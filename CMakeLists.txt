@@ -12,10 +12,14 @@ qt_add_executable(appRoboticus_control_center
     main.cpp
 )
 
+
+
 qt_add_qml_module(appRoboticus_control_center
     URI Roboticus_control_center
     QML_FILES
         Main.qml
+        qml/components/SensorPanel.qml
+
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

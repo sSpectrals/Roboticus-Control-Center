@@ -1,8 +1,14 @@
 import QtQuick
+import "qml/components"
 
 Window {
-    width: 640
-    height: 480
+    visibility:  Window.Maximized
     visible: true
-    title: qsTr("Hello World")
+    title: qsTr("Roboticus Control Center")
+    color: "grey"
+
+
+    SensorPanel {
+
+    }
 }
