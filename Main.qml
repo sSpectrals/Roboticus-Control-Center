@@ -9,6 +9,10 @@ Window {
     color: "#2f3662"
 
 
+    ListModel {
+        id: sensorModel
+    }
+
     SensorPanel {
 
     }
@@ -17,20 +21,19 @@ Window {
     Column {
         id: column
         width: parent.width / 2
-
-
+        spacing: 5
 
         Repeater {
-            model: 4
+            model: sensorModel
             SensorInfo {
                 anchors.left: parent.left
                 anchors.right: parent.right
                 height: 60
 
-                sensorId: "Sensor " + (index + 1)
-                inputValue: [1023.99, 101.3 , 65, 12.3][index]
-                thresholdValue: [1023.99, 120.0, 80, 12.0][index]
-                selectedOperator: ["<", ">", "<=", ">="][index]
+                sensorId: model.sensorId
+                inputValue: model.inputValue
+                thresholdValue: model.thresholdValue
+                selectedOperator: model.selectedOperator
             }
         }
     }
@@ -45,5 +48,24 @@ Window {
         }
         height: 70
         width: (parent.width )/2 - anchors.leftMargin*2
+
+        onAddClicked: addSensor()
+        onRemoveClicked: removeSensor()
+    }
+
+    function addSensor() {
+        var sensorCount = sensorModel.count + 1
+        sensorModel.append({
+            "sensorId": "Sensor " + sensorCount,
+            "inputValue": 0.0,
+            "thresholdValue": 100.0,
+            "selectedOperator": ">="
+        })
+    }
+
+    function removeSensor() {
+        if (sensorModel.count > 0) {
+            sensorModel.remove(sensorModel.count - 1)
+        }
     }
 }

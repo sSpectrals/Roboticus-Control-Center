@@ -14,6 +14,10 @@ Row {
     property color textColor: "white"
     property color hoverEffectColor: "#000000"
 
+    signal addClicked()
+    signal removeClicked()
+
+
 
     Button {
         id: addButton
@@ -68,7 +72,7 @@ Row {
 
 
         onClicked: {
-            console.log("Add button clicked")
+            buttonRow.addClicked()
         }
     }
 
@@ -126,17 +130,18 @@ Row {
 
         onClicked: {
             console.log("Remove button clicked")
+            buttonRow.removeClicked()
         }
     }
 
     Shortcut {
         sequence: "Ctrl+N"
-        onActivated: addButton.clicked()
+        onActivated: buttonRow.addClicked()
     }
 
     Shortcut {
         sequence: "Ctrl+D"
-        onActivated: deleteButton.clicked()
+        onActivated: buttonRow.removeClicked()
     }
 
 }
