@@ -5,9 +5,10 @@ import QtQuick.Controls 2.15
 Window {
     id: window
     visibility:  Window.Maximized
-    visible: true
     title: qsTr("Roboticus Control Center")
     color: "#2f3662"
+
+
     SensorPanel {
 
     }

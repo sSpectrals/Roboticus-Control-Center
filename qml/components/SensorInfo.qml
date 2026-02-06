@@ -10,10 +10,14 @@ Rectangle {
     property string selectedOperator: ">="
 
     color: "black"
-    radius: 10
+    radius: 4
     border {
         width: 2
         color: mouseArea.containsMouse ? Material.color(Material.Green) : "#565656"
+    }
+
+    Behavior on border.color {
+        ColorAnimation { duration: 150 }
     }
 
 
@@ -21,6 +25,7 @@ Rectangle {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
+        onClicked: sensorInfo.forceActiveFocus();
     }
 
     GridLayout {
@@ -35,12 +40,35 @@ Rectangle {
             Layout.fillHeight: true
             color: "transparent"
 
-            Text {
+            TextField   {
+                id: textInput
                 color: "white"
                 text: sensorId
                 font.bold: true
                 font.pixelSize: 14
                 anchors.centerIn: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                selectByMouse: true
+                selectionColor: "#4CAF50"
+                selectedTextColor: "white"
+
+                background: Rectangle {
+                    color: "transparent"
+                    border.color: textInput.hovered ? Material.color(Material.Green) : "transparent"
+                    border.width: 2
+                    radius: 4
+
+
+                    Behavior on border.color {
+                        ColorAnimation { duration: 150 }
+                    }
+                }
+
+                onEditingFinished: {
+                    sensorId = text
+                    focus = false
+                }
             }
         }
 
@@ -87,6 +115,63 @@ Rectangle {
                     Material.foreground: Material.Green
 
 
+                    background: Rectangle {
+                        color:  "#1a1a1a"
+                        border.color: comboBox.hovered ? Material.color(Material.Green) : "transparent"
+                        border.width: 2
+                        radius: 4
+
+                        // Optional: smooth transition
+                        Behavior on border.color {
+                            ColorAnimation { duration: 150 }
+                        }
+                    }
+
+                    popup: Popup {
+                        y: comboBox.height
+                        width: comboBox.width
+                        height: implicitHeight
+                        padding: 3
+                        contentItem: ListView {
+                            clip: true
+                            implicitHeight: contentHeight
+                            model: comboBox.popup.visible ? comboBox.delegateModel : null
+                            currentIndex: comboBox.highlightedIndex
+
+                            ScrollIndicator.vertical: ScrollIndicator { }
+                        }
+
+                        background: Rectangle {
+                            color: "#242424"
+                            border.color: Material.color(Material.Green)
+                            border.width: 2
+                            radius: 4
+                        }
+                    }
+
+                    delegate: ItemDelegate {
+                            width: comboBox.width
+                            hoverEnabled: true
+
+                            contentItem: Text {
+                                text: modelData
+                                color: parent.highlighted || parent.hovered
+                                       ? Material.color(Material.Green)
+                                       : "#cccccc"
+                            }
+
+                            highlighted: comboBox.highlightedIndex === index
+
+                            background: Rectangle {
+                                color: parent.highlighted || parent.hovered
+                                       ? "#1C1C1C"
+                                       : "transparent"
+
+                                Behavior on color {
+                                    ColorAnimation { duration: 100 }
+                                }
+                            }
+                        }
 
                     onActivated: focus = false
 
