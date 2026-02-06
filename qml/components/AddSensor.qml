@@ -129,7 +129,6 @@ Row {
 
 
         onClicked: {
-            console.log("Remove button clicked")
             buttonRow.removeClicked()
         }
     }

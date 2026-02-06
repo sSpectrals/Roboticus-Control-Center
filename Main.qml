@@ -6,7 +6,7 @@ Window {
     id: window
     visibility:  Window.Maximized
     title: qsTr("Roboticus Control Center")
-    color: "#2f3662"
+    color: "#383838"
 
 
     ListModel {
@@ -17,27 +17,60 @@ Window {
 
     }
 
+    Flickable {
+        id: flickable
+        anchors {
+            left: parent.left
+            top: parent.top
+            bottom: addSensorButton.top
+            bottomMargin: 10
+        }
+        width: parent.width /2
+        flickableDirection: Flickable.VerticalFlick
+        contentWidth: parent.width /2
+        contentHeight: column.height
+        clip: true
+        boundsBehavior: Flickable.StopAtBounds
 
-    Column {
-        id: column
-        width: parent.width / 2
-        spacing: 5
 
-        Repeater {
-            model: sensorModel
-            SensorInfo {
-                anchors.left: parent.left
-                anchors.right: parent.right
-                height: 60
+        ScrollBar.vertical: ScrollBar {
+            id: verticalScrollBar
+            policy: ScrollBar.AsNeeded
+            width: 10
+            visible: flickable.contentHeight > flickable.height
 
-                sensorId: model.sensorId
-                inputValue: model.inputValue
-                thresholdValue: model.thresholdValue
-                selectedOperator: model.selectedOperator
+            contentItem: Rectangle {
+                implicitWidth: 6
+                radius: 6
+                color: verticalScrollBar.pressed ? Material.color(Material.Green, Material.Shade900)
+                                                 : "#4CAF50"
+                opacity: verticalScrollBar.active ? 1.0 : 0.3
+                Behavior on opacity { NumberAnimation { duration: 200 } }
+
             }
         }
-    }
 
+        Column {
+            id: column
+            width: parent.width
+            spacing: 5
+
+            Repeater {
+                model: sensorModel
+                SensorInfo {
+                    anchors.left: parent.left
+                    anchors.right: parent.right
+                    height: 60
+
+                    sensorId: model.sensorId
+                    inputValue: model.inputValue
+                    thresholdValue: model.thresholdValue
+                    selectedOperator: model.selectedOperator
+                }
+            }
+        }
+
+    }
     AddSensor {
         id: addSensorButton
         anchors {
