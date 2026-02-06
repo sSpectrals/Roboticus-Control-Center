@@ -5,6 +5,7 @@ int main(int argc, char *argv[])
 {
     qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
     QGuiApplication app(argc, argv);
+    qmlRegisterSingletonType(QUrl("qrc:/IconVault.qml"), "com.myapp.assets", 1, 0, "IconVault");
 
     QQmlApplicationEngine engine;
     QObject::connect(

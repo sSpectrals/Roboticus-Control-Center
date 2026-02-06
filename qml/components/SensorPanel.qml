@@ -3,7 +3,7 @@ import QtQuick
 Rectangle {
     id: sensorPanel
     color: "red"
-    width: parent.width * 0.6
+    width: parent.width /2
 
     anchors {
         right: parent.right

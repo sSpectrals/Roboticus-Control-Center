@@ -20,7 +20,10 @@ qt_add_qml_module(appRoboticus_control_center
         Main.qml
         qml/components/SensorPanel.qml
         qml/components/SensorInfo.qml
-
+        qml/components/AddSensor.qml
+    RESOURCES
+        qml/assets/SVG/add.svg
+        qml/assets/SVG/remove.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

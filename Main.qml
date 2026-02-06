@@ -7,9 +7,7 @@ Window {
     visibility:  Window.Maximized
     visible: true
     title: qsTr("Roboticus Control Center")
-    color: "grey"
-
-
+    color: "#2f3662"
     SensorPanel {
 
     }
@@ -17,10 +15,8 @@ Window {
 
     Column {
         id: column
-        anchors.left: parent.left
-        anchors.top: parent.top
-        anchors.bottom: parent.bottom
-        width: parent.width / 3
+        width: parent.width / 2
+
 
 
         Repeater {
@@ -35,9 +31,18 @@ Window {
                 thresholdValue: [1023.99, 120.0, 80, 12.0][index]
                 selectedOperator: ["<", ">", "<=", ">="][index]
             }
-
-
         }
     }
 
+    AddSensor {
+        id: addSensorButton
+        anchors {
+            left: parent.left
+            bottom: parent.bottom
+            leftMargin: 10
+            bottomMargin: 10
+        }
+        height: 70
+        width: (parent.width )/2 - anchors.leftMargin*2
+    }
 }
