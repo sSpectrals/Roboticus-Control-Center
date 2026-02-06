@@ -19,6 +19,7 @@ qt_add_qml_module(appRoboticus_control_center
     QML_FILES
         Main.qml
         qml/components/SensorPanel.qml
+        qml/components/SensorInfo.qml
 
 )
 
