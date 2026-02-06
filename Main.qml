@@ -6,11 +6,23 @@ Window {
     id: window
     visibility:  Window.Maximized
     title: qsTr("Roboticus Control Center")
-    color: "#383838"
+    color: "#1a1a2e"
+
+    Material.theme: Material.Dark
+    Material.accent: Material.Cyan
 
 
     ListModel {
         id: sensorModel
+    }
+
+    Rectangle {
+        anchors.fill: parent
+        gradient: Gradient {
+            GradientStop { position: 0.0; color: "#1a1a2e" }
+            GradientStop { position: 1.0; color: "#16213e" }
+        }
+        opacity: 0.8
     }
 
     SensorPanel {
@@ -23,7 +35,9 @@ Window {
             left: parent.left
             top: parent.top
             bottom: addSensorButton.top
-            bottomMargin: 10
+            bottomMargin: 20
+            leftMargin: 20
+            rightMargin: 20
         }
         width: parent.width /2
         flickableDirection: Flickable.VerticalFlick
@@ -36,24 +50,54 @@ Window {
         ScrollBar.vertical: ScrollBar {
             id: verticalScrollBar
             policy: ScrollBar.AsNeeded
-            width: 10
+            width: 8
             visible: flickable.contentHeight > flickable.height
 
             contentItem: Rectangle {
                 implicitWidth: 6
-                radius: 6
-                color: verticalScrollBar.pressed ? Material.color(Material.Green, Material.Shade900)
-                                                 : "#4CAF50"
-                opacity: verticalScrollBar.active ? 1.0 : 0.3
+                radius: 3
+                color: verticalScrollBar.pressed ? "#00ffaa" : "#00ccff"
+                opacity: verticalScrollBar.active ? 0.8 : 0.4
                 Behavior on opacity { NumberAnimation { duration: 200 } }
-
             }
         }
 
         Column {
             id: column
             width: parent.width
-            spacing: 5
+            spacing: 12
+
+            Rectangle {
+                width: parent.width
+                height: 50
+                color: "transparent"
+
+
+                Text {
+                    text: "SENSOR MONITORING"
+                    font.family: "Segoe UI"
+                    font.pixelSize: 20
+                    font.weight: Font.DemiBold
+                    color: "#ffffff"
+                    anchors {
+                        left: parent.left
+                        verticalCenter: parent.verticalCenter
+                        leftMargin: 10
+                    }
+                }
+
+                Rectangle {
+                    width: parent.width - 20
+                    height: 2
+                    color: "#00ccff"
+                    opacity: 0.6
+                    anchors {
+                        left: parent.left
+                        bottom: parent.bottom
+                        leftMargin: 10
+                    }
+                }
+            }
 
             Repeater {
                 model: sensorModel
@@ -61,6 +105,8 @@ Window {
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: 60
+
+                    color: index % 2 === 0 ? "#2d3047" : "#25283d"
 
                     sensorId: model.sensorId
                     inputValue: model.inputValue
@@ -71,20 +117,23 @@ Window {
         }
 
     }
+
     AddSensor {
         id: addSensorButton
         anchors {
             left: parent.left
             bottom: parent.bottom
-            leftMargin: 10
-            bottomMargin: 10
+            leftMargin: 20
+            bottomMargin: 20
         }
         height: 70
-        width: (parent.width )/2 - anchors.leftMargin*2
+        width: (parent.width )/2
 
         onAddClicked: addSensor()
         onRemoveClicked: removeSensor()
     }
+
+
 
     function addSensor() {
         var sensorCount = sensorModel.count + 1

@@ -10,10 +10,10 @@ Rectangle {
     property string selectedOperator: ">="
 
     color: "black"
-    radius: 4
+    radius: 10
     border {
         width: 2
-        color: mouseArea.containsMouse ? Material.color(Material.Green) : "#565656"
+        color: mouseArea.containsMouse ? "#00ccff" : "#565656"
     }
 
     Behavior on border.color {
@@ -26,6 +26,24 @@ Rectangle {
         anchors.fill: parent
         hoverEnabled: true
         onClicked: sensorInfo.forceActiveFocus();
+    }
+
+    // property bool triggered
+    // switch(selectedOperator) {
+    //     case ">=": triggered: inputValue >= thresholdValue ? true : false
+    // }
+
+    // TODO: change color depending on triggered or not?
+    Rectangle {
+        width: 6
+        height: parent.height * 0.6
+        color: "white"
+        radius: 3
+        anchors {
+            left: parent.left
+            verticalCenter: parent.verticalCenter
+            leftMargin: 8
+        }
     }
 
     GridLayout {

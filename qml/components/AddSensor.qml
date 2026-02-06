@@ -19,6 +19,7 @@ Row {
 
 
 
+
     Button {
         id: addButton
         width: (parent.width - buttonRow.spacing) /2
@@ -29,8 +30,6 @@ Row {
         Material.roundedScale: Button.None
         Material.elevation: deleteButton.hovered ? 3 : 1
 
-
-
         Image {
             anchors.centerIn: parent
             source: "../assets/SVG/add.svg"
@@ -40,7 +39,7 @@ Row {
         background: Rectangle {
             anchors.fill: parent
             color: addButton.Material.background
-            radius: 0
+            radius: 12
             border.color: Qt.darker(addButton.Material.background, 1.2)
             border.width: 1
 
@@ -98,7 +97,7 @@ Row {
         background: Rectangle {
             anchors.fill: parent
             color: deleteButton.Material.background
-            radius: 0
+            radius: 12
             border.color: Qt.darker(deleteButton.Material.background, 1.2)
             border.width: 1
 
