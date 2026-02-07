@@ -67,6 +67,8 @@ Window {
             width: parent.width
             spacing: 12
 
+            property var selectedSensor: null
+
             Rectangle {
                 width: parent.width
                 height: 50
@@ -101,7 +103,8 @@ Window {
 
             Repeater {
                 model: sensorModel
-                SensorInfo {
+                delegate: SensorInfo {
+                    id: sensorDelegate
                     anchors.left: parent.left
                     anchors.right: parent.right
                     height: 60
@@ -112,6 +115,18 @@ Window {
                     inputValue: model.inputValue
                     thresholdValue: model.thresholdValue
                     selectedOperator: model.selectedOperator
+                    selected: column.selectedSensor === sensorDelegate
+
+                    onClicked: {
+                        if (column.selectedSensor === sensorDelegate) {
+                            // Clicking the already selected item - deselect it
+                            column.selectedSensor = null;
+                        } else {
+                            // Select this item (automatically deselects previous)
+                            column.selectedSensor = sensorDelegate;
+                        }
+                    }
+
                 }
             }
         }

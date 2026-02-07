@@ -8,24 +8,29 @@ Rectangle {
     property double inputValue: -1.0
     property double thresholdValue: 100.0
     property string selectedOperator: ">="
+    property bool selected: false
 
     color: "black"
     radius: 10
     border {
         width: 2
-        color: mouseArea.containsMouse ? "#00ccff" : "#565656"
+        color: (mouseArea.containsMouse || selected)? "#00ccff" : "#565656"
     }
 
     Behavior on border.color {
         ColorAnimation { duration: 150 }
     }
 
+    signal clicked()
 
     MouseArea {
         id: mouseArea
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: sensorInfo.forceActiveFocus();
+        onClicked: {
+            sensorInfo.clicked();
+            sensorInfo.forceActiveFocus();
+        }
     }
 
     // property bool triggered
