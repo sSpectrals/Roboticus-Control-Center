@@ -7,6 +7,7 @@ Window {
     visibility:  Window.Maximized
     title: qsTr("Roboticus Control Center")
     color: "#1a1a2e"
+    property int sensorCounter: 0
 
     Material.theme: Material.Dark
     Material.accent: Material.Cyan
@@ -68,6 +69,7 @@ Window {
             spacing: 12
 
             property var selectedSensor: null
+            property int selectedSensorIndex: -1
 
             Rectangle {
                 width: parent.width
@@ -77,7 +79,6 @@ Window {
 
                 Text {
                     text: "SENSOR MONITORING"
-                    font.family: "Segoe UI"
                     font.pixelSize: 20
                     font.weight: Font.DemiBold
                     color: "#ffffff"
@@ -119,11 +120,11 @@ Window {
 
                     onClicked: {
                         if (column.selectedSensor === sensorDelegate) {
-                            // Clicking the already selected item - deselect it
                             column.selectedSensor = null;
+                            column.selectedSensorIndex = -1;
                         } else {
-                            // Select this item (automatically deselects previous)
                             column.selectedSensor = sensorDelegate;
+                            column.selectedSensorIndex = index;
                         }
                     }
 
@@ -151,9 +152,9 @@ Window {
 
 
     function addSensor() {
-        var sensorCount = sensorModel.count + 1
+        sensorCounter++;
         sensorModel.append({
-            "sensorId": "Sensor " + sensorCount,
+            "sensorId": "Sensor " + sensorCounter,
             "inputValue": 0.0,
             "thresholdValue": 100.0,
             "selectedOperator": ">="
@@ -162,7 +163,16 @@ Window {
 
     function removeSensor() {
         if (sensorModel.count > 0) {
-            sensorModel.remove(sensorModel.count - 1)
+
+            if (column.selectedSensorIndex !== -1) {
+                sensorModel.remove(column.selectedSensorIndex);
+                column.selectedSensor = null;
+                column.selectedSensorIndex = -1;
+            } else {
+                // no sensor selected
+                // sensorModel.remove(sensorModel.count - 1);
+            }
+
         }
     }
 }
