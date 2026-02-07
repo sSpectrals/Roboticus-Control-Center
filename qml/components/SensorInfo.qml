@@ -14,7 +14,7 @@ Rectangle {
     radius: 10
     border {
         width: 2
-        color: (mouseArea.containsMouse || selected)? "#00ccff" : "#565656"
+        color: (mouseArea.containsMouse || selected)? "#98FF98" : "#333333"
     }
 
     Behavior on border.color {
@@ -73,12 +73,12 @@ Rectangle {
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 selectByMouse: true
-                selectionColor: "#4CAF50"
-                selectedTextColor: "white"
+                selectionColor: "#98FF98"
+                selectedTextColor: "#1a1a1a"
 
                 background: Rectangle {
                     color: "transparent"
-                    border.color: textInput.hovered ? Material.color(Material.Green) : "transparent"
+                    border.color: textInput.hovered ? "#98FF98" : "transparent"
                     border.width: 2
                     radius: 4
 
@@ -99,7 +99,7 @@ Rectangle {
         Rectangle {
             Layout.preferredWidth: parent.width * 0.5
             Layout.fillHeight: true
-            color: "#242424"
+            color: "#1a1a1a"
             radius: 10
 
             RowLayout {
@@ -134,13 +134,13 @@ Rectangle {
                     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
                     model: [">=", ">", "<", "<=", "==", "!=="]
 
-                    Material.accent: Material.Green
-                    Material.foreground: Material.Green
+                    Material.accent: "#98FF98"
+                    Material.foreground: "#98FF98"
 
 
                     background: Rectangle {
-                        color:  "#1a1a1a"
-                        border.color: comboBox.hovered ? Material.color(Material.Green) : "transparent"
+                        color:  "#0f0f0f"
+                        border.color: comboBox.hovered ? "#98FF98" : "#333333"
                         border.width: 2
                         radius: 4
 
@@ -165,8 +165,8 @@ Rectangle {
                         }
 
                         background: Rectangle {
-                            color: "#242424"
-                            border.color: Material.color(Material.Green)
+                            color: "#1a1a1a"
+                            border.color: "#98FF98"
                             border.width: 2
                             radius: 4
                         }
@@ -179,15 +179,15 @@ Rectangle {
                             contentItem: Text {
                                 text: modelData
                                 color: parent.highlighted || parent.hovered
-                                       ? Material.color(Material.Green)
-                                       : "#cccccc"
+                                       ? "#98FF98"
+                                       : "#888888"
                             }
 
                             highlighted: comboBox.highlightedIndex === index
 
                             background: Rectangle {
                                 color: parent.highlighted || parent.hovered
-                                       ? "#1C1C1C"
+                                       ? "#0f0f0f"
                                        : "transparent"
 
                                 Behavior on color {

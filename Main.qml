@@ -6,11 +6,11 @@ Window {
     id: window
     visibility:  Window.Maximized
     title: qsTr("Roboticus Control Center")
-    color: "#1a1a2e"
+    color: "#1a1a1a"
     property int sensorCounter: 0
 
     Material.theme: Material.Dark
-    Material.accent: Material.Cyan
+    Material.accent: "#98FF98"
 
 
     ListModel {
@@ -20,8 +20,8 @@ Window {
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#1a1a2e" }
-            GradientStop { position: 1.0; color: "#16213e" }
+            GradientStop { position: 0.0; color: "#1a1a1a" }
+            GradientStop { position: 1.0; color: "#0f0f0f" }
         }
         opacity: 0.8
     }
@@ -57,7 +57,7 @@ Window {
             contentItem: Rectangle {
                 implicitWidth: 6
                 radius: 3
-                color: verticalScrollBar.pressed ? "#00ffaa" : "#00ccff"
+                color: verticalScrollBar.pressed ? "#22FF98" : "#98FF98"
                 opacity: verticalScrollBar.active ? 0.8 : 0.4
                 Behavior on opacity { NumberAnimation { duration: 200 } }
             }
@@ -81,7 +81,7 @@ Window {
                     text: "SENSOR MONITORING"
                     font.pixelSize: 20
                     font.weight: Font.DemiBold
-                    color: "#ffffff"
+                    color: "white"
                     anchors {
                         left: parent.left
                         verticalCenter: parent.verticalCenter
@@ -92,7 +92,7 @@ Window {
                 Rectangle {
                     width: parent.width - 20
                     height: 2
-                    color: "#00ccff"
+                    color: "#98FF98"
                     opacity: 0.6
                     anchors {
                         left: parent.left
@@ -110,7 +110,7 @@ Window {
                     anchors.right: parent.right
                     height: 60
 
-                    color: index % 2 === 0 ? "#2d3047" : "#25283d"
+                    color: index % 2 === 0 ? "#1a1a1a" : "#151515"
 
                     sensorId: model.sensorId
                     inputValue: model.inputValue
