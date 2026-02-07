@@ -11,25 +11,33 @@ Rectangle {
     anchors {
         left: flickable.right
         top: parent.top
-        bottom: parent.bottom
         right: parent.right
         margins: 20
     }
 
+    height: chart.height
+
 
 
     ChartView {
-        anchors.fill: parent
+        id: chart
+        anchors {
+            left: parent.left
+            right: parent.right
+        }
+
+        height: chart.width
+
+        dropShadowEnabled: true
         antialiasing: true
         backgroundColor: "transparent"
         legend.visible: false
 
-
         ValueAxis {
             id: axisX
-            min: 1.0
-            max: 3.0
-            tickCount: 5
+            min: -10
+            max: 10
+            tickCount: 20
             labelsColor: "white"
             gridLineColor: "#333333"
             lineVisible: false
@@ -38,9 +46,9 @@ Rectangle {
 
         ValueAxis {
             id: axisY
-            min: 1.0
-            max: 2.5
-            tickCount: 5
+            min: -10
+            max: 10
+            tickCount: 20
             labelsColor: "white"
             gridLineColor: "#333333"
             lineVisible: false
@@ -52,13 +60,38 @@ Rectangle {
             axisX: axisX
             axisY: axisY
 
-            XYPoint { x: 1.5; y: 1.5 }
-            XYPoint { x: 1.5; y: 1.6 }
-            XYPoint { x: 1.57; y: 1.55 }
-            XYPoint { x: 1.8; y: 1.8 }
-            XYPoint { x: 1.9; y: 1.6 }
-            XYPoint { x: 2.1; y: 1.3 }
-            XYPoint { x: 2.5; y: 2.1 }
+            XYPoint { x: 0.0; y: -7.0 }
+                XYPoint { x: 1.37; y: -6.87 }
+                XYPoint { x: 2.67; y: -6.5 }
+                XYPoint { x: 3.83; y: -5.9 }
+                XYPoint { x: 4.83; y: -5.09 }
+                XYPoint { x: 5.63; y: -4.1 }
+                XYPoint { x: 6.18; y: -2.95 }
+                XYPoint { x: 6.56; y: -1.65 }
+                XYPoint { x: 6.73; y: 0.0 }
+                XYPoint { x: 6.56; y: 1.65 }
+                XYPoint { x: 6.18; y: 2.95 }
+                XYPoint { x: 5.63; y: 4.1 }
+                XYPoint { x: 4.83; y: 5.09 }
+                XYPoint { x: 3.83; y: 5.9 }
+                XYPoint { x: 2.67; y: 6.5 }
+                XYPoint { x: 1.37; y: 6.87 }
+                XYPoint { x: 0.0; y: 7.0 }
+                XYPoint { x: -1.37; y: 6.87 }
+                XYPoint { x: -2.67; y: 6.5 }
+                XYPoint { x: -3.83; y: 5.9 }
+                XYPoint { x: -4.83; y: 5.09 }
+                XYPoint { x: -5.63; y: 4.1 }
+                XYPoint { x: -6.18; y: 2.95 }
+                XYPoint { x: -6.56; y: 1.65 }
+                XYPoint { x: -6.73; y: 0.0 }
+                XYPoint { x: -6.56; y: -1.65 }
+                XYPoint { x: -6.18; y: -2.95 }
+                XYPoint { x: -5.63; y: -4.1 }
+                XYPoint { x: -4.83; y: -5.09 }
+                XYPoint { x: -3.83; y: -5.9 }
+                XYPoint { x: -2.67; y: -6.5 }
+                XYPoint { x: -1.37; y: -6.87 }
         }
     }
 

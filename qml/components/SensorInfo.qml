@@ -144,7 +144,7 @@ Rectangle {
                         border.width: 2
                         radius: 4
 
-                        // Optional: smooth transition
+
                         Behavior on border.color {
                             ColorAnimation { duration: 150 }
                         }
