@@ -4,7 +4,7 @@ project(Roboticus_control_center VERSION 0.1 LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Qt6 REQUIRED COMPONENTS Quick Charts)
+find_package(Qt6 REQUIRED COMPONENTS Quick Graphs)
 
 qt_standard_project_setup(REQUIRES 6.10)
 
@@ -38,7 +38,7 @@ set_target_properties(appRoboticus_control_center PROPERTIES
 )
 
 target_link_libraries(appRoboticus_control_center
-    PRIVATE Qt6::Quick Qt6::Charts
+    PRIVATE Qt6::Quick Qt6::Graphs
 )
 
 include(GNUInstallDirs)

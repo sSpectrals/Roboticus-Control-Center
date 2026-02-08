@@ -1,10 +1,10 @@
-#include <QApplication>
+#include <QGuiApplication >
 #include <QQmlApplicationEngine>
 
 int main(int argc, char *argv[])
 {
     qputenv("QT_QUICK_CONTROLS_STYLE", "Material");
-    QApplication  app(argc, argv);
+    QGuiApplication  app(argc, argv);
 
     QQmlApplicationEngine engine;
     QObject::connect(

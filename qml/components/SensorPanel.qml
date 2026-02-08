@@ -1,9 +1,10 @@
 import QtQuick
-import QtCharts
+import QtGraphs
 
 Rectangle {
     id: sensorPanel
     width: parent.width /2
+    height: flickable.height
     color: "#1a1a1a"
     radius: 15
     border.width: 2
@@ -15,83 +16,110 @@ Rectangle {
         margins: 20
     }
 
-    height: chart.height
 
 
 
-    ChartView {
+    GraphsView {
         id: chart
-        anchors {
+        anchors{
+            top: parent.top
             left: parent.left
             right: parent.right
+            bottom: parent.bottom
+            margins: 20
         }
 
-        height: chart.width
+        axisX: axisX
+        axisY: axisY
 
-        dropShadowEnabled: true
-        antialiasing: true
-        backgroundColor: "transparent"
-        legend.visible: false
+
+        theme: GraphsTheme {
+            labelBorderVisible: false
+            grid {
+                mainColor: "grey"
+                mainWidth: 2
+            }
+            gridVisible: true
+        }
+
 
         ValueAxis {
             id: axisX
-            min: -10
-            max: 10
-            tickCount: 20
-            labelsColor: "white"
-            gridLineColor: "#333333"
-            lineVisible: false
+            min: -20
+            max: 20
+            visible: false
             labelsVisible: false
+
+
+
         }
 
         ValueAxis {
             id: axisY
-            min: -10
-            max: 10
-            tickCount: 20
-            labelsColor: "white"
-            gridLineColor: "#333333"
-            lineVisible: false
+            min: -20
+            max: 20
+            visible: false
             labelsVisible: false
+
+
+        }
+
+        function pixelToX(px) {
+            return axisX.min + (px / width) * (axisX.max - axisX.min)
+        }
+
+        function pixelToY(py) {
+            return axisY.max - (py / height) * (axisY.max - axisY.min)
         }
 
         ScatterSeries  {
-            id: scatter1
-            axisX: axisX
-            axisY: axisY
+            id: scatter
 
-            XYPoint { x: 0.0; y: -7.0 }
-                XYPoint { x: 1.37; y: -6.87 }
-                XYPoint { x: 2.67; y: -6.5 }
-                XYPoint { x: 3.83; y: -5.9 }
-                XYPoint { x: 4.83; y: -5.09 }
-                XYPoint { x: 5.63; y: -4.1 }
-                XYPoint { x: 6.18; y: -2.95 }
-                XYPoint { x: 6.56; y: -1.65 }
-                XYPoint { x: 6.73; y: 0.0 }
-                XYPoint { x: 6.56; y: 1.65 }
-                XYPoint { x: 6.18; y: 2.95 }
-                XYPoint { x: 5.63; y: 4.1 }
-                XYPoint { x: 4.83; y: 5.09 }
-                XYPoint { x: 3.83; y: 5.9 }
-                XYPoint { x: 2.67; y: 6.5 }
-                XYPoint { x: 1.37; y: 6.87 }
-                XYPoint { x: 0.0; y: 7.0 }
-                XYPoint { x: -1.37; y: 6.87 }
-                XYPoint { x: -2.67; y: 6.5 }
-                XYPoint { x: -3.83; y: 5.9 }
-                XYPoint { x: -4.83; y: 5.09 }
-                XYPoint { x: -5.63; y: 4.1 }
-                XYPoint { x: -6.18; y: 2.95 }
-                XYPoint { x: -6.56; y: 1.65 }
-                XYPoint { x: -6.73; y: 0.0 }
-                XYPoint { x: -6.56; y: -1.65 }
-                XYPoint { x: -6.18; y: -2.95 }
-                XYPoint { x: -5.63; y: -4.1 }
-                XYPoint { x: -4.83; y: -5.09 }
-                XYPoint { x: -3.83; y: -5.9 }
-                XYPoint { x: -2.67; y: -6.5 }
-                XYPoint { x: -1.37; y: -6.87 }
+            XYPoint { x: 0.0; y: -7.0;}
+            XYPoint { x: 1.0; y: -6.0;}
+
+            pointDelegate: Rectangle {
+                id: pointItem
+                width: 15
+                height: 15
+                radius: width /2
+                color: "lime"
+
+                property real originalX: 0
+                property real originalY: 0
+
+
+                MouseArea {
+                    anchors.fill: parent
+                    cursorShape: Qt.OpenHandCursor
+                    drag.target: pointItem
+                    drag.smoothed: false
+                    drag.minimumX: -pointItem.width / 2
+                    drag.maximumX: chart.width*0.96 - pointItem.width
+                    drag.minimumY: -pointItem.height / 2
+                    drag.maximumY: chart.height*0.96 - pointItem.height
+
+
+
+                    onPressed: function(mouse) {
+                        cursorShape = Qt.ClosedHandCursor
+                        pointItem.originalX = chart.pixelToX(pointItem.x + pointItem.width / 2)
+                        pointItem.originalY = chart.pixelToY(pointItem.y + pointItem.height / 2)
+                    }
+
+                    onReleased: function(mouse) {
+                        cursorShape = Qt.OpenHandCursor
+
+                        const newX = chart.pixelToX(pointItem.x + pointItem.width / 2)
+                        const newY = chart.pixelToY(pointItem.y + pointItem.height / 2)
+
+                        scatter.replace(pointItem.originalX, pointItem.originalY, newX, newY)
+
+
+                    }
+                }
+            }
+
         }
     }
 
