@@ -16,6 +16,10 @@ Rectangle {
         margins: 20
     }
 
+
+
+
+
     GraphsView {
         id: chart
         anchors{
@@ -93,6 +97,36 @@ Rectangle {
     }
 
     function removePointFromGraph(id) {
+        var series = seriesMap[id]
+        if (series) {
+            chart.removeSeries(series)
+
+            delete seriesMap[id]
+
+            series.destroy(100)
+
+        }
+    }
+
+    function addArrowToGraph(x, y, rotation, scale, arrowColor ,id) {
+
+        var component = Qt.createComponent("VectorArrow.qml")
+        if (component.status === Component.Ready) {
+            var series = component.createObject(chart, {
+                "vectorId": id,
+                "pointX": x,
+                "pointY": y,
+                "arrowRotation": rotation,
+                "arrowScale": scale,
+                "arrowColor": arrowColor
+            })
+
+            chart.addSeries(series)
+            seriesMap[id] = series
+        }
+    }
+
+    function removeArrowFromGraph(id) {
         var series = seriesMap[id]
         if (series) {
             chart.removeSeries(series)

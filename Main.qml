@@ -174,6 +174,7 @@ Window {
         });
 
         sensorPanel.addPointToGraph(0, 0, sensorCounter);
+        sensorPanel.addArrowToGraph(0,0,-180, 1,"red", 1)
     }
 
     function removeSensor(id) {
@@ -188,6 +189,8 @@ Window {
         sensorPanel.removePointFromGraph(sensor.id)
         sensorModel.remove(getSensorIndexFromId(sensor.id));
         column.selectedSensor = null
+
+        sensorPanel.removeArrowFromGraph(1)
 
     }
 
