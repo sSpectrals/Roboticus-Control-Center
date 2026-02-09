@@ -56,20 +56,13 @@ Rectangle {
             labelsVisible: false
         }
 
-        function pixelToX(px) {
-            return axisX.min + (px / width) * (axisX.max - axisX.min)
-        }
-
-        function pixelToY(py) {
-            return axisY.max - (py / height) * (axisY.max - axisY.min)
-        }
     }
 
 
     property var seriesMap: ({})
 
     function addPointToGraph(x, y, id) {
-        // Create a new ScatterSeries for this point
+
         var component = Qt.createComponent("SinglePointSeries.qml")
         if (component.status === Component.Ready) {
             var series = component.createObject(chart, {

@@ -32,12 +32,29 @@ ScatterSeries {
             onReleased: function(mouse) {
                 cursorShape = Qt.OpenHandCursor
 
-                let newX = chart.pixelToX(pointItem.x + pointItem.width / 2)
-                let newY = chart.pixelToY(pointItem.y + pointItem.height / 2)
+                // let newX = pixelToX(pointItem.x + pointItem.width / 2)
+                // let newY = pixelToY(pointItem.y + pointItem.height / 2)
 
+                let centerPoint = pointItem.mapToItem(chart,
+                                                      pointItem.width / 2,
+                                                      pointItem.height / 2)
+                let newX = series.pixelToX(centerPoint.x)
+                let newY = series.pixelToY(centerPoint.y)
 
                 series.replace(0, newX, newY)
             }
         }
+    }
+
+    function pixelToX(px) {
+        let plotArea = chart.plotArea
+        let axisX = chart.axisX
+        return axisX.min + (px - plotArea.x) * (axisX.max - axisX.min) / plotArea.width
+    }
+
+    function pixelToY(py) {
+        let plotArea = chart.plotArea
+        let axisY = chart.axisY
+        return axisY.max - (py - plotArea.y) * (axisY.max - axisY.min) / plotArea.height
     }
 }
