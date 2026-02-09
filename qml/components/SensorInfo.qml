@@ -4,10 +4,13 @@ import QtQuick.Layouts
 
 Rectangle {
     id: sensorInfo
-    property string sensorId: "No ID Set"
+    property string sensorName: "No Name Set"
+    property int sensorID: -1
     property double inputValue: -1.0
     property double thresholdValue: 100.0
     property string selectedOperator: ">="
+    property real xLocation: 0
+    property real yLocation: 0
     property bool selected: false
 
     color: "black"
@@ -57,7 +60,7 @@ Rectangle {
         columns: 2
         rows: 1
 
-        // Column 1: Sensor ID
+        // Column 1: Sensor Name
         Rectangle {
             Layout.preferredWidth: parent.width * 0.4
             Layout.fillHeight: true
@@ -66,7 +69,7 @@ Rectangle {
             TextField   {
                 id: textInput
                 color: "white"
-                text: sensorId
+                text: sensorName
                 font.bold: true
                 font.pixelSize: 14
                 anchors.centerIn: parent
@@ -89,7 +92,7 @@ Rectangle {
                 }
 
                 onEditingFinished: {
-                    sensorId = text
+                    sensorName = text
                     focus = false
                 }
             }

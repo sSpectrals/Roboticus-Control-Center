@@ -16,8 +16,7 @@ Rectangle {
         margins: 20
     }
 
-
-
+    signal pointMoved(real newX, real newY, int id)
 
     GraphsView {
         id: chart
@@ -32,7 +31,6 @@ Rectangle {
         axisX: axisX
         axisY: axisY
 
-
         theme: GraphsTheme {
             labelBorderVisible: false
             grid {
@@ -42,16 +40,12 @@ Rectangle {
             gridVisible: true
         }
 
-
         ValueAxis {
             id: axisX
             min: -20
             max: 20
             visible: false
             labelsVisible: false
-
-
-
         }
 
         ValueAxis {
@@ -60,8 +54,6 @@ Rectangle {
             max: 20
             visible: false
             labelsVisible: false
-
-
         }
 
         function pixelToX(px) {
@@ -71,57 +63,36 @@ Rectangle {
         function pixelToY(py) {
             return axisY.max - (py / height) * (axisY.max - axisY.min)
         }
-
-        ScatterSeries  {
-            id: scatter
-
-            XYPoint { x: 0.0; y: -7.0;}
-            XYPoint { x: 1.0; y: -6.0;}
-
-            pointDelegate: Rectangle {
-                id: pointItem
-                width: 15
-                height: 15
-                radius: width /2
-                color: "lime"
-
-                property real originalX: 0
-                property real originalY: 0
+    }
 
 
-                MouseArea {
-                    anchors.fill: parent
-                    cursorShape: Qt.OpenHandCursor
-                    drag.target: pointItem
-                    drag.smoothed: false
-                    drag.minimumX: -pointItem.width / 2
-                    drag.maximumX: chart.width*0.96 - pointItem.width
-                    drag.minimumY: -pointItem.height / 2
-                    drag.maximumY: chart.height*0.96 - pointItem.height
+    property var seriesMap: ({})
 
+    function addPointToGraph(x, y, id) {
+        // Create a new ScatterSeries for this point
+        var component = Qt.createComponent("SinglePointSeries.qml")
+        if (component.status === Component.Ready) {
+            var series = component.createObject(chart, {
+                "sensorId": id,
+                "pointX": x,
+                "pointY": y
+            })
 
-
-                    onPressed: function(mouse) {
-                        cursorShape = Qt.ClosedHandCursor
-                        pointItem.originalX = chart.pixelToX(pointItem.x + pointItem.width / 2)
-                        pointItem.originalY = chart.pixelToY(pointItem.y + pointItem.height / 2)
-                    }
-
-                    onReleased: function(mouse) {
-                        cursorShape = Qt.OpenHandCursor
-
-                        const newX = chart.pixelToX(pointItem.x + pointItem.width / 2)
-                        const newY = chart.pixelToY(pointItem.y + pointItem.height / 2)
-
-                        scatter.replace(pointItem.originalX, pointItem.originalY, newX, newY)
-
-
-                    }
-                }
-            }
-
+            chart.addSeries(series)
+            seriesMap[id] = series
         }
     }
 
+    function removePointFromGraph(id) {
+        var series = seriesMap[id]
+        if (series) {
+            chart.removeSeries(series)
+
+            delete seriesMap[id]
+
+            series.destroy(100)
+
+        }
+    }
 
 }

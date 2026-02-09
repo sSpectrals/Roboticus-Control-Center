@@ -5,6 +5,8 @@ import QtQuick.Controls 2.15
 Window {
     id: window
     visibility:  Window.Maximized
+    // width: 1920
+    // height: 1080
     title: qsTr("Roboticus Control Center")
     color: "#1a1a1a"
     property int sensorCounter: 0
@@ -17,6 +19,8 @@ Window {
         id: sensorModel
     }
 
+
+
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
@@ -27,7 +31,29 @@ Window {
     }
 
     SensorPanel {
+        id: sensorPanel
 
+        // onAddPoint: function(x, y, id) {
+        //     addPointToGraph(x, y, id)
+        // }
+        // onRemovePoint: function(id) {
+        //     removePointFromGraph(id)
+        // }
+
+
+
+        // onPointMoved: function(newX, newY, id) {
+
+        //     for(let i = 0; i < sensorModel.count; i++) {
+        //         const sensor = sensorModel.get(i)
+        //         if(sensor.id === id) {
+        //             sensorModel.setProperty(i, "xLocation", newX)
+        //             sensorModel.setProperty(i, "yLocation", newY)
+        //             console.log("id: " + sensor.id);
+        //             return
+        //         }
+        //     }
+        // }
     }
 
     Flickable {
@@ -69,7 +95,6 @@ Window {
             spacing: 12
 
             property var selectedSensor: null
-            property int selectedSensorIndex: -1
 
             Rectangle {
                 width: parent.width
@@ -112,19 +137,19 @@ Window {
 
                     color: index % 2 === 0 ? "#1a1a1a" : "#151515"
 
-                    sensorId: model.sensorId
+                    sensorID: model.id
                     inputValue: model.inputValue
                     thresholdValue: model.thresholdValue
                     selectedOperator: model.selectedOperator
+                    xLocation: model.xLocation
+                    yLocation: model.yLocation
                     selected: column.selectedSensor === sensorDelegate
 
                     onClicked: {
-                        if (column.selectedSensor === sensorDelegate) {
+                        if(column.selectedSensor === sensorDelegate) {
                             column.selectedSensor = null;
-                            column.selectedSensorIndex = -1;
                         } else {
                             column.selectedSensor = sensorDelegate;
-                            column.selectedSensorIndex = index;
                         }
                     }
 
@@ -146,7 +171,13 @@ Window {
         width: (parent.width )/2
 
         onAddClicked: addSensor()
-        onRemoveClicked: removeSensor()
+        onRemoveClicked: {
+            if (column.selectedSensor !== null) {
+                removeSensor(column.selectedSensor.sensorID )
+            } else {
+                console.log("No sensor selected")
+            }
+        }
     }
 
 
@@ -154,25 +185,52 @@ Window {
     function addSensor() {
         sensorCounter++;
         sensorModel.append({
-            "sensorId": "Sensor " + sensorCounter,
+            "id": sensorCounter,
+            "sensorName": "No Name Set",
             "inputValue": 0.0,
             "thresholdValue": 100.0,
-            "selectedOperator": ">="
-        })
+            "selectedOperator": ">=",
+            "xLocation": 0,
+            "yLocation": 0
+
+        });
+
+        sensorPanel.addPointToGraph(0, 0, sensorCounter);
     }
 
-    function removeSensor() {
-        if (sensorModel.count > 0) {
+    function removeSensor(id) {
 
-            if (column.selectedSensorIndex !== -1) {
-                sensorModel.remove(column.selectedSensorIndex);
-                column.selectedSensor = null;
-                column.selectedSensorIndex = -1;
-            } else {
-                // no sensor selected
-                // sensorModel.remove(sensorModel.count - 1);
+        if(sensorModel.count  < 1) return
+
+        const sensor = getSensorByID(id);
+
+        if(sensor === null) return
+
+
+        sensorPanel.removePointFromGraph(sensor.id)
+        sensorModel.remove(getSensorIndexFromId(sensor.id));
+        column.selectedSensor = null
+
+    }
+
+
+    function getSensorByID(id) {
+        for(let i = 0; i < sensorModel.count; i++) {
+            const sensor = sensorModel.get(i)
+            if(sensor.id === id) {
+                return sensor
             }
-
         }
+        return null
+    }
+
+    function getSensorIndexFromId(id) {
+        for(let i = 0; i < sensorModel.count; i++) {
+            const sensor = sensorModel.get(i)
+            if(sensor.id === id) {
+                return i
+            }
+        }
+        return -1
     }
 }

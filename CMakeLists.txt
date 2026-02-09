@@ -24,6 +24,7 @@ qt_add_qml_module(appRoboticus_control_center
     RESOURCES
         qml/assets/SVG/add.svg
         qml/assets/SVG/remove.svg
+        QML_FILES qml/components/SinglePointSeries.qml
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
