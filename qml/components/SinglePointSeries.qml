@@ -19,32 +19,32 @@ ScatterSeries {
         radius: width / 2
         color: "lime"
 
-        MouseArea {
-            anchors.fill: parent
-            cursorShape: Qt.OpenHandCursor
-            drag.target: pointItem
-            drag.smoothed: false
+        DragHandler {
+            id: dragHandler
+            target: pointItem
 
-            onPressed: function(mouse) {
-                cursorShape = Qt.ClosedHandCursor
-            }
+            onActiveChanged: {
+                if (!active) {
+                    let centerPoint = pointItem.mapToItem(chart,
+                                                          pointItem.width / 2,
+                                                          pointItem.height / 2)
 
-            onReleased: function(mouse) {
-                cursorShape = Qt.OpenHandCursor
+                    let newX = series.pixelToX(centerPoint.x)
+                    let newY = series.pixelToY(centerPoint.y)
 
-                // let newX = pixelToX(pointItem.x + pointItem.width / 2)
-                // let newY = pixelToY(pointItem.y + pointItem.height / 2)
-
-                let centerPoint = pointItem.mapToItem(chart,
-                                                      pointItem.width / 2,
-                                                      pointItem.height / 2)
-                let newX = series.pixelToX(centerPoint.x)
-                let newY = series.pixelToY(centerPoint.y)
-
-                series.replace(0, newX, newY)
+                    series.replace(0, newX, newY)
+                }
             }
         }
+
+        HoverHandler {
+            cursorShape: dragHandler.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
+        }
+
+
     }
+
+
 
     function pixelToX(px) {
         let plotArea = chart.plotArea

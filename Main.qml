@@ -32,28 +32,6 @@ Window {
 
     SensorPanel {
         id: sensorPanel
-
-        // onAddPoint: function(x, y, id) {
-        //     addPointToGraph(x, y, id)
-        // }
-        // onRemovePoint: function(id) {
-        //     removePointFromGraph(id)
-        // }
-
-
-
-        // onPointMoved: function(newX, newY, id) {
-
-        //     for(let i = 0; i < sensorModel.count; i++) {
-        //         const sensor = sensorModel.get(i)
-        //         if(sensor.id === id) {
-        //             sensorModel.setProperty(i, "xLocation", newX)
-        //             sensorModel.setProperty(i, "yLocation", newY)
-        //             console.log("id: " + sensor.id);
-        //             return
-        //         }
-        //     }
-        // }
     }
 
     Flickable {

@@ -16,8 +16,6 @@ Rectangle {
         margins: 20
     }
 
-    signal pointMoved(real newX, real newY, int id)
-
     GraphsView {
         id: chart
         anchors{
@@ -44,16 +42,34 @@ Rectangle {
             id: axisX
             min: -20
             max: 20
-            visible: false
-            labelsVisible: false
+            // visible: false
+            // labelsVisible: false
+            zoom: 1.0
         }
 
         ValueAxis {
             id: axisY
-            min: -20
-            max: 20
-            visible: false
-            labelsVisible: false
+            min: axisX.min
+            max: axisX.max
+            // visible: false
+            // labelsVisible: false
+            zoom: axisX.zoom
+        }
+
+        WheelHandler {
+            target: chart
+            acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
+
+            onWheel: function(event) {
+                let delta = event.angleDelta.y
+                let zoomFactor = delta > 0 ? 1.1 : 0.9
+
+                axisX.zoom *= zoomFactor
+
+                axisX.zoom = Math.max(0.5, Math.min(4, axisX.zoom))
+
+
+            }
         }
 
     }
