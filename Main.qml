@@ -10,6 +10,7 @@ Window {
     title: qsTr("Roboticus Control Center")
     color: "#1a1a1a"
     property int sensorCounter: 0
+    property int vectorCounter: 0
 
     Material.theme: Material.Dark
     Material.accent: "#98FF98"
@@ -18,6 +19,11 @@ Window {
     ListModel {
         id: sensorModel
     }
+
+    ListModel {
+        id: vectorModel
+    }
+
 
 
 
@@ -72,7 +78,7 @@ Window {
             width: parent.width
             spacing: 12
 
-            property var selectedSensor: null
+            property var selection: null
 
             Rectangle {
                 width: parent.width
@@ -121,13 +127,13 @@ Window {
                     selectedOperator: model.selectedOperator
                     xLocation: model.xLocation
                     yLocation: model.yLocation
-                    selected: column.selectedSensor === sensorDelegate
+                    selected: column.selection === sensorDelegate
 
                     onClicked: {
-                        if(column.selectedSensor === sensorDelegate) {
-                            column.selectedSensor = null;
+                        if(column.selection === sensorDelegate) {
+                            column.selection = null;
                         } else {
-                            column.selectedSensor = sensorDelegate;
+                            column.selection = sensorDelegate;
                         }
                     }
 
@@ -137,7 +143,7 @@ Window {
 
     }
 
-    AddSensor {
+    AddItem {
         id: addSensorButton
         anchors {
             left: parent.left
@@ -148,15 +154,18 @@ Window {
         height: 70
         width: (parent.width )/2
 
-        onAddClicked: addSensor()
-        onRemoveClicked: {
-            if (column.selectedSensor !== null) {
-                removeSensor(column.selectedSensor.sensorID )
-            } else {
-                console.log("No sensor selected")
-            }
-        }
+        onAddSensorRequested: addSensor()
+        // onRemoveClicked: {
+        //     if (column.selection !== null) {
+        //         removeSensor(column.selection.sensorID )
+        //     } else {
+        //         console.log("No sensor selected")
+        //     }
+        // }
+
+        onAddVectorRequested: addVector()
     }
+
 
 
 
@@ -170,16 +179,15 @@ Window {
             "selectedOperator": ">=",
             "xLocation": 0,
             "yLocation": 0
-
         });
 
-        sensorPanel.addPointToGraph(0, 0, sensorCounter);
-        sensorPanel.addArrowToGraph(0,0,-180, 1,"red", 1)
+        sensorPanel.addPointToGraph(0, 0, sensorCounter)
     }
+
 
     function removeSensor(id) {
 
-        if(sensorModel.count  < 1) return
+        if(sensorModel.count < 1) return
 
         const sensor = getSensorByID(id);
 
@@ -188,12 +196,42 @@ Window {
 
         sensorPanel.removePointFromGraph(sensor.id)
         sensorModel.remove(getSensorIndexFromId(sensor.id));
-        column.selectedSensor = null
-
-        sensorPanel.removeArrowFromGraph(1)
-
+        column.selection = null
     }
 
+
+    function addVector(){
+        vectorCounter++
+        vectorModel.append({
+           "id": vectorCounter,
+           "vectorName": "No Name Set",
+           "rotation": 0.0,
+           "scale": 1,
+           "color": "white",
+           "xLocation": 0,
+           "yLocation": 0
+       });
+
+
+        sensorPanel.addArrowToGraph(0,0,0, 1,"white", vectorCounter)
+    }
+
+
+    function removeVector(id) {
+
+        if(vectorModel.count < 1) return
+
+        const vector = getVectorByID(id);
+
+        if(vector === null) return
+
+
+
+
+        sensorPanel.removeArrowFromGraph(vector.id)
+        vectorModel.remove(getVectorIndexFromId(vector.id))
+        column.selection = null
+    }
 
     function getSensorByID(id) {
         for(let i = 0; i < sensorModel.count; i++) {
@@ -209,6 +247,26 @@ Window {
         for(let i = 0; i < sensorModel.count; i++) {
             const sensor = sensorModel.get(i)
             if(sensor.id === id) {
+                return i
+            }
+        }
+        return -1
+    }
+
+    function getVectorByID(id) {
+        for(let i = 0; i < vectorModel.count; i++) {
+            const vector = vectorModel.get(i)
+            if(vector.id === id) {
+                return vector
+            }
+        }
+        return null
+    }
+
+    function getVectorIndexFromId(id) {
+        for(let i = 0; i < vectorModel.count; i++) {
+            const vector = vectorModel.get(i)
+            if(vector.id === id) {
                 return i
             }
         }

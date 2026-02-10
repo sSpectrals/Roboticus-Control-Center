@@ -114,8 +114,8 @@ Rectangle {
         if (component.status === Component.Ready) {
             var series = component.createObject(chart, {
                 "vectorId": id,
-                "pointX": x,
-                "pointY": y,
+                "vecX": x,
+                "vecY": y,
                 "arrowRotation": rotation,
                 "arrowScale": scale,
                 "arrowColor": arrowColor

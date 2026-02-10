@@ -20,7 +20,7 @@ qt_add_qml_module(appRoboticus_control_center
         Main.qml
         qml/components/SensorPanel.qml
         qml/components/SensorInfo.qml
-        qml/components/AddSensor.qml
+        qml/components/AddItem.qml
         qml/components/SinglePointSeries.qml
     RESOURCES
         qml/assets/SVG/add.svg

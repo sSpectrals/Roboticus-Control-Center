@@ -7,14 +7,14 @@ ScatterSeries {
     id: vectorArrow
 
     property int vectorId: 0
-    property real pointX: 0
-    property real pointY: 0
+    property real vecX: 0
+    property real vecY: 0
     property real arrowRotation: 0
     property real arrowScale: 1
     property color arrowColor: "white"
 
     Component.onCompleted: {
-        append(Qt.point(pointX, pointY))
+        append(Qt.point(vecX, vecX))
     }
 
     pointDelegate: Item {

@@ -8,16 +8,16 @@ Row {
     id: buttonRow
     spacing: 10
     property color addButtonColor: "#98FF98"
-    property color deleteButtonColor: "#FF6B6B"
+    property color vectorButtonColor: "#FF6B6B"
     property color textColor: "#1a1a1a"
     property color hoverEffectColor: "#ffffff"
-    signal addClicked()
-    signal removeClicked()
+    signal addSensorRequested()
+    signal addVectorRequested()
 
     Button {
         id: addButton
-        width: (parent.width - buttonRow.spacing) /2
-        height: parent.height
+        width: (buttonRow.width - buttonRow.spacing) /2
+        height: buttonRow.height
         Material.foreground: buttonRow.textColor
         Material.background: buttonRow.addButtonColor
         Material.roundedScale: Button.None
@@ -50,23 +50,23 @@ Row {
                 Behavior on opacity { NumberAnimation { duration: 100 } }
             }
         }
-        ToolTip.text: "Add new sensor (Ctrl+N)"
+        ToolTip.text: "Add new sensor (Ctrl+1)"
         ToolTip.visible: hovered && ToolTip.text.length > 0
         ToolTip.delay: 500
         ToolTip.toolTip.y: parent.height + 10
         onClicked: {
-            buttonRow.addClicked()
+            buttonRow.addSensorRequested()
         }
     }
 
     Button {
-        id: deleteButton
-        width: (parent.width - buttonRow.spacing) /2
-        height: parent.height
+        id: vectorButton
+        width: (buttonRow.width - buttonRow.spacing) /2
+        height: buttonRow.height
         Material.foreground: buttonRow.textColor
-        Material.background: buttonRow.deleteButtonColor
+        Material.background: buttonRow.vectorButtonColor
         Material.roundedScale: Button.None
-        Material.elevation: deleteButton.hovered ? 3 : 1
+        Material.elevation: vectorButton.hovered ? 3 : 1
         Image {
             anchors.centerIn: parent
             source: "../assets/SVG/remove.svg"
@@ -74,16 +74,16 @@ Row {
         }
         background: Rectangle {
             anchors.fill: parent
-            color: deleteButton.Material.background
+            color: vectorButton.Material.background
             radius: 12
-            border.color: Qt.darker(deleteButton.Material.background, 1.2)
+            border.color: Qt.darker(vectorButton.Material.background, 1.2)
             border.width: 1
             // Hover glow effect
             Rectangle {
                 anchors.fill: parent
                 color: buttonRow.hoverEffectColor
                 radius: parent.radius
-                opacity: deleteButton.hovered ? 0.15 : 0
+                opacity: vectorButton.hovered ? 0.15 : 0
                 Behavior on opacity { NumberAnimation { duration: 150 } }
             }
             // Pressed effect
@@ -91,26 +91,26 @@ Row {
                 anchors.fill: parent
                 color: "#1a1a1a"
                 radius: parent.radius
-                opacity: deleteButton.down ? 0.2 : 0
+                opacity: vectorButton.down ? 0.2 : 0
                 Behavior on opacity { NumberAnimation { duration: 100 } }
             }
         }
-        ToolTip.text: "Remove selected sensor (Ctrl+D)"
+        ToolTip.text: "Add Vector (Ctrl+2)"
         ToolTip.visible: hovered && ToolTip.text.length > 0
         ToolTip.delay: 500
         ToolTip.toolTip.y: parent.height + 10
         onClicked: {
-            buttonRow.removeClicked()
+            buttonRow.addVectorRequested()
         }
     }
 
     Shortcut {
-        sequence: "Ctrl+N"
-        onActivated: buttonRow.addClicked()
+        sequence: "Ctrl+1"
+        onActivated: buttonRow.addSensorRequested()
     }
 
     Shortcut {
-        sequence: "Ctrl+D"
-        onActivated: buttonRow.removeClicked()
+        sequence: "Ctrl+2"
+        onActivated: buttonRow.addVectorRequested()
     }
 }
