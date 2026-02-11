@@ -7,6 +7,8 @@ Window {
     visibility:  Window.Maximized
     // width: 1920
     // height: 1080
+    minimumWidth: 854
+    minimumHeight: 480
     title: qsTr("Roboticus Control Center")
     color: "#1a1a1a"
     property int sensorCounter: 0

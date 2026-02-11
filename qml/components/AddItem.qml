@@ -5,40 +5,45 @@ import QtQuick.Controls.Material
 import "../assets"
 
 Row {
-    id: buttonRow
+    id: addItem
     spacing: 10
-    property color addButtonColor: "#98FF98"
-    property color vectorButtonColor: "#FF6B6B"
-    property color textColor: "#1a1a1a"
-    property color hoverEffectColor: "#ffffff"
+    property color addButtonColor: "#2b2a2a"
+    property color vectorButtonColor: "#2b2a2a"
+    property color textColor: "#98FF98"
+    property color hoverEffectColor: "#98FF98"
     signal addSensorRequested()
     signal addVectorRequested()
 
     Button {
-        id: addButton
-        width: (buttonRow.width - buttonRow.spacing) /2
-        height: buttonRow.height
-        Material.foreground: buttonRow.textColor
-        Material.background: buttonRow.addButtonColor
+        id: sensorButton
+        width: (addItem.width - addItem.spacing) /2
+        height: addItem.height
+        Material.foreground: addItem.textColor
+        Material.background: addItem.addButtonColor
         Material.roundedScale: Button.None
-        Material.elevation: addButton.hovered ? 3 : 1
-        Image {
+        Material.elevation: sensorButton.hovered ? 3 : 1
+
+        Text {
+            text: "Add Sensor"
             anchors.centerIn: parent
-            source: "../assets/SVG/add.svg"
-            fillMode: Image.PreserveAspectFit
+            color: addItem.textColor
+            font.bold: true
+            minimumPixelSize: 10
+            font.pixelSize: 22
         }
+
         background: Rectangle {
             anchors.fill: parent
-            color: addButton.Material.background
+            color: sensorButton.Material.background
             radius: 12
-            border.color: Qt.darker(addButton.Material.background, 1.2)
+            border.color: Qt.darker(sensorButton.Material.background, 1.2)
             border.width: 1
             // Hover glow effect
             Rectangle {
                 anchors.fill: parent
-                color: buttonRow.hoverEffectColor
+                color: addItem.hoverEffectColor
                 radius: parent.radius
-                opacity: addButton.hovered ? 0.15 : 0
+                opacity: sensorButton.hovered ? 0.15 : 0
                 Behavior on opacity { NumberAnimation { duration: 150 } }
             }
             // Pressed effect
@@ -46,7 +51,7 @@ Row {
                 anchors.fill: parent
                 color: "#1a1a1a"
                 radius: parent.radius
-                opacity: addButton.down ? 0.2 : 0
+                opacity: sensorButton.down ? 0.2 : 0
                 Behavior on opacity { NumberAnimation { duration: 100 } }
             }
         }
@@ -55,22 +60,30 @@ Row {
         ToolTip.delay: 500
         ToolTip.toolTip.y: parent.height + 10
         onClicked: {
-            buttonRow.addSensorRequested()
+            addItem.addSensorRequested()
+        }
+
+        HoverHandler {
+            cursorShape: sensorButton.hovered ? Qt.PointingHandCursor   : Qt.defaultHandCursor
         }
     }
 
     Button {
         id: vectorButton
-        width: (buttonRow.width - buttonRow.spacing) /2
-        height: buttonRow.height
-        Material.foreground: buttonRow.textColor
-        Material.background: buttonRow.vectorButtonColor
+        width: (addItem.width - addItem.spacing) /2
+        height: addItem.height
+        Material.foreground: addItem.textColor
+        Material.background: addItem.vectorButtonColor
         Material.roundedScale: Button.None
         Material.elevation: vectorButton.hovered ? 3 : 1
-        Image {
+
+        Text {
+            text: "Add Vector"
             anchors.centerIn: parent
-            source: "../assets/SVG/remove.svg"
-            fillMode: Image.PreserveAspectFit
+            color: addItem.textColor
+            font.bold: true
+            minimumPixelSize: 10
+            font.pixelSize: 22
         }
         background: Rectangle {
             anchors.fill: parent
@@ -81,7 +94,7 @@ Row {
             // Hover glow effect
             Rectangle {
                 anchors.fill: parent
-                color: buttonRow.hoverEffectColor
+                color: addItem.hoverEffectColor
                 radius: parent.radius
                 opacity: vectorButton.hovered ? 0.15 : 0
                 Behavior on opacity { NumberAnimation { duration: 150 } }
@@ -100,17 +113,21 @@ Row {
         ToolTip.delay: 500
         ToolTip.toolTip.y: parent.height + 10
         onClicked: {
-            buttonRow.addVectorRequested()
+            addItem.addVectorRequested()
+        }
+
+        HoverHandler {
+            cursorShape: vectorButton.hovered ? Qt.PointingHandCursor   : Qt.defaultHandCursor
         }
     }
 
     Shortcut {
         sequence: "Ctrl+1"
-        onActivated: buttonRow.addSensorRequested()
+        onActivated: addItem.addSensorRequested()
     }
 
     Shortcut {
         sequence: "Ctrl+2"
-        onActivated: buttonRow.addVectorRequested()
+        onActivated: addItem.addVectorRequested()
     }
 }
