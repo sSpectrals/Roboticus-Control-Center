@@ -22,11 +22,13 @@ qt_add_qml_module(appRoboticus_control_center
         qml/components/SensorInfo.qml
         qml/components/AddItem.qml
         qml/components/SinglePointSeries.qml
+        qml/components/VectorArrow.qml
     RESOURCES
         qml/assets/SVG/add.svg
         qml/assets/SVG/remove.svg
         qml/assets/SVG/arrow.svg
-        QML_FILES qml/components/VectorArrow.qml
+        qml/assets/SVG/trash.svg
+
 
 )
 

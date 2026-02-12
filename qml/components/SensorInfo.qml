@@ -13,6 +13,9 @@ Rectangle {
     property real yLocation: 0
     property bool selected: false
 
+    signal clicked()
+    signal deleteSensor()
+
     color: "black"
     radius: 10
     border {
@@ -20,11 +23,11 @@ Rectangle {
         color: (mouseArea.containsMouse || selected)? "#98FF98" : "#333333"
     }
 
+
     Behavior on border.color {
         ColorAnimation { duration: 150 }
     }
 
-    signal clicked()
 
     MouseArea {
         id: mouseArea
@@ -57,7 +60,7 @@ Rectangle {
     GridLayout {
         anchors.fill: parent
         anchors.margins: 8
-        columns: 2
+        columns: 3
         rows: 1
 
         // Column 1: Sensor Name
@@ -219,11 +222,25 @@ Rectangle {
                         horizontalAlignment: Text.AlignHCenter
                     }
                 }
-
-
             }
         }
+        Rectangle {
+            Layout.fillWidth: true
+            Layout.fillHeight: true
+            color: Material.color(Material.Red)
+            radius: 10
+            Image {
+                source: "../assets/SVG/trash.svg"
+                anchors.centerIn: parent
+            }
 
+            MouseArea {
+                anchors.fill: parent
 
+                onClicked: {
+                    deleteSensor()
+                }
+            }
+        }
     }
 }

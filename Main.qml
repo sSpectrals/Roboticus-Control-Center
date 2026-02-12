@@ -2,11 +2,12 @@ import QtQuick
 import "qml/components"
 import QtQuick.Controls 2.15
 
+//TODO: note to self, column.selectedSensor/onClicked is unused, possible to use for something else? idk
+
+
 Window {
     id: window
     visibility:  Window.Maximized
-    // width: 1920
-    // height: 1080
     minimumWidth: 854
     minimumHeight: 480
     title: qsTr("Roboticus Control Center")
@@ -139,6 +140,10 @@ Window {
                         }
                     }
 
+                    onDeleteSensor: {
+                        removeSensor(model.id)
+                    }
+
                 }
             }
         }
@@ -159,7 +164,7 @@ Window {
         onAddSensorRequested: addSensor()
         // onRemoveClicked: {
         //     if (column.selection !== null) {
-        //         removeSensor(column.selection.sensorID )
+        //
         //     } else {
         //         console.log("No sensor selected")
         //     }
