@@ -1,7 +1,7 @@
 import QtQuick
 import "qml/components"
 import QtQuick.Controls 2.15
-
+import com.Roboticus.ControlCenter
 //TODO: note to self, column.selectedSensor/onClicked is unused, possible to use for something else? idk
 
 
@@ -12,19 +12,19 @@ Window {
     minimumHeight: 480
     title: qsTr("Roboticus Control Center")
     color: "#1a1a1a"
-    property int sensorCounter: 0
     property int vectorCounter: 0
 
     Material.theme: Material.Dark
     Material.accent: "#98FF98"
 
 
-    ListModel {
-        id: sensorModel
-    }
 
     ListModel {
         id: vectorModel
+    }
+
+    SensorController {
+        id: controller
     }
 
 
@@ -115,7 +115,8 @@ Window {
             }
 
             Repeater {
-                model: sensorModel
+                // model: sensorModel
+                model: controller.model
                 delegate: SensorInfo {
                     id: sensorDelegate
                     anchors.left: parent.left
@@ -126,10 +127,10 @@ Window {
 
                     sensorID: model.id
                     inputValue: model.inputValue
-                    thresholdValue: model.thresholdValue
+                    thresholdValue: model.threshold
                     selectedOperator: model.selectedOperator
-                    xLocation: model.xLocation
-                    yLocation: model.yLocation
+                    xLocation: model.x
+                    yLocation: model.y
                     selected: column.selection === sensorDelegate
 
                     onClicked: {
@@ -141,7 +142,8 @@ Window {
                     }
 
                     onDeleteSensor: {
-                        removeSensor(model.id)
+                        controller.removeSensor(model.id)
+                        column.selection = null
                     }
 
                 }
@@ -161,15 +163,7 @@ Window {
         height: 70
         width: (parent.width )/2
 
-        onAddSensorRequested: addSensor()
-        // onRemoveClicked: {
-        //     if (column.selection !== null) {
-        //
-        //     } else {
-        //         console.log("No sensor selected")
-        //     }
-        // }
-
+        onAddSensorRequested: controller.addSensor("x", 100, "==");
         onAddVectorRequested: addVector()
     }
 
@@ -177,16 +171,6 @@ Window {
 
 
     function addSensor() {
-        sensorCounter++;
-        sensorModel.append({
-            "id": sensorCounter,
-            "sensorName": "No Name Set",
-            "inputValue": 0.0,
-            "thresholdValue": 100.0,
-            "selectedOperator": ">=",
-            "xLocation": 0,
-            "yLocation": 0
-        });
 
         sensorPanel.addPointToGraph(0, 0, sensorCounter)
     }
@@ -238,26 +222,6 @@ Window {
         sensorPanel.removeArrowFromGraph(vector.id)
         vectorModel.remove(getVectorIndexFromId(vector.id))
         column.selection = null
-    }
-
-    function getSensorByID(id) {
-        for(let i = 0; i < sensorModel.count; i++) {
-            const sensor = sensorModel.get(i)
-            if(sensor.id === id) {
-                return sensor
-            }
-        }
-        return null
-    }
-
-    function getSensorIndexFromId(id) {
-        for(let i = 0; i < sensorModel.count; i++) {
-            const sensor = sensorModel.get(i)
-            if(sensor.id === id) {
-                return i
-            }
-        }
-        return -1
     }
 
     function getVectorByID(id) {

@@ -5,7 +5,7 @@ import QtQuick.Layouts
 Rectangle {
     id: sensorInfo
     property string sensorName: "No Name Set"
-    property int sensorID: -1
+    property var sensorID: -1
     property double inputValue: -1.0
     property double thresholdValue: 100.0
     property string selectedOperator: ">="

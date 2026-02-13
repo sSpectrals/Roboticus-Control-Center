@@ -10,12 +10,14 @@ qt_standard_project_setup(REQUIRES 6.10)
 
 qt_add_executable(appRoboticus_control_center
     main.cpp
+    SensorModel.h
+    SensorModel.cpp
 )
 
 
 
 qt_add_qml_module(appRoboticus_control_center
-    URI Roboticus_control_center
+    URI com.Roboticus.ControlCenter
     QML_FILES
         Main.qml
         qml/components/SensorPanel.qml
@@ -28,8 +30,13 @@ qt_add_qml_module(appRoboticus_control_center
         qml/assets/SVG/remove.svg
         qml/assets/SVG/arrow.svg
         qml/assets/SVG/trash.svg
-
-
+    SOURCES
+        # src/Models/sensor_model.cpp src/Models/sensor_model.h
+        # src/Models/vector_model.cpp src/Models/vector_model.h
+        # src/Controller/main_controller.cpp src/Controller/main_controller.h
+        SensorModel.h
+        SensorModel.cpp
+        SOURCES SensorController.h SensorController.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.
