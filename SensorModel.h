@@ -43,13 +43,18 @@ public:
                        int role) override;
   virtual QHash<int, QByteArray> roleNames() const override;
 
-  Q_INVOKABLE QUuid addSensor();
+  Q_INVOKABLE Sensor addSensor(QString name = QString(),
+                               double threshold = 100.0,
+                               QString op = ">=", double x = 0.0,
+                               double y = 0.0);
   Q_INVOKABLE bool removeSensor(const QUuid &id);
 
-  int getIndexFromId(const QUuid &id) const;
+  Q_INVOKABLE int getIndexFromId(const QUuid &id) const;
+  Q_INVOKABLE Sensor getSensorById(const QUuid &id) const;
 
 signals:
-  void sensorAdded(const QUuid &id);
+  void sensorAdded(const QUuid &id, const QString &name, double threshold,
+                   const QString &op, double x, double y);
   void sensorRemoved(const QUuid &id);
   void countChanged();
 

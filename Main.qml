@@ -25,6 +25,15 @@ Window {
 
     SensorController {
         id: controller
+
+        onSensorAdded: function(id, name, threshold, op, x, y) {
+            sensorPanel.addPointToGraph(id, x, y)
+
+        }
+
+        onSensorRemoved: function(id) {
+            sensorPanel.removePointFromGraph(id)
+        }
     }
 
 
@@ -142,8 +151,8 @@ Window {
                     }
 
                     onDeleteSensor: {
-                        controller.removeSensor(model.id)
                         column.selection = null
+                        controller.removeSensor(model.id)
                     }
 
                 }
@@ -167,13 +176,6 @@ Window {
         onAddVectorRequested: addVector()
     }
 
-
-
-
-    function addSensor() {
-
-        sensorPanel.addPointToGraph(0, 0, sensorCounter)
-    }
 
 
     function removeSensor(id) {

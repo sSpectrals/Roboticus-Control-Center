@@ -10,25 +10,25 @@ SensorController::SensorController(QObject *parent)
           &SensorController::sensorRemoved);
 }
 
-Q_INVOKABLE QUuid SensorController::addSensor(const QString &name,
-                                              double threshold,
-                                              const QString &op) {
+Q_INVOKABLE Sensor SensorController::addSensor(const QString &name,
+                                               double threshold,
+                                               const QString &op, double x,
+                                               double y) {
 
   if (!m_model)
-    return QUuid();
+    return Sensor();
 
+  Sensor newSensor = m_model->addSensor(name, threshold, op, x, y);
 
-    QUuid newSensor = m_model->addSensor();
-
-    emit sensorAdded(newSensor);
-    return newSensor;
-
+  return newSensor;
 }
 
 Q_INVOKABLE bool SensorController::removeSensor(const QUuid &id) {
 
   if (!m_model)
     return false;
+
+  Sensor removedSensor = m_model->getSensorById(id);
 
   return m_model->removeSensor(id);
 }
@@ -40,8 +40,11 @@ Q_INVOKABLE bool SensorController::setSensorValue(const QUuid &id,
     return false;
 
   int index = m_model->getIndexFromId(id);
-  if (index < 0)
+  if (index < 0) {
+    qWarning() << "Attempted to set value for non-existent sensor with id:"
+               << id;
     return false;
+  }
 
   return m_model->setData(m_model->index(index), value, SensorModel::InputRole);
 }
@@ -53,8 +56,11 @@ Q_INVOKABLE bool SensorController::setSensorThreshold(const QUuid &id,
     return false;
 
   int index = m_model->getIndexFromId(id);
-  if (index < 0)
+  if (index < 0) {
+    qWarning() << "Attempted to set threshold for non-existent sensor with id:"
+               << id;
     return false;
+  }
 
   return m_model->setData(m_model->index(index), threshold,
                           SensorModel::ThresholdRole);
@@ -65,10 +71,12 @@ Q_INVOKABLE bool SensorController::setSensorOperator(const QUuid &id,
 
   if (!m_model)
     return false;
-
   int index = m_model->getIndexFromId(id);
-  if (index < 0)
+  if (index < 0) {
+    qWarning() << "Attempted to set operator for non-existent sensor with id:"
+               << id;
     return false;
+  }
 
   return m_model->setData(m_model->index(index), op, SensorModel::OperatorRole);
 }
@@ -80,8 +88,11 @@ Q_INVOKABLE bool SensorController::setSensorName(const QUuid &id,
     return false;
 
   int index = m_model->getIndexFromId(id);
-  if (index < 0)
+  if (index < 0) {
+    qWarning() << "Attempted to set name for non-existent sensor with id:"
+               << id;
     return false;
+  }
 
   return m_model->setData(m_model->index(index), name, SensorModel::NameRole);
 }
@@ -100,8 +111,11 @@ Q_INVOKABLE bool SensorController::setSensorPositionX(const QUuid &id,
     return false;
 
   int index = m_model->getIndexFromId(id);
-  if (index < 0)
+  if (index < 0) {
+    qWarning() << "Attempted to set position X for non-existent sensor with id:"
+               << id;
     return false;
+  }
 
   return m_model->setData(m_model->index(index), x, SensorModel::XRole);
 }
@@ -112,8 +126,11 @@ Q_INVOKABLE bool SensorController::setSensorPositionY(const QUuid &id,
     return false;
 
   int index = m_model->getIndexFromId(id);
-  if (index < 0)
+  if (index < 0) {
+    qWarning() << "Attempted to set position Y for non-existent sensor with id:"
+               << id;
     return false;
+  }
 
   return m_model->setData(m_model->index(index), y, SensorModel::YRole);
 }

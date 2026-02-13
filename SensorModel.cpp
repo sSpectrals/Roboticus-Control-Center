@@ -100,23 +100,34 @@ QHash<int, QByteArray> SensorModel::roleNames() const {
   return mapping;
 }
 
-QUuid SensorModel::addSensor() {
+Sensor SensorModel::addSensor(QString name, double threshold, QString op,
+                              double x, double y) {
   beginInsertRows(QModelIndex(), m_sensors.size(), m_sensors.size());
 
   Sensor sensor;
-  sensor.name = "No Name Set";
+  sensor.name =
+      name.isEmpty() ? "Sensor " + QString::number(m_sensors.size() + 1) : name;
   sensor.inputValue = 0.0;
-  sensor.threshold = 100.0;
-  sensor.selectedOperator = "==";
-  sensor.x = 0;
-  sensor.y = 0;
+  sensor.threshold = threshold;
+  sensor.selectedOperator = op;
+  sensor.x = x;
+  sensor.y = y;
 
   m_sensors.append(sensor);
 
   endInsertRows();
-  emit sensorAdded(sensor.id);
+  emit sensorAdded(sensor.id, sensor.name, sensor.threshold,
+                   sensor.selectedOperator, sensor.x, sensor.y);
   emit countChanged();
-  return sensor.id;
+  return sensor;
+}
+
+Sensor SensorModel::getSensorById(const QUuid &id) const {
+  for (const auto &sensor : m_sensors) {
+    if (sensor.id == id)
+      return sensor;
+  }
+  return Sensor();
 }
 
 bool SensorModel::removeSensor(const QUuid &id) {

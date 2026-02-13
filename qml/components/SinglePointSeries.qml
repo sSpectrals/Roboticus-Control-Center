@@ -4,7 +4,7 @@ import QtGraphs
 ScatterSeries {
     id: series
 
-    property int sensorId: 0
+    property var sensorId: 0
     property real pointX: 0
     property real pointY: 0
 

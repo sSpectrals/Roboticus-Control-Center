@@ -81,7 +81,7 @@ Rectangle {
 
     property var seriesMap: ({})
 
-    function addPointToGraph(x, y, id) {
+    function addPointToGraph(id, x, y) {
 
         var component = Qt.createComponent("SinglePointSeries.qml")
         if (component.status === Component.Ready) {
