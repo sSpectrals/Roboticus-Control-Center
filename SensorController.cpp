@@ -102,7 +102,19 @@ Q_INVOKABLE bool SensorController::setSensorPositionXY(const QUuid &id,
   if (!m_model)
     return false;
 
-  return setSensorPositionX(id, x) && setSensorPositionY(id, y);
+  int index = m_model->getIndexFromId(id);
+  if (index < 0) {
+    qWarning() << "Attempted to set position for non-existent sensor with id:"
+               << id;
+    return false;
+  }
+
+  bool xChanged =
+      m_model->setData(m_model->index(index), x, SensorModel::XRole);
+  bool yChanged =
+      m_model->setData(m_model->index(index), y, SensorModel::YRole);
+
+  return xChanged || yChanged;
 }
 
 Q_INVOKABLE bool SensorController::setSensorPositionX(const QUuid &id,

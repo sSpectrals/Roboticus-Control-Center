@@ -108,7 +108,7 @@ Rectangle {
         }
     }
 
-    function addArrowToGraph(x, y, rotation, scale, arrowColor ,id) {
+    function addArrowToGraph(id, rotation, scale, arrowColor ,x,y) {
 
         var component = Qt.createComponent("VectorArrow.qml")
         if (component.status === Component.Ready) {

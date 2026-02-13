@@ -18,13 +18,8 @@ Window {
     Material.accent: "#98FF98"
 
 
-
-    ListModel {
-        id: vectorModel
-    }
-
     SensorController {
-        id: controller
+        id: sensorController
 
         onSensorAdded: function(id, name, threshold, op, x, y) {
             sensorPanel.addPointToGraph(id, x, y)
@@ -33,6 +28,18 @@ Window {
 
         onSensorRemoved: function(id) {
             sensorPanel.removePointFromGraph(id)
+        }
+    }
+
+    VectorController {
+        id: vectorController
+
+        onVectorAdded: function(id, name, rotation, scale, color, x , y) {
+            sensorPanel.addArrowToGraph(id, rotation, scale, color ,x,y)
+        }
+
+        onVectorRemoved: function(id) {
+            sensorPanel.removeArrowFromGraph(id)
         }
     }
 
@@ -124,8 +131,7 @@ Window {
             }
 
             Repeater {
-                // model: sensorModel
-                model: controller.model
+                model: sensorController.model
                 delegate: SensorInfo {
                     id: sensorDelegate
                     anchors.left: parent.left
@@ -152,7 +158,7 @@ Window {
 
                     onDeleteSensor: {
                         column.selection = null
-                        controller.removeSensor(model.id)
+                        sensorController.removeSensor(model.id)
                     }
 
                 }
@@ -172,77 +178,9 @@ Window {
         height: 70
         width: (parent.width )/2
 
-        onAddSensorRequested: controller.addSensor("x", 100, "==");
-        onAddVectorRequested: addVector()
+        onAddSensorRequested: sensorController.addSensor("name", 100, "==");
+        onAddVectorRequested: vectorController.addVector("name", 0.0, 0.0);
     }
 
 
-
-    function removeSensor(id) {
-
-        if(sensorModel.count < 1) return
-
-        const sensor = getSensorByID(id);
-
-        if(sensor === null) return
-
-
-        sensorPanel.removePointFromGraph(sensor.id)
-        sensorModel.remove(getSensorIndexFromId(sensor.id));
-        column.selection = null
-    }
-
-
-    function addVector(){
-        vectorCounter++
-        vectorModel.append({
-           "id": vectorCounter,
-           "vectorName": "No Name Set",
-           "rotation": 0.0,
-           "scale": 1,
-           "color": "white",
-           "xLocation": 0,
-           "yLocation": 0
-       });
-
-
-        sensorPanel.addArrowToGraph(0,0,0, 1,"white", vectorCounter)
-    }
-
-
-    function removeVector(id) {
-
-        if(vectorModel.count < 1) return
-
-        const vector = getVectorByID(id);
-
-        if(vector === null) return
-
-
-
-
-        sensorPanel.removeArrowFromGraph(vector.id)
-        vectorModel.remove(getVectorIndexFromId(vector.id))
-        column.selection = null
-    }
-
-    function getVectorByID(id) {
-        for(let i = 0; i < vectorModel.count; i++) {
-            const vector = vectorModel.get(i)
-            if(vector.id === id) {
-                return vector
-            }
-        }
-        return null
-    }
-
-    function getVectorIndexFromId(id) {
-        for(let i = 0; i < vectorModel.count; i++) {
-            const vector = vectorModel.get(i)
-            if(vector.id === id) {
-                return i
-            }
-        }
-        return -1
-    }
 }

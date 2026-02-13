@@ -37,6 +37,9 @@ qt_add_qml_module(appRoboticus_control_center
         SensorModel.h
         SensorModel.cpp
         SOURCES SensorController.h SensorController.cpp
+        SOURCES VectorModel.h VectorModel.cpp
+        SOURCES VectorController.h VectorController.cpp
+        SOURCES SensorModel.cpp VectorModel.cpp
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

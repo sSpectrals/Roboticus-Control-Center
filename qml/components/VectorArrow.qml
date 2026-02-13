@@ -6,7 +6,7 @@ import QtQuick.Effects
 ScatterSeries {
     id: vectorArrow
 
-    property int vectorId: 0
+    property var vectorId: 0
     property real vecX: 0
     property real vecY: 0
     property real arrowRotation: 0

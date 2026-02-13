@@ -102,7 +102,6 @@ QHash<int, QByteArray> SensorModel::roleNames() const {
 
 Sensor SensorModel::addSensor(QString name, double threshold, QString op,
                               double x, double y) {
-  beginInsertRows(QModelIndex(), m_sensors.size(), m_sensors.size());
 
   Sensor sensor;
   sensor.name =
@@ -113,13 +112,26 @@ Sensor SensorModel::addSensor(QString name, double threshold, QString op,
   sensor.x = x;
   sensor.y = y;
 
+  beginInsertRows(QModelIndex(), m_sensors.size(), m_sensors.size());
   m_sensors.append(sensor);
-
   endInsertRows();
   emit sensorAdded(sensor.id, sensor.name, sensor.threshold,
                    sensor.selectedOperator, sensor.x, sensor.y);
-  emit countChanged();
   return sensor;
+}
+
+bool SensorModel::removeSensor(const QUuid &id) {
+  int i = getIndexFromId(id);
+  if (i < 0) {
+    return false;
+  }
+
+  beginRemoveRows(QModelIndex(), i, i);
+  m_sensors.removeAt(i);
+  endRemoveRows();
+
+  emit sensorRemoved(id);
+  return true;
 }
 
 Sensor SensorModel::getSensorById(const QUuid &id) const {
@@ -128,24 +140,6 @@ Sensor SensorModel::getSensorById(const QUuid &id) const {
       return sensor;
   }
   return Sensor();
-}
-
-bool SensorModel::removeSensor(const QUuid &id) {
-  int i = getIndexFromId(id);
-  if (i < 0) {
-    qWarning() << "Attempted to remove non-existent sensor with id:" << id;
-    return false;
-  }
-
-  beginRemoveRows({}, i, i);
-
-  m_sensors.removeAt(i);
-
-  endRemoveRows();
-
-  emit sensorRemoved(id);
-  emit countChanged();
-  return true;
 }
 
 int SensorModel::getIndexFromId(const QUuid &id) const {

@@ -20,8 +20,6 @@ struct Sensor {
 class SensorModel : public QAbstractListModel {
   Q_OBJECT
   QML_ELEMENT
-
-  Q_PROPERTY(int count READ rowCount NOTIFY countChanged)
 public:
   enum Roles {
     IdRole = Qt::UserRole + 1,
@@ -56,7 +54,6 @@ signals:
   void sensorAdded(const QUuid &id, const QString &name, double threshold,
                    const QString &op, double x, double y);
   void sensorRemoved(const QUuid &id);
-  void countChanged();
 
 private:
   QList<Sensor> m_sensors;
