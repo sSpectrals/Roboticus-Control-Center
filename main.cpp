@@ -1,7 +1,5 @@
 #include <QGuiApplication >
 #include <QQmlApplicationEngine>
-// #include "src/Controller/SensorModel.h"
-
 
 int main(int argc, char *argv[])
 {
@@ -9,10 +7,6 @@ int main(int argc, char *argv[])
     QGuiApplication  app(argc, argv);
 
     QQmlApplicationEngine engine;
-
-
-    // SensorModel *sensorModel = new SensorModel(&app);
-    // qmlRegisterSingletonInstance("com.Roboticus.ControlCenter.models", 1, 0, "SensorModel", sensorModel);
 
 
     QObject::connect(

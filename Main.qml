@@ -2,31 +2,27 @@ import QtQuick
 import "qml/components"
 import QtQuick.Controls 2.15
 import com.Roboticus.ControlCenter
+
 //TODO: note to self, column.selectedSensor/onClicked is unused, possible to use for something else? idk
-
-
 Window {
     id: window
-    visibility:  Window.Maximized
+    visibility: Window.Maximized
     minimumWidth: 854
     minimumHeight: 480
     title: qsTr("Roboticus Control Center")
     color: "#1a1a1a"
-    property int vectorCounter: 0
 
     Material.theme: Material.Dark
     Material.accent: "#98FF98"
 
-
     SensorController {
         id: sensorController
 
-        onSensorAdded: function(id, name, threshold, op, x, y) {
+        onSensorAdded: function (id, name, threshold, op, x, y) {
             sensorPanel.addPointToGraph(id, x, y)
-
         }
 
-        onSensorRemoved: function(id) {
+        onSensorRemoved: function (id) {
             sensorPanel.removePointFromGraph(id)
         }
     }
@@ -34,23 +30,26 @@ Window {
     VectorController {
         id: vectorController
 
-        onVectorAdded: function(id, name, rotation, scale, color, x , y) {
-            sensorPanel.addArrowToGraph(id, rotation, scale, color ,x,y)
+        onVectorAdded: function (id, name, rotation, scale, color, x, y) {
+            sensorPanel.addArrowToGraph(id, rotation, scale, color, x, y)
         }
 
-        onVectorRemoved: function(id) {
+        onVectorRemoved: function (id) {
             sensorPanel.removeArrowFromGraph(id)
         }
     }
 
-
-
-
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
-            GradientStop { position: 0.0; color: "#1a1a1a" }
-            GradientStop { position: 1.0; color: "#0f0f0f" }
+            GradientStop {
+                position: 0.0
+                color: "#1a1a1a"
+            }
+            GradientStop {
+                position: 1.0
+                color: "#0f0f0f"
+            }
         }
         opacity: 0.8
     }
@@ -69,13 +68,12 @@ Window {
             leftMargin: 20
             rightMargin: 20
         }
-        width: parent.width /2
+        width: parent.width / 2
         flickableDirection: Flickable.VerticalFlick
-        contentWidth: parent.width /2
+        contentWidth: parent.width / 2
         contentHeight: column.height
         clip: true
         boundsBehavior: Flickable.StopAtBounds
-
 
         ScrollBar.vertical: ScrollBar {
             id: verticalScrollBar
@@ -88,7 +86,11 @@ Window {
                 radius: 3
                 color: verticalScrollBar.pressed ? "#22FF98" : "#98FF98"
                 opacity: verticalScrollBar.active ? 0.8 : 0.4
-                Behavior on opacity { NumberAnimation { duration: 200 } }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 200
+                    }
+                }
             }
         }
 
@@ -103,7 +105,6 @@ Window {
                 width: parent.width
                 height: 50
                 color: "transparent"
-
 
                 Text {
                     text: "SENSOR MONITORING"
@@ -149,10 +150,10 @@ Window {
                     selected: column.selection === sensorDelegate
 
                     onClicked: {
-                        if(column.selection === sensorDelegate) {
-                            column.selection = null;
+                        if (column.selection === sensorDelegate) {
+                            column.selection = null
                         } else {
-                            column.selection = sensorDelegate;
+                            column.selection = sensorDelegate
                         }
                     }
 
@@ -160,11 +161,9 @@ Window {
                         column.selection = null
                         sensorController.removeSensor(model.id)
                     }
-
                 }
             }
         }
-
     }
 
     AddItem {
@@ -176,11 +175,9 @@ Window {
             bottomMargin: 20
         }
         height: 70
-        width: (parent.width )/2
+        width: (parent.width) / 2
 
-        onAddSensorRequested: sensorController.addSensor("name", 100, "==");
-        onAddVectorRequested: vectorController.addVector("name", 0.0, 0.0);
+        onAddSensorRequested: sensorController.addSensor("name", 100, "==")
+        onAddVectorRequested: vectorController.addVector("name", 0.0, 0.0)
     }
-
-
 }

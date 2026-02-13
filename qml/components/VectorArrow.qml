@@ -2,7 +2,6 @@ import QtQuick
 import QtGraphs
 import QtQuick.Effects
 
-
 ScatterSeries {
     id: vectorArrow
 
@@ -14,13 +13,13 @@ ScatterSeries {
     property color arrowColor: "white"
 
     Component.onCompleted: {
-        append(Qt.point(vecX, vecX))
+        append(Qt.point(vecX, vecY));
     }
 
     pointDelegate: Item {
         id: vectorItem
-        width: chart.width*0.2
-        height: chart.height*0.2
+        width: chart.width * 0.2
+        height: chart.height * 0.2
         scale: vectorArrow.arrowScale
 
         Image {
@@ -34,31 +33,26 @@ ScatterSeries {
             visible: false
         }
 
-        MultiEffect{
+        MultiEffect {
             anchors.fill: arrowImage
-            source:arrowImage
+            source: arrowImage
             colorizationColor: vectorArrow.arrowColor
             rotation: vectorArrow.arrowRotation
             antialiasing: true
             colorization: 1
 
-
-
             DragHandler {
                 id: dragHandler
                 target: vectorItem
 
-
                 onActiveChanged: {
                     if (!active) {
-                        let centerPoint = vectorItem.mapToItem(chart,
-                                                              vectorItem.width / 2,
-                                                              vectorItem.height / 2)
+                        let centerPoint = vectorItem.mapToItem(chart, vectorItem.width / 2, vectorItem.height / 2);
 
-                        let newX = vectorArrow.pixelToX(centerPoint.x)
-                        let newY = vectorArrow.pixelToY(centerPoint.y)
+                        let newX = vectorArrow.pixelToX(centerPoint.x);
+                        let newY = vectorArrow.pixelToY(centerPoint.y);
 
-                        vectorArrow.replace(0, newX, newY)
+                        vectorArrow.replace(0, newX, newY);
                     }
                 }
             }
@@ -67,21 +61,17 @@ ScatterSeries {
                 cursorShape: dragHandler.active ? Qt.ClosedHandCursor : Qt.OpenHandCursor
             }
         }
-
     }
 
-
-
     function pixelToX(px) {
-        let plotArea = chart.plotArea
-        let axisX = chart.axisX
-        return axisX.min + (px - plotArea.x) * (axisX.max - axisX.min) / plotArea.width
+        let plotArea = chart.plotArea;
+        let axisX = chart.axisX;
+        return axisX.min + (px - plotArea.x) * (axisX.max - axisX.min) / plotArea.width;
     }
 
     function pixelToY(py) {
-        let plotArea = chart.plotArea
-        let axisY = chart.axisY
-        return axisY.max - (py - plotArea.y) * (axisY.max - axisY.min) / plotArea.height
+        let plotArea = chart.plotArea;
+        let axisY = chart.axisY;
+        return axisY.max - (py - plotArea.y) * (axisY.max - axisY.min) / plotArea.height;
     }
 }
-
