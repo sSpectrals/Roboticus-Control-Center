@@ -49,12 +49,12 @@ Rectangle {
     GridLayout {
         anchors.fill: parent
         anchors.margins: 8
-        columns: 3
+        columns: 4
         rows: 1
 
         // Column 1: Vector Name
         Rectangle {
-            Layout.preferredWidth: parent.width * 0.4
+            Layout.preferredWidth: parent.width * 0.3
             Layout.fillHeight: true
             color: "transparent"
 
@@ -108,7 +108,24 @@ Rectangle {
             }
         }
 
-        // Column 2: rotation | color
+        //column 2: (x,y)
+        Rectangle {
+            Layout.preferredWidth: parent.width * 0.1
+            Layout.fillHeight: true
+            color: "transparent"
+
+            Text {
+                color: "white"
+                font.bold: true
+                font.pixelSize: 14
+                anchors.centerIn: parent
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                text: "(" + xLocation + ", " + yLocation + ")"
+            }
+        }
+
+        // Column 3: rotation | color
         Rectangle {
             Layout.preferredWidth: parent.width * 0.5
             Layout.fillHeight: true
@@ -149,6 +166,7 @@ Rectangle {
             }
         }
 
+        // column 4: delete
         Rectangle {
             Layout.fillWidth: true
             Layout.fillHeight: true
