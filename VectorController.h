@@ -16,7 +16,7 @@ public:
 
   VectorModel *model() const { return m_model; }
 
-  Q_INVOKABLE Vector addVector(const QString &name = QString(), double x = 0.0,
+  Q_INVOKABLE Vector addVector(const QString &name = QString(), double rotation = 0, double scale = 1, QColor color = "white", double x = 0.0,
                                double y = 0.0);
   Q_INVOKABLE bool removeVector(const QUuid &id);
 

@@ -13,30 +13,25 @@ Rectangle {
     property real yLocation: 0
     property bool selected: false
 
-    signal clicked()
-    signal deleteSensor()
+    signal clicked
+    signal deleteSensor
 
     color: "black"
     radius: 10
     border {
         width: 2
-        color: (mouseArea.containsMouse || selected)? "#98FF98" : "#333333"
+        color: (hoverHandler.hovered || selected) ? "#98FF98" : "#333333"
     }
-
 
     Behavior on border.color {
-        ColorAnimation { duration: 150 }
+        ColorAnimation {
+            duration: 150
+        }
     }
 
-
-    MouseArea {
-        id: mouseArea
-        anchors.fill: parent
-        hoverEnabled: true
-        onClicked: {
-            sensorInfo.clicked();
-            sensorInfo.forceActiveFocus();
-        }
+    HoverHandler {
+        id: hoverHandler
+        acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
     }
 
     // property bool triggered
@@ -69,7 +64,7 @@ Rectangle {
             Layout.fillHeight: true
             color: "transparent"
 
-            TextField   {
+            TextField {
                 id: textInput
                 color: "white"
                 text: sensorName
@@ -81,6 +76,7 @@ Rectangle {
                 selectByMouse: true
                 selectionColor: "#98FF98"
                 selectedTextColor: "#1a1a1a"
+                hoverEnabled: true
 
                 background: Rectangle {
                     color: "transparent"
@@ -88,15 +84,22 @@ Rectangle {
                     border.width: 2
                     radius: 4
 
-
                     Behavior on border.color {
-                        ColorAnimation { duration: 150 }
+                        ColorAnimation {
+                            duration: 150
+                        }
                     }
                 }
 
-                onEditingFinished: {
-                    sensorName = text
-                    focus = false
+                onActiveFocusChanged: {
+                    if (!activeFocus) {
+                        // Lost focus
+                        if (text.trim() === "") {
+                            text = sensorName
+                        } else {
+                            sensorName = text
+                        }
+                    }
                 }
             }
         }
@@ -112,9 +115,8 @@ Rectangle {
                 anchors.fill: parent
                 spacing: 5
 
-
                 // Input
-                Rectangle{
+                Rectangle {
                     Layout.preferredWidth: 20
                     Layout.fillHeight: true
                     color: "transparent"
@@ -130,7 +132,6 @@ Rectangle {
                     }
                 }
 
-
                 // Operator selection
                 ComboBox {
                     id: comboBox
@@ -143,16 +144,16 @@ Rectangle {
                     Material.accent: "#98FF98"
                     Material.foreground: "#98FF98"
 
-
                     background: Rectangle {
-                        color:  "#0f0f0f"
+                        color: "#0f0f0f"
                         border.color: comboBox.hovered ? "#98FF98" : "#333333"
                         border.width: 2
                         radius: 4
 
-
                         Behavior on border.color {
-                            ColorAnimation { duration: 150 }
+                            ColorAnimation {
+                                duration: 150
+                            }
                         }
                     }
 
@@ -167,7 +168,7 @@ Rectangle {
                             model: comboBox.popup.visible ? comboBox.delegateModel : null
                             currentIndex: comboBox.highlightedIndex
 
-                            ScrollIndicator.vertical: ScrollIndicator { }
+                            ScrollIndicator.vertical: ScrollIndicator {}
                         }
 
                         background: Rectangle {
@@ -179,36 +180,34 @@ Rectangle {
                     }
 
                     delegate: ItemDelegate {
-                            width: comboBox.width
-                            hoverEnabled: true
+                        width: comboBox.width
+                        hoverEnabled: true
 
-                            contentItem: Text {
-                                text: modelData
-                                color: parent.highlighted || parent.hovered
-                                       ? "#98FF98"
-                                       : "#888888"
-                            }
+                        contentItem: Text {
+                            text: modelData
+                            color: parent.highlighted
+                                   || parent.hovered ? "#98FF98" : "#888888"
+                        }
 
-                            highlighted: comboBox.highlightedIndex === index
+                        highlighted: comboBox.highlightedIndex === index
 
-                            background: Rectangle {
-                                color: parent.highlighted || parent.hovered
-                                       ? "#0f0f0f"
-                                       : "transparent"
+                        background: Rectangle {
+                            color: parent.highlighted
+                                   || parent.hovered ? "#0f0f0f" : "transparent"
 
-                                Behavior on color {
-                                    ColorAnimation { duration: 100 }
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 100
                                 }
                             }
                         }
+                    }
 
                     onActivated: focus = false
-
                 }
 
-
                 // Threshold
-                Rectangle{
+                Rectangle {
                     Layout.preferredWidth: 20
                     Layout.fillHeight: true
                     color: "transparent"
@@ -230,7 +229,7 @@ Rectangle {
             color: Material.color(Material.Red)
             radius: 10
             Image {
-                source: "../assets/SVG/trash.svg"
+                source: "./assets/SVG/trash.svg"
                 anchors.centerIn: parent
             }
 

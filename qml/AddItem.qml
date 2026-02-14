@@ -2,7 +2,7 @@ import QtQuick
 import QtQuick.Layouts
 import QtQuick.Controls
 import QtQuick.Controls.Material
-import "../assets"
+import "./assets"
 
 Row {
     id: addItem
@@ -11,12 +11,12 @@ Row {
     property color vectorButtonColor: "#2b2a2a"
     property color textColor: "#98FF98"
     property color hoverEffectColor: "#98FF98"
-    signal addSensorRequested()
-    signal addVectorRequested()
+    signal addSensorRequested
+    signal addVectorRequested
 
     Button {
         id: sensorButton
-        width: (addItem.width - addItem.spacing) /2
+        width: (addItem.width - addItem.spacing) / 2
         height: addItem.height
         Material.foreground: addItem.textColor
         Material.background: addItem.addButtonColor
@@ -44,7 +44,11 @@ Row {
                 color: addItem.hoverEffectColor
                 radius: parent.radius
                 opacity: sensorButton.hovered ? 0.15 : 0
-                Behavior on opacity { NumberAnimation { duration: 150 } }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 150
+                    }
+                }
             }
             // Pressed effect
             Rectangle {
@@ -52,7 +56,11 @@ Row {
                 color: "#1a1a1a"
                 radius: parent.radius
                 opacity: sensorButton.down ? 0.2 : 0
-                Behavior on opacity { NumberAnimation { duration: 100 } }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 100
+                    }
+                }
             }
         }
         ToolTip.text: "Add new sensor (Ctrl+1)"
@@ -64,13 +72,13 @@ Row {
         }
 
         HoverHandler {
-            cursorShape: sensorButton.hovered ? Qt.PointingHandCursor   : Qt.defaultHandCursor
+            cursorShape: sensorButton.hovered ? Qt.PointingHandCursor : Qt.defaultHandCursor
         }
     }
 
     Button {
         id: vectorButton
-        width: (addItem.width - addItem.spacing) /2
+        width: (addItem.width - addItem.spacing) / 2
         height: addItem.height
         Material.foreground: addItem.textColor
         Material.background: addItem.vectorButtonColor
@@ -97,7 +105,11 @@ Row {
                 color: addItem.hoverEffectColor
                 radius: parent.radius
                 opacity: vectorButton.hovered ? 0.15 : 0
-                Behavior on opacity { NumberAnimation { duration: 150 } }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 150
+                    }
+                }
             }
             // Pressed effect
             Rectangle {
@@ -105,7 +117,11 @@ Row {
                 color: "#1a1a1a"
                 radius: parent.radius
                 opacity: vectorButton.down ? 0.2 : 0
-                Behavior on opacity { NumberAnimation { duration: 100 } }
+                Behavior on opacity {
+                    NumberAnimation {
+                        duration: 100
+                    }
+                }
             }
         }
         ToolTip.text: "Add Vector (Ctrl+2)"
@@ -117,7 +133,7 @@ Row {
         }
 
         HoverHandler {
-            cursorShape: vectorButton.hovered ? Qt.PointingHandCursor   : Qt.defaultHandCursor
+            cursorShape: vectorButton.hovered ? Qt.PointingHandCursor : Qt.defaultHandCursor
         }
     }
 

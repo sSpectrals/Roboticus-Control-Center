@@ -13,19 +13,19 @@ ScatterSeries {
     property color arrowColor: "white"
 
     Component.onCompleted: {
-        append(Qt.point(vecX, vecY));
+        append(Qt.point(vecX, vecY))
     }
 
     pointDelegate: Item {
         id: vectorItem
-        width: chart.width * 0.2
-        height: chart.height * 0.2
+        width: chart.width * 0.1
+        height: chart.height * 0.1
         scale: vectorArrow.arrowScale
 
         Image {
             id: arrowImage
             anchors.fill: parent
-            source: "../assets/SVG/arrow.svg"
+            source: "./assets/SVG/arrow.svg"
             width: parent.width
             height: parent.height
             sourceSize: Qt.size(width * 2, height * 2)
@@ -47,12 +47,14 @@ ScatterSeries {
 
                 onActiveChanged: {
                     if (!active) {
-                        let centerPoint = vectorItem.mapToItem(chart, vectorItem.width / 2, vectorItem.height / 2);
+                        let centerPoint = vectorItem.mapToItem(
+                                chart, vectorItem.width / 2,
+                                vectorItem.height / 2)
 
-                        let newX = vectorArrow.pixelToX(centerPoint.x);
-                        let newY = vectorArrow.pixelToY(centerPoint.y);
+                        let newX = vectorArrow.pixelToX(centerPoint.x)
+                        let newY = vectorArrow.pixelToY(centerPoint.y)
 
-                        vectorArrow.replace(0, newX, newY);
+                        vectorArrow.replace(0, newX, newY)
                     }
                 }
             }
@@ -64,14 +66,14 @@ ScatterSeries {
     }
 
     function pixelToX(px) {
-        let plotArea = chart.plotArea;
-        let axisX = chart.axisX;
-        return axisX.min + (px - plotArea.x) * (axisX.max - axisX.min) / plotArea.width;
+        let plotArea = chart.plotArea
+        let axisX = chart.axisX
+        return axisX.min + (px - plotArea.x) * (axisX.max - axisX.min) / plotArea.width
     }
 
     function pixelToY(py) {
-        let plotArea = chart.plotArea;
-        let axisY = chart.axisY;
-        return axisY.max - (py - plotArea.y) * (axisY.max - axisY.min) / plotArea.height;
+        let plotArea = chart.plotArea
+        let axisY = chart.axisY
+        return axisY.max - (py - plotArea.y) * (axisY.max - axisY.min) / plotArea.height
     }
 }

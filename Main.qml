@@ -1,5 +1,5 @@
 import QtQuick
-import "qml/components"
+import "qml"
 import QtQuick.Controls 2.15
 import com.Roboticus.ControlCenter
 
@@ -58,8 +58,9 @@ Window {
         id: sensorPanel
     }
 
-    Flickable {
-        id: flickable
+    MonitoringPanel {
+        id: monitor
+
         anchors {
             left: parent.left
             top: parent.top
@@ -68,102 +69,9 @@ Window {
             leftMargin: 20
             rightMargin: 20
         }
-        width: parent.width / 2
-        flickableDirection: Flickable.VerticalFlick
-        contentWidth: parent.width / 2
-        contentHeight: column.height
-        clip: true
-        boundsBehavior: Flickable.StopAtBounds
 
-        ScrollBar.vertical: ScrollBar {
-            id: verticalScrollBar
-            policy: ScrollBar.AsNeeded
-            width: 8
-            visible: flickable.contentHeight > flickable.height
-
-            contentItem: Rectangle {
-                implicitWidth: 6
-                radius: 3
-                color: verticalScrollBar.pressed ? "#22FF98" : "#98FF98"
-                opacity: verticalScrollBar.active ? 0.8 : 0.4
-                Behavior on opacity {
-                    NumberAnimation {
-                        duration: 200
-                    }
-                }
-            }
-        }
-
-        Column {
-            id: column
-            width: parent.width
-            spacing: 12
-
-            property var selection: null
-
-            Rectangle {
-                width: parent.width
-                height: 50
-                color: "transparent"
-
-                Text {
-                    text: "SENSOR MONITORING"
-                    font.pixelSize: 20
-                    font.weight: Font.DemiBold
-                    color: "white"
-                    anchors {
-                        left: parent.left
-                        verticalCenter: parent.verticalCenter
-                        leftMargin: 10
-                    }
-                }
-
-                Rectangle {
-                    width: parent.width - 20
-                    height: 2
-                    color: "#98FF98"
-                    opacity: 0.6
-                    anchors {
-                        left: parent.left
-                        bottom: parent.bottom
-                        leftMargin: 10
-                    }
-                }
-            }
-
-            Repeater {
-                model: sensorController.model
-                delegate: SensorInfo {
-                    id: sensorDelegate
-                    anchors.left: parent.left
-                    anchors.right: parent.right
-                    height: 60
-
-                    color: index % 2 === 0 ? "#1a1a1a" : "#151515"
-
-                    sensorID: model.id
-                    inputValue: model.inputValue
-                    thresholdValue: model.threshold
-                    selectedOperator: model.selectedOperator
-                    xLocation: model.x
-                    yLocation: model.y
-                    selected: column.selection === sensorDelegate
-
-                    onClicked: {
-                        if (column.selection === sensorDelegate) {
-                            column.selection = null
-                        } else {
-                            column.selection = sensorDelegate
-                        }
-                    }
-
-                    onDeleteSensor: {
-                        column.selection = null
-                        sensorController.removeSensor(model.id)
-                    }
-                }
-            }
-        }
+        sensorController: sensorController
+        vectorController: vectorController
     }
 
     AddItem {
@@ -177,7 +85,9 @@ Window {
         height: 70
         width: (parent.width) / 2
 
-        onAddSensorRequested: sensorController.addSensor("name", 100, "==")
-        onAddVectorRequested: vectorController.addVector("name", 0.0, 0.0)
+        onAddSensorRequested: sensorController.addSensor("Sensor name",
+                                                         100, "==")
+        onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1,
+                                                         "white", 0.0, 0.0)
     }
 }
