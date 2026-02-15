@@ -43,8 +43,6 @@ Rectangle {
             }
             font.weight: Font.DemiBold
             color: "white"
-            // Layout.alignment: Qt.AlignVCenter
-            // Layout.fillWidth: true
         }
 
         ComboBox {
@@ -52,10 +50,7 @@ Rectangle {
             Layout.preferredWidth: 150
             Layout.preferredHeight: title.height * 0.6
             Layout.alignment: Qt.AlignVCenter
-            model: {
-                var ports = serialParser.availablePorts()
-                return ports.length > 0 ? ports : ["No COM Port found"]
-            }
+            model: serialParser.availablePortsList.length > 0 ? serialParser.availablePortsList : ["No COM Port found"]
             Layout.fillWidth: true
 
             Material.accent: "#98FF98"

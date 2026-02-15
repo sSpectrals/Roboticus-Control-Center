@@ -1,6 +1,13 @@
 #include "SerialParser.h"
 
-SerialParser::SerialParser(QObject *parent) : QObject(parent) {}
+SerialParser::SerialParser(QObject *parent) : QObject(parent) {
+  // Initialize available ports
+  refreshPorts();
+
+  // Setup timer to poll for port changes every 1 second
+  connect(&m_portRefreshTimer, &QTimer::timeout, this, &SerialParser::refreshPorts);
+  m_portRefreshTimer.start(1000);
+}
 
 Q_INVOKABLE bool SerialParser::connectToPort(QString port, int baudRate) {
 
@@ -91,6 +98,14 @@ QStringList SerialParser::availablePorts() {
     ports.append(info.portName());
   }
   return ports;
+}
+
+void SerialParser::refreshPorts() {
+  QStringList newPorts = availablePorts();
+  if (newPorts != m_availablePorts) {
+    m_availablePorts = newPorts;
+    emit availablePortsChanged();
+  }
 }
 
 void SerialParser::setModels(SensorModel *sensorModel,

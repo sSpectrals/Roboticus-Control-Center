@@ -9,6 +9,7 @@
 #include <QQmlEngine>
 #include <QSerialPort>
 #include <QSerialPortInfo>
+#include <QTimer>
 
 #include "SensorModel.h"
 #include "VectorModel.h"
@@ -19,6 +20,8 @@ class SerialParser : public QObject {
 
   Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionChanged)
   Q_PROPERTY(QString currentPort READ currentPort NOTIFY portChanged)
+  Q_PROPERTY(QStringList availablePortsList READ availablePortsList NOTIFY availablePortsChanged)
+
 public:
   explicit SerialParser(QObject *parent = nullptr);
 
@@ -28,29 +31,36 @@ public:
   Q_INVOKABLE bool setComPort(QString port);
   Q_INVOKABLE void disconnectPort();
 
-  Q_INVOKABLE QStringList availablePorts();
+
+  QStringList availablePortsList() const { return m_availablePorts; }
+  Q_INVOKABLE void refreshPorts();
 
   bool isConnected() const { return m_serial.isOpen(); }
   QString currentPort() const { return m_serial.portName(); }
 
-  Q_INVOKABLE void setModels(SensorModel *sensorModel, VectorModel *vectorModel);
+  Q_INVOKABLE void setModels(SensorModel *sensorModel,
+                             VectorModel *vectorModel);
   Q_INVOKABLE void readData();
 
 signals:
   void connectionChanged();
   void portChanged();
   void dataReceived(QByteArray data);
+  void availablePortsChanged();
 
 private:
   QSerialPort m_serial;
   QByteArray m_buffer;
   SensorModel *m_sensorModel = nullptr;
   VectorModel *m_vectorModel = nullptr;
+  QStringList m_availablePorts;
+  QTimer m_portRefreshTimer;
 
   void configureDefaultSettings();
   void processJsonData(const QByteArray &jsonData);
   void updateSensorsFromJson(const QJsonArray &sensors);
   void updateVectorsFromJson(const QJsonArray &vectors);
+  QStringList availablePorts();
 };
 
 #endif // SERIALPARSER_H
