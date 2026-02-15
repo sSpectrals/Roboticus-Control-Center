@@ -7,7 +7,7 @@ import com.Roboticus.ControlCenter
 Window {
     id: window
     visibility: Window.Maximized
-    minimumWidth: 854
+    minimumWidth: 890
     minimumHeight: 480
     title: qsTr("Roboticus Control Center")
     color: "#1a1a1a"
