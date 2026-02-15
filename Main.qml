@@ -39,6 +39,12 @@ Window {
         }
     }
 
+    SerialParser {
+        id: serialParser
+        Component.onCompleted: setModels(sensorController.model,
+                                         vectorController.model)
+    }
+
     Rectangle {
         anchors.fill: parent
         gradient: Gradient {
@@ -58,12 +64,18 @@ Window {
         id: sensorPanel
     }
 
+    TitleBar {
+        id: title
+
+        serialParser: serialParser
+    }
+
     MonitoringPanel {
         id: monitor
 
         anchors {
             left: parent.left
-            top: parent.top
+            top: title.bottom
             bottom: addSensorButton.top
             bottomMargin: 20
             leftMargin: 20
@@ -86,8 +98,8 @@ Window {
         width: (parent.width) / 2
 
         onAddSensorRequested: sensorController.addSensor("Sensor name", 0, 100,
-                                                         "==", 0.0, 1.0)
+                                                         "==", 0.0, 0.0)
         onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1,
-                                                         "white", 0.0, -1.0)
+                                                         "white", 0.0, 0.0)
     }
 }

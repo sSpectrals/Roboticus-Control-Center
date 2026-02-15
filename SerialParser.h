@@ -15,6 +15,8 @@
 
 class SerialParser : public QObject {
   Q_OBJECT
+  QML_ELEMENT
+
   Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionChanged)
   Q_PROPERTY(QString currentPort READ currentPort NOTIFY portChanged)
 public:
@@ -31,8 +33,8 @@ public:
   bool isConnected() const { return m_serial.isOpen(); }
   QString currentPort() const { return m_serial.portName(); }
 
-  void setModels(SensorModel *sensorModel, VectorModel *vectorModel);
-  void readData();
+  Q_INVOKABLE void setModels(SensorModel *sensorModel, VectorModel *vectorModel);
+  Q_INVOKABLE void readData();
 
 signals:
   void connectionChanged();

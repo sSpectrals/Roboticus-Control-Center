@@ -41,36 +41,6 @@ Flickable {
 
         property var selection: null
 
-        Rectangle {
-            width: parent.width
-            height: 50
-            color: "transparent"
-
-            Text {
-                text: "SENSOR MONITORING"
-                font.pixelSize: 20
-                font.weight: Font.DemiBold
-                color: "white"
-                anchors {
-                    left: parent.left
-                    verticalCenter: parent.verticalCenter
-                    leftMargin: 10
-                }
-            }
-
-            Rectangle {
-                width: parent.width - 20
-                height: 2
-                color: "#98FF98"
-                opacity: 0.6
-                anchors {
-                    left: parent.left
-                    bottom: parent.bottom
-                    leftMargin: 10
-                }
-            }
-        }
-
         ListView {
             id: sensorList
             width: parent.width

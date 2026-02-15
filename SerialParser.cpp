@@ -15,6 +15,8 @@ Q_INVOKABLE bool SerialParser::connectToPort(QString port, int baudRate) {
   bool success = m_serial.open(QIODevice::ReadWrite);
 
   if (success) {
+    connect(&m_serial, &QSerialPort::readyRead, this, &SerialParser::readData,
+            Qt::UniqueConnection);
     emit connectionChanged();
     emit portChanged();
   }
