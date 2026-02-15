@@ -18,7 +18,7 @@ Window {
     SensorController {
         id: sensorController
 
-        onSensorAdded: function (id, name, threshold, op, x, y) {
+        onSensorAdded: function (id, name, input, threshold, op, x, y) {
             sensorPanel.addPointToGraph(id, x, y)
         }
 
@@ -85,9 +85,9 @@ Window {
         height: 70
         width: (parent.width) / 2
 
-        onAddSensorRequested: sensorController.addSensor("Sensor name",
-                                                         100, "==")
+        onAddSensorRequested: sensorController.addSensor("Sensor name", 0, 100,
+                                                         "==", 0.0, 1.0)
         onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1,
-                                                         "white", 0.0, 0.0)
+                                                         "white", 0.0, -1.0)
     }
 }

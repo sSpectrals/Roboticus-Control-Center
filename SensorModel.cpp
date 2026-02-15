@@ -100,13 +100,13 @@ QHash<int, QByteArray> SensorModel::roleNames() const {
   return mapping;
 }
 
-Sensor SensorModel::addSensor(QString name, double threshold, QString op,
-                              double x, double y) {
+Sensor SensorModel::addSensor(QString name, double input, double threshold,
+                              QString op, double x, double y) {
 
   Sensor sensor;
   sensor.name =
       name.isEmpty() ? "Sensor " + QString::number(m_sensors.size() + 1) : name;
-  sensor.inputValue = 0.0;
+  sensor.inputValue = input;
   sensor.threshold = threshold;
   sensor.selectedOperator = op;
   sensor.x = x;
@@ -115,7 +115,7 @@ Sensor SensorModel::addSensor(QString name, double threshold, QString op,
   beginInsertRows(QModelIndex(), m_sensors.size(), m_sensors.size());
   m_sensors.append(sensor);
   endInsertRows();
-  emit sensorAdded(sensor.id, sensor.name, sensor.threshold,
+  emit sensorAdded(sensor.id, sensor.name, sensor.inputValue, sensor.threshold,
                    sensor.selectedOperator, sensor.x, sensor.y);
   return sensor;
 }
@@ -145,6 +145,13 @@ Sensor SensorModel::getSensorById(const QUuid &id) const {
 int SensorModel::getIndexFromId(const QUuid &id) const {
   for (int i = 0; i < m_sensors.size(); ++i)
     if (m_sensors[i].id == id)
+      return i;
+  return -1;
+}
+
+int SensorModel::getIndexByName(const QString &name) const {
+  for (int i = 0; i < m_sensors.size(); ++i)
+    if (m_sensors[i].name == name)
       return i;
   return -1;
 }

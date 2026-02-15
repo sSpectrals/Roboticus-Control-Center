@@ -16,7 +16,7 @@ public:
   SensorModel *model() const { return m_model; }
 
   Q_INVOKABLE Sensor addSensor(const QString &name = QString(),
-                               double threshold = 100.0,
+                               double input = 0.0, double threshold = 100.0,
                                const QString &op = ">=", double x = 0.0,
                                double y = 0.0);
 
@@ -31,8 +31,8 @@ public:
   Q_INVOKABLE bool setSensorPositionY(const QUuid &id, double y);
 
 signals:
-  void sensorAdded(const QUuid &id, const QString &name, double threshold,
-                   const QString &op, double x, double y);
+  void sensorAdded(const QUuid &id, const QString &name, double input,
+                   double threshold, const QString &op, double x, double y);
   void sensorRemoved(const QUuid &id);
 
 private:

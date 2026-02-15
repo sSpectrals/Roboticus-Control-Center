@@ -2,10 +2,16 @@
 #define SERIALPARSER_H
 
 #include <QDebug>
+#include <QJsonArray>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QObject>
 #include <QQmlEngine>
 #include <QSerialPort>
 #include <QSerialPortInfo>
+
+#include "SensorModel.h"
+#include "VectorModel.h"
 
 class SerialParser : public QObject {
   Q_OBJECT
@@ -25,6 +31,7 @@ public:
   bool isConnected() const { return m_serial.isOpen(); }
   QString currentPort() const { return m_serial.portName(); }
 
+  void setModels(SensorModel *sensorModel, VectorModel *vectorModel);
   void readData();
 
 signals:
@@ -34,7 +41,14 @@ signals:
 
 private:
   QSerialPort m_serial;
-      void configureDefaultSettings();
+  QByteArray m_buffer;
+  SensorModel *m_sensorModel = nullptr;
+  VectorModel *m_vectorModel = nullptr;
+
+  void configureDefaultSettings();
+  void processJsonData(const QByteArray &jsonData);
+  void updateSensorsFromJson(const QJsonArray &sensors);
+  void updateVectorsFromJson(const QJsonArray &vectors);
 };
 
 #endif // SERIALPARSER_H

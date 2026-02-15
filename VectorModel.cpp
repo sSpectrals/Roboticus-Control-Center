@@ -142,3 +142,10 @@ int VectorModel::getIndexFromId(const QUuid &id) const {
       return i;
   return -1;
 }
+
+int VectorModel::getIndexByName(const QString &name) const {
+  for (int i = 0; i < m_vectors.size(); ++i)
+    if (m_vectors[i].name == name)
+      return i;
+  return -1;
+}

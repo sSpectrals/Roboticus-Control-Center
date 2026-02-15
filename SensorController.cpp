@@ -11,14 +11,14 @@ SensorController::SensorController(QObject *parent)
 }
 
 Q_INVOKABLE Sensor SensorController::addSensor(const QString &name,
-                                               double threshold,
+                                               double input, double threshold,
                                                const QString &op, double x,
                                                double y) {
 
   if (!m_model)
     return Sensor();
 
-  Sensor newSensor = m_model->addSensor(name, threshold, op, x, y);
+  Sensor newSensor = m_model->addSensor(name, input, threshold, op, x, y);
 
   return newSensor;
 }
