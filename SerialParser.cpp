@@ -4,31 +4,42 @@ SerialParser::SerialParser(QObject *parent) : QObject(parent) {
   refreshPorts();
 
   // Setup timer to poll for port changes every 1 second
-  connect(&m_portRefreshTimer, &QTimer::timeout, this, &SerialParser::refreshPorts);
+  connect(&m_portRefreshTimer, &QTimer::timeout, this,
+          &SerialParser::refreshPorts);
   m_portRefreshTimer.start(1000);
 }
 
 Q_INVOKABLE bool SerialParser::connectToPort() {
 
-
   if (m_serial.isOpen()) {
     m_serial.close();
   }
 
-  if(m_serial.portName().isEmpty() || m_serial.baudRate() <=0) {
-      qDebug() << "failed to set port or baudrate";
-      return false;
+  if (m_serial.portName().isEmpty() || m_serial.baudRate() <= 0) {
+    qDebug() << "failed to set port or baudrate";
+    return false;
   }
 
   configureDefaultSettings();
 
-  bool success = m_serial.open(QIODevice::ReadWrite);
+  bool success = m_serial.open(QIODevice::ReadOnly);
 
   if (success) {
+    m_serial.setDataTerminalReady(true);
+
     connect(&m_serial, &QSerialPort::readyRead, this, &SerialParser::readData,
             Qt::UniqueConnection);
+
+    qDebug() << "successfully connected";
+    qDebug() << "Port:" << m_serial.portName()
+             << "Baud:" << m_serial.baudRate();
     emit connectionChanged();
     emit portChanged();
+  } else {
+    qDebug() << "Error:" << m_serial.error() << m_serial.errorString()
+             << "\nCheck if you have a serial monitor open somewhere else";
+    qDebug() << "Port:" << m_serial.portName()
+             << "Baud:" << m_serial.baudRate();
   }
 
   return success;
@@ -51,13 +62,11 @@ bool SerialParser::setBaudRate(int baudRate) {
     m_serial.close();
 
     m_serial.setBaudRate(baudRate);
-    bool success = m_serial.open(QIODevice::ReadWrite);
+    bool success = connectToPort();
 
     if (success) {
       emit connectionChanged();
     }
-
-    connectToPort();
 
     return success;
   } else {
@@ -74,13 +83,12 @@ bool SerialParser::setComPort(QString port) {
 
     m_serial.setPortName(port);
 
-    bool success = m_serial.open(QIODevice::ReadWrite);
+    bool success = connectToPort();
     if (success) {
       emit connectionChanged();
       emit portChanged();
     }
 
-    connectToPort();
     return success;
   } else {
 
@@ -121,12 +129,15 @@ void SerialParser::setModels(SensorModel *sensorModel,
 }
 
 void SerialParser::readData() {
+
   if (!m_serial.isOpen()) {
     qDebug() << "Could not read serial data";
     return;
   }
 
-  m_buffer.append(m_serial.readAll());
+  QByteArray incoming = m_serial.readAll();
+  // qDebug() << "Received:" << incoming.size() << "bytes:" << incoming;
+  m_buffer.append(incoming);
 
   // Look for complete JSON object (matching braces)
   int braceCount = 0;
@@ -171,6 +182,7 @@ void SerialParser::processJsonData(const QByteArray &jsonData) {
   Q_UNUSED(timestamp) // Available for future replay functionality
 
   if (frame.contains("sensors")) {
+    qDebug() << "reading sensors";
     updateSensorsFromJson(frame["sensors"].toArray());
   }
 

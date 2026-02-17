@@ -35,14 +35,32 @@ Rectangle {
             Layout.preferredWidth: 150
             Layout.preferredHeight: title.height * 0.6
             Layout.alignment: Qt.AlignVCenter
-            model: serialParser.availablePortsList.length
-                   > 0 ? serialParser.availablePortsList : ["No COM Port found"]
+            model: serialParser.availablePortsList.length > 0 ? serialParser.availablePortsList : ["No COM Port found"]
             Layout.fillWidth: true
 
             Material.accent: "#98FF98"
             Material.foreground: "#98FF98"
 
-            currentIndex: 1
+            currentIndex: 0
+
+            Connections {
+                target: serialParser
+                function onAvailablePortsChanged() {
+                    if (serialParser.availablePortsList.length > 0) {
+                        comSelection.currentIndex = 0;
+                        serialParser.setComPort(serialParser.availablePortsList[0]);
+                    }
+                }
+            }
+
+            Component.onCompleted: {
+                // Initialize baud rate on startup
+                serialParser.setBaudRate(baudSelection.model[baudSelection.currentIndex]);
+                // Initialize COM port if available
+                if (serialParser.availablePortsList.length > 0) {
+                    serialParser.setComPort(serialParser.availablePortsList[0]);
+                }
+            }
 
             background: Rectangle {
                 color: "#0f0f0f"
@@ -85,15 +103,13 @@ Rectangle {
 
                 contentItem: Text {
                     text: modelData
-                    color: parent.highlighted
-                           || parent.hovered ? "#98FF98" : "#888888"
+                    color: parent.highlighted || parent.hovered ? "#98FF98" : "#888888"
                 }
 
                 highlighted: comSelection.highlightedIndex === index
 
                 background: Rectangle {
-                    color: parent.highlighted
-                           || parent.hovered ? "#0f0f0f" : "transparent"
+                    color: parent.highlighted || parent.hovered ? "#0f0f0f" : "transparent"
 
                     Behavior on color {
                         ColorAnimation {
@@ -104,8 +120,8 @@ Rectangle {
             }
 
             onActivated: function (index) {
-                serialParser.setComPort(model[index])
-                focus = false
+                serialParser.setComPort(model[index]);
+                focus = false;
             }
         }
 
@@ -115,6 +131,7 @@ Rectangle {
             Layout.preferredHeight: title.height * 0.6
             Layout.alignment: Qt.AlignVCenter
             model: [1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200]
+            currentIndex: 3
 
             Material.accent: "#98FF98"
             Material.foreground: "#98FF98"
@@ -161,15 +178,13 @@ Rectangle {
 
                 contentItem: Text {
                     text: modelData
-                    color: parent.highlighted
-                           || parent.hovered ? "#98FF98" : "#888888"
+                    color: parent.highlighted || parent.hovered ? "#98FF98" : "#888888"
                 }
 
                 highlighted: baudSelection.highlightedIndex === index
 
                 background: Rectangle {
-                    color: parent.highlighted
-                           || parent.hovered ? "#0f0f0f" : "transparent"
+                    color: parent.highlighted || parent.hovered ? "#0f0f0f" : "transparent"
 
                     Behavior on color {
                         ColorAnimation {
@@ -180,8 +195,8 @@ Rectangle {
             }
 
             onActivated: function (index) {
-                serialParser.setBaudRate(model[index])
-                focus = false
+                serialParser.setBaudRate(model[index]);
+                focus = false;
             }
         }
 
@@ -230,9 +245,9 @@ Rectangle {
 
             onClicked: {
                 if (serialParser.isConnected) {
-                    serialParser.disconnectPort()
-                } else {
-                    serialParser.connectToPort()
+                    serialParser.disconnectPort();
+                } else if (serialParser.availablePortsList.length > 0) {
+                    serialParser.connectToPort();
                 }
             }
             HoverHandler {

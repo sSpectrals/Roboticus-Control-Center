@@ -21,47 +21,19 @@ struct Vector {
 // Create arrays of sensors
 Sensor sensors[] = {
   // Temperature sensors
-  { "temperature_1", 23.5, ">=", 30.0, 10, 20 },
-  { "temperature_2", 18.2, "<=", 20.0, 12, 22 },
-  { "temperature_3", 31.7, ">=", 28.0, 14, 24 },
-  { "temperature_4", 22.1, "<=", 25.0, 16, 26 },
-  { "temperature_5", 27.8, ">=", 26.5, 18, 28 },
-  { "temperature_6", 19.4, "<=", 22.0, 20, 30 },
-  { "temperature_7", 33.2, ">=", 32.0, 22, 32 },
-  { "temperature_8", 24.6, "<=", 26.0, 24, 34 },
-
-  // Humidity sensors
-  { "humidity_1", 65.2, "<=", 70.0, 11, 21 },
-  { "humidity_2", 82.5, ">=", 80.0, 13, 23 },
-  { "humidity_3", 45.8, "<=", 50.0, 15, 25 },
-  { "humidity_4", 73.1, ">=", 72.0, 17, 27 },
-  { "humidity_5", 55.3, "<=", 60.0, 19, 29 },
-  { "humidity_6", 88.7, ">=", 85.0, 21, 31 },
-  { "humidity_7", 38.9, "<=", 40.0, 23, 33 },
-  { "humidity_8", 76.4, ">=", 75.0, 25, 35 },
+  { "IR_1", 23.5, ">=", 30.0, 0, 0 },
+  { "IR_2", 18.2, "<=", 20.0, 1, 1 },
+  { "IR_3", 31.7, ">=", 28.0, 2, 2 },
+  { "IR_4", 22.1, "<=", 25.0, 3, 3 },
+  { "IR_5", 27.8, ">=", 26.5, 4, 4 }
 };
 
 // Create arrays of vectors
 Vector vectors[] = {
   // Motors
-  { "motor_1", 45.0, "#FF5733", 5, 10 },
-  { "motor_2", 90.0, "#33FF57", 8, 12 },
-  { "motor_3", 135.0, "#3357FF", 11, 14 },
-  { "motor_4", 180.0, "#FF33F5", 14, 16 },
-  { "motor_5", 225.0, "#F5FF33", 17, 18 },
-  { "motor_6", 270.0, "#33FFF5", 20, 20 },
-  { "motor_7", 315.0, "#FF33A8", 23, 22 },
-  { "motor_8", 360.0, "#A833FF", 26, 24 },
-
-  // Servos
-  { "servo_1", 30.0, "#FF8C33", 29, 26 },
-  { "servo_2", 60.0, "#33FF8C", 32, 28 },
-  { "servo_3", 120.0, "#8C33FF", 35, 30 },
-  { "servo_4", 150.0, "#FF338C", 38, 32 },
-  { "servo_5", 210.0, "#33FFC4", 41, 34 },
-  { "servo_6", 240.0, "#C433FF", 44, 36 },
-  { "servo_7", 300.0, "#FFC433", 47, 38 },
-  { "servo_8", 330.0, "#33A8FF", 50, 40 },
+  { "Line avoidance", 45.0, "#FF5733", 0, -2 },
+  { "Line tracker", 90.0, "#33FF57", 0, -4 },
+  { "Ball", 135.0, "#3357FF", 0, -6 },
 };
 
 // Calculate array sizes
@@ -71,7 +43,7 @@ const int numVectors = sizeof(vectors) / sizeof(vectors[0]);
 
 void setup() {
 
-  Serial.begin(115200);
+  Serial.begin(9600);
 }
 
 void loop() {
