@@ -25,7 +25,7 @@ class SerialParser : public QObject {
 public:
   explicit SerialParser(QObject *parent = nullptr);
 
-  Q_INVOKABLE bool connectToPort(QString port, int baudRate);
+  Q_INVOKABLE bool connectToPort();
 
   Q_INVOKABLE bool setBaudRate(int baudRate);
   Q_INVOKABLE bool setComPort(QString port);

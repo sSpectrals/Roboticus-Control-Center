@@ -1,7 +1,6 @@
 #include "SerialParser.h"
 
 SerialParser::SerialParser(QObject *parent) : QObject(parent) {
-  // Initialize available ports
   refreshPorts();
 
   // Setup timer to poll for port changes every 1 second
@@ -9,14 +8,18 @@ SerialParser::SerialParser(QObject *parent) : QObject(parent) {
   m_portRefreshTimer.start(1000);
 }
 
-Q_INVOKABLE bool SerialParser::connectToPort(QString port, int baudRate) {
+Q_INVOKABLE bool SerialParser::connectToPort() {
+
 
   if (m_serial.isOpen()) {
     m_serial.close();
   }
 
-  m_serial.setPortName(port);
-  m_serial.setBaudRate(baudRate);
+  if(m_serial.portName().isEmpty() || m_serial.baudRate() <=0) {
+      qDebug() << "failed to set port or baudrate";
+      return false;
+  }
+
   configureDefaultSettings();
 
   bool success = m_serial.open(QIODevice::ReadWrite);
@@ -54,6 +57,8 @@ bool SerialParser::setBaudRate(int baudRate) {
       emit connectionChanged();
     }
 
+    connectToPort();
+
     return success;
   } else {
     return m_serial.setBaudRate(baudRate);
@@ -75,6 +80,7 @@ bool SerialParser::setComPort(QString port) {
       emit portChanged();
     }
 
+    connectToPort();
     return success;
   } else {
 

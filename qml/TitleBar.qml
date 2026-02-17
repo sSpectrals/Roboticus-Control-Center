@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Layouts
 import com.Roboticus.ControlCenter
+import QtQuick.Controls.Material
 
 Rectangle {
     id: title
@@ -29,32 +30,19 @@ Rectangle {
         }
         spacing: 20
 
-        Text {
-            id: titleText
-            text: "SENSOR MONITORING"
-            font.pixelSize: {
-                if (window.width > 1600) {
-                    20
-                } else if (window.width > 1200) {
-                    15
-                } else {
-                    10
-                }
-            }
-            font.weight: Font.DemiBold
-            color: "white"
-        }
-
         ComboBox {
             id: comSelection
             Layout.preferredWidth: 150
             Layout.preferredHeight: title.height * 0.6
             Layout.alignment: Qt.AlignVCenter
-            model: serialParser.availablePortsList.length > 0 ? serialParser.availablePortsList : ["No COM Port found"]
+            model: serialParser.availablePortsList.length
+                   > 0 ? serialParser.availablePortsList : ["No COM Port found"]
             Layout.fillWidth: true
 
             Material.accent: "#98FF98"
             Material.foreground: "#98FF98"
+
+            currentIndex: 1
 
             background: Rectangle {
                 color: "#0f0f0f"
@@ -197,8 +185,59 @@ Rectangle {
             }
         }
 
-        Item {
+        Button {
+            id: startMonitor
+            Layout.preferredWidth: 150
             Layout.fillWidth: true
+            Layout.preferredHeight: title.height * 0.6
+            Layout.alignment: Qt.AlignVCenter
+
+            Material.accent: "#98FF98"
+            Material.foreground: "#98FF98"
+            Material.roundedScale: Button.None
+            Material.elevation: startMonitor.hovered ? 3 : 1
+
+            Text {
+                text: serialParser.isConnected ? "Stop Monitor" : "Start Monitor"
+                anchors.centerIn: parent
+                color: "#98FF98"
+                font.bold: true
+                minimumPixelSize: 8
+                font.pixelSize: 14
+            }
+
+            background: Rectangle {
+
+                anchors.fill: parent
+                color: "#0f0f0f"
+                border.color: startMonitor.hovered ? "#98FF98" : "#333333"
+                border.width: 2
+                radius: 4
+
+                // Pressed effect
+                Rectangle {
+                    anchors.fill: parent
+                    color: "#1a1a1a"
+                    radius: 4
+                    opacity: startMonitor.down ? 0.2 : 0
+                    Behavior on opacity {
+                        NumberAnimation {
+                            duration: 100
+                        }
+                    }
+                }
+            }
+
+            onClicked: {
+                if (serialParser.isConnected) {
+                    serialParser.disconnectPort()
+                } else {
+                    serialParser.connectToPort()
+                }
+            }
+            HoverHandler {
+                cursorShape: startMonitor.hovered ? Qt.PointingHandCursor : Qt.defaultHandCursor
+            }
         }
     }
 
