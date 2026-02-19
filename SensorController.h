@@ -17,22 +17,23 @@ public:
 
   Q_INVOKABLE Sensor addSensor(const QString &name = QString(),
                                double input = 0.0, double threshold = 100.0,
-                               const QString &op = ">=", double x = 0.0,
+                               const bool &isTriggered = false, double x = 0.0,
                                double y = 0.0);
 
   Q_INVOKABLE bool removeSensor(const QUuid &id);
 
   Q_INVOKABLE bool setSensorValue(const QUuid &id, double value);
   Q_INVOKABLE bool setSensorThreshold(const QUuid &id, double threshold);
-  Q_INVOKABLE bool setSensorOperator(const QUuid &id, const QString &op);
   Q_INVOKABLE bool setSensorName(const QUuid &id, const QString &name);
+  Q_INVOKABLE bool setTriggered(const QUuid &id, const bool &isTriggered);
   Q_INVOKABLE bool setSensorPositionXY(const QUuid &id, double x, double y);
   Q_INVOKABLE bool setSensorPositionX(const QUuid &id, double x);
   Q_INVOKABLE bool setSensorPositionY(const QUuid &id, double y);
 
 signals:
   void sensorAdded(const QUuid &id, const QString &name, double input,
-                   double threshold, const QString &op, double x, double y);
+                   double threshold, const bool &isTriggered, double x,
+                   double y);
   void sensorRemoved(const QUuid &id);
 
 private:

@@ -197,14 +197,22 @@ void SerialParser::updateSensorsFromJson(const QJsonArray &sensors) {
 
   for (const QJsonValue &sensorVal : sensors) {
     QJsonObject sensorObj = sensorVal.toObject();
-    QString name = sensorObj["name"].toString();
-    double threshold = sensorObj["threshold"].toDouble();
-    QString op = sensorObj["operator"].toString(">=");
-    double input = sensorObj["input"].toDouble();
+    QString name = sensorObj["name"].toString("no name set");
+
+    QJsonValue thresholdVal = sensorObj["threshold"];
+    double threshold = thresholdVal.isBool()
+                           ? (thresholdVal.toBool() ? 1.0 : 0.0)
+                           : thresholdVal.toDouble(-1);
+
+    QJsonValue inputVal = sensorObj["input"];
+    double input = inputVal.isBool() ? (inputVal.toBool() ? 1.0 : 0.0)
+                                     : inputVal.toDouble(-1);
+
+    bool isTriggered = sensorObj["isTriggered"].toBool(false);
 
     QJsonObject location = sensorObj["location"].toObject();
-    double x = location["x"].toDouble();
-    double y = location["y"].toDouble();
+    double x = location["x"].toDouble(0.0);
+    double y = location["y"].toDouble(0.0);
 
     int idx = m_sensorModel->getIndexByName(name);
 
@@ -213,13 +221,13 @@ void SerialParser::updateSensorsFromJson(const QJsonArray &sensors) {
       QModelIndex modelIdx = m_sensorModel->index(idx);
       m_sensorModel->setData(modelIdx, input, SensorModel::InputRole);
       m_sensorModel->setData(modelIdx, threshold, SensorModel::ThresholdRole);
-      m_sensorModel->setData(modelIdx, op, SensorModel::OperatorRole);
+      m_sensorModel->setData(modelIdx, isTriggered, SensorModel::TriggerRole);
       m_sensorModel->setData(modelIdx, x, SensorModel::XRole);
       m_sensorModel->setData(modelIdx, y, SensorModel::YRole);
     } else {
       // Add new sensor
       Sensor newSensor =
-          m_sensorModel->addSensor(name, input, threshold, op, x, y);
+          m_sensorModel->addSensor(name, input, threshold, isTriggered, x, y);
     }
   }
 }

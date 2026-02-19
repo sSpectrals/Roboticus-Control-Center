@@ -12,13 +12,14 @@ SensorController::SensorController(QObject *parent)
 
 Q_INVOKABLE Sensor SensorController::addSensor(const QString &name,
                                                double input, double threshold,
-                                               const QString &op, double x,
-                                               double y) {
+                                               const bool &isTriggered,
+                                               double x, double y) {
 
   if (!m_model)
     return Sensor();
 
-  Sensor newSensor = m_model->addSensor(name, input, threshold, op, x, y);
+  Sensor newSensor =
+      m_model->addSensor(name, input, threshold, isTriggered, x, y);
 
   return newSensor;
 }
@@ -66,19 +67,20 @@ Q_INVOKABLE bool SensorController::setSensorThreshold(const QUuid &id,
                           SensorModel::ThresholdRole);
 }
 
-Q_INVOKABLE bool SensorController::setSensorOperator(const QUuid &id,
-                                                     const QString &op) {
+Q_INVOKABLE bool SensorController::setTriggered(const QUuid &id,
+                                                const bool &isTriggered) {
 
   if (!m_model)
     return false;
   int index = m_model->getIndexFromId(id);
   if (index < 0) {
-    qWarning() << "Attempted to set operator for non-existent sensor with id:"
+    qWarning() << "Attempted to set triggered for non-existent sensor with id:"
                << id;
     return false;
   }
 
-  return m_model->setData(m_model->index(index), op, SensorModel::OperatorRole);
+  return m_model->setData(m_model->index(index), isTriggered,
+                          SensorModel::TriggerRole);
 }
 
 Q_INVOKABLE bool SensorController::setSensorName(const QUuid &id,

@@ -8,7 +8,6 @@ Rectangle {
     property var sensorID: -1
     property double inputValue: -1.0
     property double thresholdValue: 100.0
-    property string selectedOperator: ">="
     property real xLocation: 0
     property real yLocation: 0
     property bool selected: false
@@ -93,7 +92,7 @@ Rectangle {
             }
         }
 
-        // Column 3: input | operator | threshold grouped tightly
+        // Column 3: input | / | threshold
         Rectangle {
             Layout.preferredWidth: parent.width * 0.3
             Layout.fillHeight: true
@@ -123,7 +122,7 @@ Rectangle {
 
                 Text {
                     padding: 8
-                    text: selectedOperator
+                    text: "/"
                     color: isTriggered ? Material.color(
                                              Material.Red) : "#98FF98"
                     font.bold: true

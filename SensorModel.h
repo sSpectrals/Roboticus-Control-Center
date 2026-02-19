@@ -10,7 +10,7 @@ struct Sensor {
   QString name = "No Name Set";
   double inputValue = -1.0;
   double threshold = -1.0;
-  QString selectedOperator = "==";
+  bool isTriggered = false;
   double x = 0.0;
   double y = 0.0;
 
@@ -26,7 +26,7 @@ public:
     NameRole,
     InputRole,
     ThresholdRole,
-    OperatorRole,
+    TriggerRole,
     XRole,
     YRole
   };
@@ -43,7 +43,7 @@ public:
 
   Q_INVOKABLE Sensor addSensor(QString name = QString(), double input = 0.0,
                                double threshold = 100.0,
-                               QString op = ">=", double x = 0.0,
+                               bool isTriggered = false, double x = 0.0,
                                double y = 0.0);
   Q_INVOKABLE bool removeSensor(const QUuid &id);
 
@@ -53,7 +53,7 @@ public:
 
 signals:
   void sensorAdded(const QUuid &id, const QString &name, double input,
-                   double threshold, const QString &op, double x, double y);
+                   double threshold, const bool &isTriggered, double x, double y);
   void sensorRemoved(const QUuid &id);
 
 private:

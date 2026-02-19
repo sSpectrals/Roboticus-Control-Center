@@ -93,7 +93,7 @@ Flickable {
                 sensorID: model.id
                 inputValue: model.inputValue
                 thresholdValue: model.threshold
-                selectedOperator: model.selectedOperator
+                isTriggered: model.isTriggered
                 xLocation: model.x
                 yLocation: model.y
 

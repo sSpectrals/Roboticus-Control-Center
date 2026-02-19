@@ -22,8 +22,8 @@ QVariant SensorModel::data(const QModelIndex &index, int role) const {
     return sensor.inputValue;
   case ThresholdRole:
     return sensor.threshold;
-  case OperatorRole:
-    return sensor.selectedOperator;
+  case TriggerRole:
+    return sensor.isTriggered;
   case XRole:
     return sensor.x;
   case YRole:
@@ -59,9 +59,9 @@ bool SensorModel::setData(const QModelIndex &index, const QVariant &value,
       changed = true;
     }
     break;
-  case OperatorRole:
-    if (sensor.selectedOperator != value.toString()) {
-      sensor.selectedOperator = value.toString();
+  case TriggerRole:
+    if (sensor.isTriggered != value.toBool()) {
+      sensor.isTriggered = value.toBool();
       changed = true;
     }
     break;
@@ -89,26 +89,25 @@ bool SensorModel::setData(const QModelIndex &index, const QVariant &value,
 }
 
 QHash<int, QByteArray> SensorModel::roleNames() const {
-  static const QHash<int, QByteArray> mapping{
-      {IdRole, "id"},
-      {NameRole, "name"},
-      {InputRole, "inputValue"},
-      {ThresholdRole, "threshold"},
-      {OperatorRole, "selectedOperator"},
-      {XRole, "x"},
-      {YRole, "y"}};
+  static const QHash<int, QByteArray> mapping{{IdRole, "id"},
+                                              {NameRole, "name"},
+                                              {InputRole, "inputValue"},
+                                              {ThresholdRole, "threshold"},
+                                              {TriggerRole, "isTriggered"},
+                                              {XRole, "x"},
+                                              {YRole, "y"}};
   return mapping;
 }
 
 Sensor SensorModel::addSensor(QString name, double input, double threshold,
-                              QString op, double x, double y) {
+                              bool isTriggered, double x, double y) {
 
   Sensor sensor;
   sensor.name =
       name.isEmpty() ? "Sensor " + QString::number(m_sensors.size() + 1) : name;
   sensor.inputValue = input;
   sensor.threshold = threshold;
-  sensor.selectedOperator = op;
+  sensor.isTriggered = isTriggered;
   sensor.x = x;
   sensor.y = y;
 
@@ -116,7 +115,7 @@ Sensor SensorModel::addSensor(QString name, double input, double threshold,
   m_sensors.append(sensor);
   endInsertRows();
   emit sensorAdded(sensor.id, sensor.name, sensor.inputValue, sensor.threshold,
-                   sensor.selectedOperator, sensor.x, sensor.y);
+                   sensor.isTriggered, sensor.x, sensor.y);
   return sensor;
 }
 
