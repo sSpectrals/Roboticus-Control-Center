@@ -7,6 +7,7 @@ ScatterSeries {
     property var sensorId: 0
     property real pointX: 0
     property real pointY: 0
+    property bool isTriggered: true
 
     Component.onCompleted: {
         append(Qt.point(pointX, pointY))
@@ -17,7 +18,7 @@ ScatterSeries {
         width: 15
         height: 15
         radius: width / 2
-        color: "lime"
+        color: isTriggered ? "red" : "lime"
 
         DragHandler {
             id: dragHandler

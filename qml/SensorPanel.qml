@@ -75,14 +75,15 @@ Rectangle {
         console.log("Clicked at graph coordinates:", graphPoint.x, graphPoint.y)
     }
 
-    function addPointToGraph(id, x, y) {
+    function addPointToGraph(id, x, y, trig) {
 
         var component = Qt.createComponent("SinglePointSeries.qml")
         if (component.status === Component.Ready) {
             var series = component.createObject(chart, {
                                                     "sensorId": id,
                                                     "pointX": x,
-                                                    "pointY": y
+                                                    "pointY": y,
+                                                    "isTriggered": trig
                                                 })
 
             chart.addSeries(series)

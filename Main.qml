@@ -19,7 +19,7 @@ Window {
         id: sensorController
 
         onSensorAdded: function (id, name, input, threshold, op, x, y) {
-            sensorPanel.addPointToGraph(id, x, y)
+            sensorPanel.addPointToGraph(id, x, y, true)
         }
 
         onSensorRemoved: function (id) {

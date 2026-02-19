@@ -12,6 +12,7 @@ Rectangle {
     property real xLocation: 0
     property real yLocation: 0
     property bool selected: false
+    property bool isTriggered: true
 
     signal clicked
     signal deleteSensor
@@ -60,7 +61,6 @@ Rectangle {
 
         // Column 1: Sensor Name
         Rectangle {
-            // Layout.preferredWidth: parent.width * 0.3
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: "transparent"
@@ -78,7 +78,6 @@ Rectangle {
 
         // Column 2: (x,y)
         Rectangle {
-            // Layout.preferredWidth: parent.width * 0.4
             Layout.fillWidth: true
             Layout.fillHeight: true
             color: "transparent"
@@ -96,12 +95,11 @@ Rectangle {
 
         // Column 3: input | operator | threshold grouped tightly
         Rectangle {
-            // Layout.fillWidth: true
             Layout.preferredWidth: parent.width * 0.3
             Layout.fillHeight: true
             color: "#1a1a1a"
             radius: 10
-            border.color: "#333333"
+            border.color: isTriggered ? Material.color(Material.Red) : "#333333"
             border.width: 2
 
             RowLayout {
@@ -126,7 +124,8 @@ Rectangle {
                 Text {
                     padding: 8
                     text: selectedOperator
-                    color: "#98FF98"
+                    color: isTriggered ? Material.color(
+                                             Material.Red) : "#98FF98"
                     font.bold: true
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignHCenter
