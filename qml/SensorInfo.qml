@@ -60,53 +60,26 @@ Rectangle {
 
         // Column 1: Sensor Name
         Rectangle {
-            Layout.preferredWidth: parent.width * 0.3
+            // Layout.preferredWidth: parent.width * 0.3
+            Layout.fillWidth: true
             Layout.fillHeight: true
             color: "transparent"
 
-            TextField {
-                id: textInput
+            Text {
+                anchors.centerIn: parent
                 color: "white"
                 text: sensorName
                 font.bold: true
                 font.pixelSize: 14
-                anchors.centerIn: parent
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
-                selectByMouse: true
-                selectionColor: "#98FF98"
-                selectedTextColor: "#1a1a1a"
-                hoverEnabled: true
-
-                background: Rectangle {
-                    color: "transparent"
-                    border.color: textInput.hovered ? "#98FF98" : "transparent"
-                    border.width: 2
-                    radius: 4
-
-                    Behavior on border.color {
-                        ColorAnimation {
-                            duration: 150
-                        }
-                    }
-                }
-
-                onActiveFocusChanged: {
-                    if (!activeFocus) {
-                        // Lost focus
-                        if (text.trim() === "") {
-                            text = sensorName
-                        } else {
-                            sensorName = text
-                        }
-                    }
-                }
             }
         }
 
-        //column 2: (x,y)
+        // Column 2: (x,y)
         Rectangle {
-            Layout.preferredWidth: parent.width * 0.1
+            // Layout.preferredWidth: parent.width * 0.4
+            Layout.fillWidth: true
             Layout.fillHeight: true
             color: "transparent"
 
@@ -121,132 +94,70 @@ Rectangle {
             }
         }
 
-        // Column 3: input | operator | threshold
+        // Column 3: input | operator | threshold grouped tightly
         Rectangle {
-            Layout.preferredWidth: parent.width * 0.5
+            // Layout.fillWidth: true
+            Layout.preferredWidth: parent.width * 0.3
             Layout.fillHeight: true
             color: "#1a1a1a"
             radius: 10
+            border.color: "#333333"
+            border.width: 2
 
             RowLayout {
-                anchors.fill: parent
-                spacing: 5
+                anchors.centerIn: parent
+                spacing: 0
 
-                // Input
-                Rectangle {
-                    Layout.preferredWidth: 20
-                    Layout.fillHeight: true
-                    color: "transparent"
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    Layout.fillWidth: true
-                    Text {
-                        anchors.centerIn: parent
-                        color: "white"
-                        text: inputValue
-                        font.pixelSize: 14
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
-                    }
+                Text {
+                    padding: 8
+                    text: inputValue
+                    color: "white"
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
 
-                // Operator selection
-                ComboBox {
-                    id: comboBox
-                    Layout.preferredWidth: 104
-                    Layout.fillWidth: false
-                    Layout.fillHeight: true
-                    Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
-                    model: [">=", ">", "<", "<=", "==", "!=="]
-
-                    Material.accent: "#98FF98"
-                    Material.foreground: "#98FF98"
-
-                    background: Rectangle {
-                        color: "#0f0f0f"
-                        border.color: comboBox.hovered ? "#98FF98" : "#333333"
-                        border.width: 2
-                        radius: 4
-
-                        Behavior on border.color {
-                            ColorAnimation {
-                                duration: 150
-                            }
-                        }
-                    }
-
-                    popup: Popup {
-                        y: comboBox.height
-                        width: comboBox.width
-                        height: implicitHeight
-                        padding: 3
-                        contentItem: ListView {
-                            clip: true
-                            implicitHeight: contentHeight
-                            model: comboBox.popup.visible ? comboBox.delegateModel : null
-                            currentIndex: comboBox.highlightedIndex
-
-                            ScrollIndicator.vertical: ScrollIndicator {}
-                        }
-
-                        background: Rectangle {
-                            color: "#1a1a1a"
-                            border.color: "#98FF98"
-                            border.width: 2
-                            radius: 4
-                        }
-                    }
-
-                    delegate: ItemDelegate {
-                        width: comboBox.width
-                        hoverEnabled: true
-
-                        contentItem: Text {
-                            text: modelData
-                            color: parent.highlighted
-                                   || parent.hovered ? "#98FF98" : "#888888"
-                        }
-
-                        highlighted: comboBox.highlightedIndex === index
-
-                        background: Rectangle {
-                            color: parent.highlighted
-                                   || parent.hovered ? "#0f0f0f" : "transparent"
-
-                            Behavior on color {
-                                ColorAnimation {
-                                    duration: 100
-                                }
-                            }
-                        }
-                    }
-
-                    onActivated: focus = false
+                Rectangle {
+                    width: 1
+                    height: 20
+                    color: "#333333"
                 }
 
-                // Threshold
+                Text {
+                    padding: 8
+                    text: selectedOperator
+                    color: "#98FF98"
+                    font.bold: true
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
+                }
+
                 Rectangle {
-                    Layout.preferredWidth: 20
-                    Layout.fillHeight: true
-                    color: "transparent"
-                    Layout.fillWidth: true
-                    Text {
-                        anchors.centerIn: parent
-                        text: thresholdValue
-                        font.pixelSize: 14
-                        color: "white"
-                        verticalAlignment: Text.AlignVCenter
-                        horizontalAlignment: Text.AlignHCenter
-                    }
+                    width: 1
+                    height: 20
+                    color: "#333333"
+                }
+
+                Text {
+                    padding: 8
+                    text: thresholdValue
+                    color: "white"
+                    font.pixelSize: 14
+                    horizontalAlignment: Text.AlignHCenter
+                    verticalAlignment: Text.AlignVCenter
                 }
             }
         }
 
-        // column 4: Delete
+        // Column 4: Delete
         Rectangle {
-            Layout.fillWidth: true
+            Layout.preferredWidth: 50
+            // Layout.fillWidth: true
             Layout.fillHeight: true
             color: Material.color(Material.Red)
             radius: 10
+
             Image {
                 source: "./assets/SVG/trash.svg"
                 anchors.centerIn: parent
@@ -254,10 +165,7 @@ Rectangle {
 
             MouseArea {
                 anchors.fill: parent
-
-                onClicked: {
-                    deleteSensor()
-                }
+                onClicked: deleteSensor()
             }
         }
     }
