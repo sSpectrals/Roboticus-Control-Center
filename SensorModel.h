@@ -53,8 +53,12 @@ public:
 
 signals:
   void sensorAdded(const QUuid &id, const QString &name, double input,
-                   double threshold, const bool &isTriggered, double x, double y);
+                   double threshold, const bool &isTriggered, double x,
+                   double y);
   void sensorRemoved(const QUuid &id);
+  void sensorUpdated(const QUuid &id, const QString &name, double input,
+                     double threshold, const bool &isTriggered, double x,
+                     double y);
 
 private:
   QList<Sensor> m_sensors;

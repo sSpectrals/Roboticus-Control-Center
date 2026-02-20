@@ -71,63 +71,66 @@ Rectangle {
 
     property var seriesMap: ({})
 
-    function doit() {
-        console.log("Clicked at graph coordinates:", graphPoint.x, graphPoint.y)
-    }
-
     function addPointToGraph(id, x, y, trig) {
-
-        var component = Qt.createComponent("SinglePointSeries.qml")
+        var component = Qt.createComponent("SinglePointSeries.qml");
         if (component.status === Component.Ready) {
             var series = component.createObject(chart, {
-                                                    "sensorId": id,
-                                                    "pointX": x,
-                                                    "pointY": y,
-                                                    "isTriggered": trig
-                                                })
+                "sensorId": id,
+                "pointX": x,
+                "pointY": y,
+                "isTriggered": trig
+            });
 
-            chart.addSeries(series)
-            seriesMap[id] = series
+            chart.addSeries(series);
+            seriesMap[id] = series;
         }
     }
 
     function removePointFromGraph(id) {
-        var series = seriesMap[id]
+        var series = seriesMap[id];
         if (series) {
-            chart.removeSeries(series)
+            chart.removeSeries(series);
 
-            delete seriesMap[id]
+            delete seriesMap[id];
 
-            series.destroy(100)
+            series.destroy(100);
+        }
+    }
+
+    function updatePointOnGraph(id, x, y, trig) {
+        var series = seriesMap[id];
+        if (series) {
+            series.pointX = x;
+            series.pointY = y;
+            series.isTriggered = trig;
         }
     }
 
     function addArrowToGraph(id, rotation, scale, arrowColor, x, y) {
-
-        var component = Qt.createComponent("VectorArrow.qml")
+        var component = Qt.createComponent("VectorArrow.qml");
         if (component.status === Component.Ready) {
             var series = component.createObject(chart, {
-                                                    "vectorId": id,
-                                                    "vecX": x,
-                                                    "vecY": y,
-                                                    "arrowRotation": rotation,
-                                                    "arrowScale": scale,
-                                                    "arrowColor": arrowColor
-                                                })
+                "vectorId": id,
+                "vecX": x,
+                "vecY": y,
+                "arrowRotation": rotation,
+                "arrowScale": scale,
+                "arrowColor": arrowColor
+            });
 
-            chart.addSeries(series)
-            seriesMap[id] = series
+            chart.addSeries(series);
+            seriesMap[id] = series;
         }
     }
 
     function removeArrowFromGraph(id) {
-        var series = seriesMap[id]
+        var series = seriesMap[id];
         if (series) {
-            chart.removeSeries(series)
+            chart.removeSeries(series);
 
-            delete seriesMap[id]
+            delete seriesMap[id];
 
-            series.destroy(100)
+            series.destroy(100);
         }
     }
 }

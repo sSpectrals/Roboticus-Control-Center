@@ -182,7 +182,6 @@ void SerialParser::processJsonData(const QByteArray &jsonData) {
   Q_UNUSED(timestamp) // Available for future replay functionality
 
   if (frame.contains("sensors")) {
-    qDebug() << "reading sensors";
     updateSensorsFromJson(frame["sensors"].toArray());
   }
 

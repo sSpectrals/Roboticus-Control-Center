@@ -19,11 +19,15 @@ Window {
         id: sensorController
 
         onSensorAdded: function (id, name, input, threshold, isTriggered, x, y) {
-            sensorPanel.addPointToGraph(id, x, y, isTriggered)
+            sensorPanel.addPointToGraph(id, x, y, isTriggered);
         }
 
         onSensorRemoved: function (id) {
-            sensorPanel.removePointFromGraph(id)
+            sensorPanel.removePointFromGraph(id);
+        }
+
+        onSensorUpdated: function (id, name, input, threshold, isTriggered, x, y) {
+            sensorPanel.updatePointOnGraph(id, x, y, isTriggered);
         }
     }
 
@@ -31,18 +35,17 @@ Window {
         id: vectorController
 
         onVectorAdded: function (id, name, rotation, scale, color, x, y) {
-            sensorPanel.addArrowToGraph(id, rotation, scale, color, x, y)
+            sensorPanel.addArrowToGraph(id, rotation, scale, color, x, y);
         }
 
         onVectorRemoved: function (id) {
-            sensorPanel.removeArrowFromGraph(id)
+            sensorPanel.removeArrowFromGraph(id);
         }
     }
 
     SerialParser {
         id: serialParser
-        Component.onCompleted: setModels(sensorController.model,
-                                         vectorController.model)
+        Component.onCompleted: setModels(sensorController.model, vectorController.model)
     }
 
     Rectangle {
@@ -98,10 +101,9 @@ Window {
         width: (parent.width) / 2
 
         onAddSensorRequested: {
-            sensorController.addSensor("Sensor name", 0, 100, false, 0.0, 0.0)
-            sensorController.addSensor("Sensor name", 0, 100, true, 0.0, 0.0)
+            sensorController.addSensor("Sensor name", 0, 100, false, 0.0, 0.0);
+            sensorController.addSensor("Sensor name", 0, 100, true, 0.0, 0.0);
         }
-        onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1,
-                                                         "white", 0.0, 0.0)
+        onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1, "white", 0.0, 0.0)
     }
 }

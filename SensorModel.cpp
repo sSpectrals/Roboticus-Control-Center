@@ -82,6 +82,11 @@ bool SensorModel::setData(const QModelIndex &index, const QVariant &value,
   }
 
   if (changed) {
+    // for graph update
+    emit sensorUpdated(sensor.id, sensor.name, sensor.inputValue,
+                       sensor.threshold, sensor.isTriggered, sensor.x,
+                       sensor.y);
+    // for listView/repeater, built in signal so not really defined in header
     emit dataChanged(index, index, {role});
   }
 

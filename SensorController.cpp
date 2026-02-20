@@ -8,6 +8,9 @@ SensorController::SensorController(QObject *parent)
           &SensorController::sensorAdded);
   connect(m_model, &SensorModel::sensorRemoved, this,
           &SensorController::sensorRemoved);
+
+  connect(m_model, &SensorModel::sensorUpdated, this,
+          &SensorController::sensorUpdated);
 }
 
 Q_INVOKABLE Sensor SensorController::addSensor(const QString &name,

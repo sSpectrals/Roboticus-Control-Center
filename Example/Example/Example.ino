@@ -2,12 +2,12 @@
 
 // Define structs for the data types
 struct Sensor {
-  String name;
-  float input;
+  String name; // if not given then app will show as "no name given"
+  float input; // booleans also work (bool gets automatically parsed as 0.0 or 1.0) // If not given then app will show as "-1"
   String operatorStr;
-  float threshold;
-  int x;
-  int y;
+  float threshold; // booleans also work (bool gets automatically parsed as 0.0 or 1.0) // If not given then app will show as "-1"
+  int x; // if not given then app will show as 0
+  int y; // if not given then app will show as 0
 
   bool isTriggered() const {
     if (operatorStr == ">=")
@@ -27,9 +27,9 @@ struct Sensor {
 };
 
 struct Vector {
-  const char *name;
+  String name;
   float rotation;
-  const char *color;
+  String color;
   int x;
   int y;
 };
@@ -41,11 +41,10 @@ Sensor sensors[] = {
     {"IR_2", 18.2, "<=", 20.0, 1, 1},
     {"IR_3", 31.7, ">", 28.0, 2, 2},
     {"IR_4", 22.1, "<", 25.0, 3, 3},
-    {"IR_5", 27.8, "==", 26.5, 4, 4}};
+    {"IR_5", true, "==", true, 4, 4}}; // bool used here
 
 // Create arrays of vectors
 Vector vectors[] = {
-    // Motors
     {"Line avoidance", 45.0, "#FF5733", 0, -2},
     {"Line tracker", 90.0, "#33FF57", 0, -4},
     {"Ball", 135.0, "#3357FF", 0, -6},

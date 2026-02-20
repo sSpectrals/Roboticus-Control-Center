@@ -34,12 +34,6 @@ Rectangle {
         acceptedDevices: PointerDevice.Mouse | PointerDevice.TouchPad
     }
 
-    // property bool triggered
-    // switch(selectedOperator) {
-    //     case ">=": triggered: inputValue >= thresholdValue ? true : false
-    // }
-
-    // TODO: change color depending on triggered or not?
     Rectangle {
         width: 6
         height: parent.height * 0.6
@@ -123,8 +117,7 @@ Rectangle {
                 Text {
                     padding: 8
                     text: "/"
-                    color: isTriggered ? Material.color(
-                                             Material.Red) : "#98FF98"
+                    color: isTriggered ? Material.color(Material.Red) : "#98FF98"
                     font.bold: true
                     font.pixelSize: 14
                     horizontalAlignment: Text.AlignHCenter
