@@ -27,6 +27,10 @@ Q_INVOKABLE bool SerialParser::connectToPort() {
   if (success) {
     m_serial.setDataTerminalReady(true);
 
+    // Clear any startup garbage (null bytes from Arduino reset)
+    m_buffer.clear();
+    m_serial.clear();
+
     connect(&m_serial, &QSerialPort::readyRead, this, &SerialParser::readData,
             Qt::UniqueConnection);
 
@@ -54,7 +58,7 @@ void SerialParser::configureDefaultSettings() {
 
 bool SerialParser::setBaudRate(int baudRate) {
 
-  QList<int> validRates = {1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200};
+  QList<int> validRates = {38400, 57600, 115200, 230400, 460800, 921600};
   bool wasOpen = m_serial.isOpen();
 
   if (wasOpen) {
@@ -135,35 +139,40 @@ void SerialParser::readData() {
     return;
   }
 
-  QByteArray incoming = m_serial.readAll();
-  // qDebug() << "Received:" << incoming.size() << "bytes:" << incoming;
-  m_buffer.append(incoming);
+  m_buffer.append(m_serial.readAll());
 
-  // Look for complete JSON object (matching braces)
-  int braceCount = 0;
-  int startIdx = -1;
-  int endIdx = -1;
-
-  for (int i = 0; i < m_buffer.size(); ++i) {
-    if (m_buffer[i] == '{') {
-      if (startIdx == -1)
-        startIdx = i;
-      braceCount++;
-    } else if (m_buffer[i] == '}') {
-      braceCount--;
-      if (braceCount == 0 && startIdx != -1) {
-        endIdx = i;
-        break;
-      }
-    }
+  // Prevent buffer from growing too large (e.g., malformed data)
+  constexpr int maxBufferSize = 65536;
+  if (m_buffer.size() > maxBufferSize) {
+    qDebug() << "Buffer overflow, keeping last 4KB";
+    m_buffer = m_buffer.right(4096);
   }
 
-  if (startIdx != -1 && endIdx != -1) {
-    QByteArray jsonData = m_buffer.mid(startIdx, endIdx - startIdx + 1);
-    m_buffer.remove(0, endIdx + 1);
+  // Process all complete lines (newline-delimited JSON)
+  int newlineIdx;
+  while ((newlineIdx = m_buffer.indexOf('\n')) != -1) {
+    QByteArray line = m_buffer.left(newlineIdx).trimmed();
+    m_buffer.remove(0, newlineIdx + 1);
 
-    emit dataReceived(jsonData);
-    processJsonData(jsonData);
+    // Skip empty lines or non-JSON data
+    if (line.isEmpty()) {
+      continue;
+    }
+
+    // Find start of JSON (skip any leading garbage)
+    int jsonStart = line.indexOf('{');
+    if (jsonStart > 0) {
+      line = line.mid(jsonStart);
+    }
+    if (!line.startsWith('{') || !line.endsWith('}')) {
+      qDebug() << "Discarded malformed line:" << line.left(100);
+      continue;
+    }
+
+    // qDebug() << "Received JSON:" << line.size() << "bytes";
+
+    emit dataReceived(line);
+    processJsonData(line);
   }
 }
 

@@ -130,8 +130,8 @@ Rectangle {
             Layout.preferredWidth: 110
             Layout.preferredHeight: title.height * 0.6
             Layout.alignment: Qt.AlignVCenter
-            model: [1200, 2400, 4800, 9600, 19200, 38400, 57600, 115200]
-            currentIndex: 3
+            model: [38400, 57600, 115200, 230400, 460800, 921600]
+            currentIndex: 2
 
             Material.accent: "#98FF98"
             Material.foreground: "#98FF98"
