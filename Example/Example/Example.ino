@@ -3,11 +3,13 @@
 // Define structs for the data types
 struct Sensor {
   String name; // if not given then app will show as "no name given"
-  float input; // booleans also work (bool gets automatically parsed as 0.0 or 1.0) // If not given then app will show as "-1"
+  float input; // booleans also work (bool gets automatically parsed as 0.0
+               // or 1.0) // If not given then app will show as "-1"
   String operatorStr;
-  float threshold; // booleans also work (bool gets automatically parsed as 0.0 or 1.0) // If not given then app will show as "-1"
-  int x; // if not given then app will show as 0
-  int y; // if not given then app will show as 0
+  float threshold; // booleans also work (bool gets automatically parsed as 0.0
+                   // or 1.0) // If not given then app will show as "-1"
+  int x;           // if not given then app will show as 0
+  int y;           // if not given then app will show as 0
 
   bool isTriggered() const {
     if (operatorStr == ">=")
@@ -91,13 +93,17 @@ void loop() {
     location["y"] = vectors[i].y;
   }
 
+  for (int i = 0; i < numSensors; i++) {
+    sensors[i].input += 1.0;
+  }
+
+  vectors[0].rotation += 1.0;
+  vectors[1].rotation += 3.0;
+  vectors[2].rotation += 9.0;
+
   // This is optional according to ArduinoJson docs, decreases memory usage by a
   // lot.
   doc.shrinkToFit();
 
   serializeJson(doc, Serial);
-
-  for (int i = 0; i < numSensors; i++) {
-    sensors[i].input += 1.0;
-  }
 }

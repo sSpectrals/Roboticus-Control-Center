@@ -133,4 +133,15 @@ Rectangle {
             series.destroy(100);
         }
     }
+
+    function updateArrowOnGraph(id, rotation, scale, arrowColor, x, y) {
+        var series = seriesMap[id];
+        if (series) {
+            series.vecX = x;
+            series.vecY = y;
+            series.arrowRotation = rotation;
+            series.arrowScale = scale;
+            series.arrowColor = arrowColor;
+        }
+    }
 }

@@ -7,9 +7,13 @@ VectorController::VectorController(QObject *parent)
           &VectorController::vectorAdded);
   connect(m_model, &VectorModel::vectorRemoved, this,
           &VectorController::vectorRemoved);
+  connect(m_model, &VectorModel::vectorUpdated, this,
+          &VectorController::vectorUpdated);
 }
 
-Q_INVOKABLE Vector VectorController::addVector(const QString &name, double rotation, double scale,QColor color, double x,
+Q_INVOKABLE Vector VectorController::addVector(const QString &name,
+                                               double rotation, double scale,
+                                               QColor color, double x,
                                                double y) {
 
   if (!m_model)

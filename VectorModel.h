@@ -55,6 +55,8 @@ signals:
   void vectorAdded(const QUuid &id, const QString &name, double rotation,
                    double scale, const QColor &color, double x, double y);
   void vectorRemoved(const QUuid &id);
+  void vectorUpdated(const QUuid &id, const QString &name, double rotation,
+                     double scale, const QColor &color, double x, double y);
 
 private:
   QList<Vector> m_vectors;

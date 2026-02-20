@@ -82,7 +82,12 @@ bool VectorModel::setData(const QModelIndex &index, const QVariant &value,
   }
 
   if (changed) {
+    // built in signal to update repeater/listView
     emit dataChanged(index, index, {role});
+
+    // signal to update graph
+    emit vectorUpdated(vector.id, vector.name, vector.rotation, vector.scale,
+                       vector.color, vector.x, vector.y);
   }
 
   return changed;
