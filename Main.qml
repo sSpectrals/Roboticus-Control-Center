@@ -70,6 +70,8 @@ Window {
 
     SensorPanel {
         id: sensorPanel
+        anchors.bottom: timelineBar.top
+        anchors.bottomMargin: 10
     }
 
     TitleBar {
@@ -84,7 +86,7 @@ Window {
         anchors {
             left: parent.left
             top: title.bottom
-            bottom: addSensorButton.top
+            bottom: timelineBar.top
             bottomMargin: 20
             leftMargin: 20
             rightMargin: 20
@@ -94,21 +96,35 @@ Window {
         vectorController: vectorController
     }
 
-    AddItem {
-        id: addSensorButton
+    Timeline {
+        id: timelineBar
         anchors {
-            left: parent.left
+            right: parent.right
             bottom: parent.bottom
+            left: parent.left
             leftMargin: 20
+            rightMargin: 20
             bottomMargin: 20
         }
-        height: 70
-        width: (parent.width) / 2
-
-        onAddSensorRequested: {
-            sensorController.addSensor("Sensor name", 0, 100, false, 0.0, 0.0)
-        }
-        onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1,
-                                                         "white", 0.0, 0.0)
+        height: 80
+        width: sensorPanel.width
     }
+
+    // AddItem {
+    //     id: addSensorButton
+    //     anchors {
+    //         left: parent.left
+    //         bottom: parent.bottom
+    //         leftMargin: 20
+    //         bottomMargin: 20
+    //     }
+    //     height: 70
+    //     width: (parent.width) / 2
+
+    //     onAddSensorRequested: {
+    //         sensorController.addSensor("Sensor name", 0, 100, false, 0.0, 0.0)
+    //     }
+    //     onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1,
+    //                                                      "white", 0.0, 0.0)
+    // }
 }
