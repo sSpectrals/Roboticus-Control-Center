@@ -159,7 +159,7 @@ void SerialParser::readData() {
       continue;
     }
 
-    // Find start of JSON (skip any leading garbage)
+    // Find start of JSON
     int jsonStart = line.indexOf('{');
     if (jsonStart > 0) {
       line = line.mid(jsonStart);

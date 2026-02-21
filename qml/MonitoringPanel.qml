@@ -94,7 +94,7 @@ Flickable {
                 inputValue: model.inputValue
                 thresholdValue: model.threshold
                 isTriggered: model.isTriggered
-                xLocation: model.x
+                xLocation: model.x // Dragging sensors won't update this value due to model not being updated, dragging will just be visual
                 yLocation: model.y
 
                 selected: column.selection === sensorDelegate
@@ -160,7 +160,7 @@ Flickable {
 
                 vectorName: model.name
                 vectorID: model.id
-                rotation: model.rotation
+                rotationValue: model.rotation
                 vectorColor: model.color
                 xLocation: model.x
                 yLocation: model.y

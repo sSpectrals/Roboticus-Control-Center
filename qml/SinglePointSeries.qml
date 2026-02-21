@@ -13,7 +13,7 @@ ScatterSeries {
     onPointYChanged: replace(0, pointX, pointY)
 
     Component.onCompleted: {
-        append(Qt.point(pointX, pointY));
+        append(Qt.point(pointX, pointY))
     }
 
     pointDelegate: Rectangle {
@@ -27,24 +27,31 @@ ScatterSeries {
             id: dragHandler
             target: pointItem
 
+            // Model won't be updated due to it being overwritten by the next json serial anyways, so this is just visual and doesn't need an update
             onGrabChanged: (transition, point) => {
-                switch (transition) {
-                case PointerDevice.GrabExclusive:
-                    break;
-                case PointerDevice.UngrabExclusive:
-                    let centerPoint = pointItem.mapToItem(chart, pointItem.width / 2, pointItem.height / 2);
+                               switch (transition) {
+                                   case PointerDevice.GrabExclusive:
+                                   break
+                                   case PointerDevice.UngrabExclusive:
+                                   let centerPoint = pointItem.mapToItem(
+                                       chart, pointItem.width / 2,
+                                       pointItem.height / 2)
 
-                    let newX = series.pixelToX(centerPoint.x);
-                    let newY = series.pixelToY(centerPoint.y);
+                                   let newX = series.pixelToX(centerPoint.x)
+                                   let newY = series.pixelToY(centerPoint.y)
 
-                    newX = Math.max(chart.axisX.min, Math.min(newX, chart.axisX.max));
-                    newY = Math.max(chart.axisY.min, Math.min(newY, chart.axisY.max));
+                                   newX = Math.max(chart.axisX.min,
+                                                   Math.min(newX,
+                                                            chart.axisX.max))
+                                   newY = Math.max(chart.axisY.min,
+                                                   Math.min(newY,
+                                                            chart.axisY.max))
 
-                    series.replace(0, newX, newY);
+                                   series.replace(0, newX, newY)
 
-                    break;
-                }
-            }
+                                   break
+                               }
+                           }
         }
 
         HoverHandler {
@@ -53,19 +60,19 @@ ScatterSeries {
     }
 
     function pixelToX(px) {
-        let plotArea = chart.plotArea;
-        let axisX = chart.axisX;
+        let plotArea = chart.plotArea
+        let axisX = chart.axisX
 
-        let xRange = axisX.max - axisX.min;
+        let xRange = axisX.max - axisX.min
 
-        return axisX.min + (px - plotArea.x) * xRange / plotArea.width;
+        return axisX.min + (px - plotArea.x) * xRange / plotArea.width
     }
 
     function pixelToY(py) {
-        let plotArea = chart.plotArea;
-        let axisY = chart.axisY;
-        let yRange = axisY.max - axisY.min;
+        let plotArea = chart.plotArea
+        let axisY = chart.axisY
+        let yRange = axisY.max - axisY.min
 
-        return axisY.max - (py - plotArea.y) * yRange / plotArea.height;
+        return axisY.max - (py - plotArea.y) * yRange / plotArea.height
     }
 }

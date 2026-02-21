@@ -97,7 +97,7 @@ Vector vectors[] = {
 const int numSensors = sizeof(sensors) / sizeof(sensors[0]);
 const int numVectors = sizeof(vectors) / sizeof(vectors[0]);
 
-void setup() { SerialUSB.begin(115200); }
+void setup() { Serial.begin(115200); }
 
 void loop() {
   JsonDocument doc;
@@ -146,8 +146,8 @@ void loop() {
   // lot.
   doc.shrinkToFit();
 
-  serializeJson(doc, SerialUSB);
-  SerialUSB.println(); // IMPORTANT!! The app parses the json with a new line as a
+  serializeJson(doc, Serial);
+  Serial.println(); // IMPORTANT!! The app parses the json with a new line as a
                     // delimiter, without this line the app will not be able to
                     // parse the json correctly
 }

@@ -6,7 +6,7 @@ Rectangle {
     id: vectorInfo
     property string vectorName: "No Name Set"
     property var vectorID: -1
-    property double rotation: 1.0
+    property double rotationValue: 1.0
     property double scale: 1.0
     property color vectorColor: "white"
     property real xLocation: 0
@@ -98,11 +98,11 @@ Rectangle {
                         // Gained focus
                     } else {
                         if (text.trim() === "") {
-                            vectorName = "No vector name"
+                            vectorName = "No vector name";
                         } else {
-                            vectorName = text
+                            vectorName = text;
                         }
-                        focus = false
+                        focus = false;
                     }
                 }
             }
@@ -146,7 +146,7 @@ Rectangle {
                     Text {
                         anchors.centerIn: parent
                         color: "white"
-                        text: "rotation: " + rotation
+                        text: "rotation: " + (((rotationValue % 360) + 540) % 360 - 180).toFixed(1)
                         font.pixelSize: 14
                         verticalAlignment: Text.AlignVCenter
                         horizontalAlignment: Text.AlignHCenter
@@ -155,8 +155,8 @@ Rectangle {
 
                 // Color
                 Rectangle {
-                    radius: 10
                     id: vectorColor
+                    radius: 10
                     Layout.preferredWidth: 20
                     Layout.fillHeight: true
                     Layout.fillWidth: true
@@ -181,7 +181,7 @@ Rectangle {
                 anchors.fill: parent
 
                 onClicked: {
-                    deleteVector()
+                    deleteVector();
                 }
             }
         }
