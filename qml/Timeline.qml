@@ -69,19 +69,18 @@ Rectangle {
                 }
             }
 
-            // Note: Change to image
-            contentItem: Text {
-                text: "\u25C0" // ◀
-                color: backButton.enabled ? "#98FF98" : "#555555"
-                font.pixelSize: 16
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+            Image {
+                source: backButton.enabled ? "./assets/SVG/arrow_left_green.svg" : "./assets/SVG/arrow_left_grey.svg"
+                anchors.centerIn: parent
+                width: parent.width * 0.6
+                height: parent.height * 0.6
+                fillMode: Image.PreserveAspectFit
             }
 
             onClicked: {
                 if (timeline.currentFrame > 0) {
-                    timeline.currentFrame--;
-                    timeline.frameBack();
+                    timeline.currentFrame--
+                    timeline.frameBack()
                 }
             }
 
@@ -134,19 +133,18 @@ Rectangle {
                 }
             }
 
-            // Note - Change to image
-            contentItem: Text {
-                text: "\u25B6" // ▶
-                color: forwardButton.enabled ? "#98FF98" : "#555555"
-                font.pixelSize: 16
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+            Image {
+                source: forwardButton.enabled ? "./assets/SVG/arrow_right_green.svg" : "./assets/SVG/arrow_right_grey.svg"
+                anchors.centerIn: parent
+                width: parent.width * 0.6
+                height: parent.height * 0.6
+                fillMode: Image.PreserveAspectFit
             }
 
             onClicked: {
                 if (timeline.currentFrame < timeline.maxFrames) {
-                    timeline.currentFrame++;
-                    timeline.frameForward();
+                    timeline.currentFrame++
+                    timeline.frameForward()
                 }
             }
 
@@ -184,7 +182,10 @@ Rectangle {
                         bottom: parent.bottom
                         margins: 2
                     }
-                    width: timeline.maxFrames > 0 ? Math.max(0, (parent.width - 4) * (timeline.currentFrame / timeline.maxFrames)) : 0
+                    width: timeline.maxFrames > 0 ? Math.max(
+                                                        0, (parent.width - 4)
+                                                        * (timeline.currentFrame
+                                                           / timeline.maxFrames)) : 0
                     radius: height / 2
                     color: "#98FF98"
                     opacity: 0.7
@@ -280,13 +281,18 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: function (mouse) {
-                        var ratio = Math.max(0, Math.min(1, mouse.x / parent.width));
-                        timeline.currentFrame = Math.round(ratio * timeline.maxFrames);
+                        var ratio = Math.max(0,
+                                             Math.min(1,
+                                                      mouse.x / parent.width))
+                        timeline.currentFrame = Math.round(
+                                    ratio * timeline.maxFrames)
                     }
                     onPositionChanged: function (mouse) {
                         if (pressed) {
-                            var ratio = Math.max(0, Math.min(1, mouse.x / parent.width));
-                            timeline.currentFrame = Math.round(ratio * timeline.maxFrames);
+                            var ratio = Math.max(0, Math.min(
+                                                     1, mouse.x / parent.width))
+                            timeline.currentFrame = Math.round(
+                                        ratio * timeline.maxFrames)
                         }
                     }
                     cursorShape: Qt.PointingHandCursor
@@ -420,8 +426,9 @@ Rectangle {
     }
 
     function formatTime(seconds) {
-        var mins = Math.floor(seconds / 60);
-        var secs = (seconds % 60).toFixed(1);
-        return (mins > 0 ? mins + ":" : "") + (mins > 0 && secs < 10 ? "0" : "") + secs + "s";
+        var mins = Math.floor(seconds / 60)
+        var secs = (seconds % 60).toFixed(1)
+        return (mins > 0 ? mins + ":" : "") + (mins > 0
+                                               && secs < 10 ? "0" : "") + secs + "s"
     }
 }
