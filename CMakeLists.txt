@@ -43,6 +43,7 @@ qt_add_qml_module(appRoboticus_control_center
         QML_FILES qml/TitleBar.qml
         QML_FILES qml/Timeline.qml
         RESOURCES qml/assets/SVG/arrow_left_green.svg qml/assets/SVG/arrow_left_grey.svg qml/assets/SVG/arrow_right_green.svg qml/assets/SVG/arrow_right_grey.svg
+        RESOURCES qml/assets/SVG/download.svg qml/assets/SVG/upload.svg
 )
 
 # Qt for iOS sets MACOSX_BUNDLE_GUI_IDENTIFIER automatically since Qt 6.1.

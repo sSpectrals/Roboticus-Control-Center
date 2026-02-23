@@ -343,12 +343,12 @@ Rectangle {
                 }
             }
 
-            contentItem: Text {
-                text: "\uD83D\uDCBE" // 💾
-                color: "#98FF98"
-                font.pixelSize: 16
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+            Image {
+                source: "./assets/SVG/download.svg"
+                anchors.centerIn: parent
+                width: parent.width * 0.5
+                height: parent.height * 0.5
+                fillMode: Image.PreserveAspectFit
             }
 
             ToolTip.text: "Save data"
@@ -405,12 +405,12 @@ Rectangle {
                 }
             }
 
-            contentItem: Text {
-                text: "\uD83D\uDCC2" // 📂
-                color: "#98FF98"
-                font.pixelSize: 16
-                horizontalAlignment: Text.AlignHCenter
-                verticalAlignment: Text.AlignVCenter
+            Image {
+                source: "./assets/SVG/upload.svg"
+                anchors.centerIn: parent
+                width: parent.width * 0.5
+                height: parent.height * 0.5
+                fillMode: Image.PreserveAspectFit
             }
 
             ToolTip.text: "Load data"
