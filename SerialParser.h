@@ -14,12 +14,10 @@
 #include "SensorModel.h"
 #include "VectorModel.h"
 
-#include <QPair>
-#include <QVector>
-
 struct FrameSnapshot {
   qint64 timestamp;
-  QByteArray jsonData;
+  QList<Sensor> sensors;
+  QList<Vector> vectors;
 };
 
 class SerialParser : public QObject {
@@ -49,25 +47,30 @@ public:
   Q_INVOKABLE QList<qint64> availableTimestamps() const;
   Q_INVOKABLE bool restoreToIndex(int index);
 
+  Q_INVOKABLE void setModels(QList<Sensor> sensors, QList<Vector> vectors);
   Q_INVOKABLE void setModels(SensorModel *sensorModel,
                              VectorModel *vectorModel);
   Q_INVOKABLE void readData();
+
+  Q_INVOKABLE int snapshotCount() const { return m_snapshots.size(); }
+  Q_INVOKABLE qint64 timestampAt(int index) const;
 
 signals:
   void connectionChanged();
   void portChanged();
   void dataReceived(QByteArray data);
   void availablePortsChanged();
+  void snapshotsChanged();
 
 private:
+  QStringList m_availablePorts;
+  QTimer m_portRefreshTimer;
+
+  QList<FrameSnapshot> m_snapshots;
   QSerialPort m_serial;
   QByteArray m_buffer;
   SensorModel *m_sensorModel = nullptr;
   VectorModel *m_vectorModel = nullptr;
-  QStringList m_availablePorts;
-  QTimer m_portRefreshTimer;
-
-  QVector<FrameSnapshot> m_snapshots;
 
   void configureDefaultSettings();
   void processJsonData(const QByteArray &jsonData);

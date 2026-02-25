@@ -126,6 +126,17 @@ void SerialParser::refreshPorts() {
   }
 }
 
+void SerialParser::setModels(QList<Sensor> sensors, QList<Vector> vectors) {
+  for (const Sensor &s : sensors) {
+    m_sensorModel->addSensor(s.name, s.inputValue, s.threshold, s.isTriggered,
+                             s.x, s.y);
+  }
+
+  for (const Vector &v : vectors) {
+    m_vectorModel->addVector(v.name, v.rotation, v.scale, v.color, v.x, v.y);
+  }
+}
+
 void SerialParser::setModels(SensorModel *sensorModel,
                              VectorModel *vectorModel) {
   m_sensorModel = sensorModel;
@@ -176,6 +187,13 @@ void SerialParser::readData() {
   }
 }
 
+Q_INVOKABLE qint64 SerialParser::timestampAt(int index) const {
+  if (index < 0 || index >= m_snapshots.size()) {
+    return -1;
+  }
+  return m_snapshots[index].timestamp;
+}
+
 void SerialParser::processJsonData(const QByteArray &jsonData) {
   QJsonParseError parseError;
   QJsonDocument doc = QJsonDocument::fromJson(jsonData, &parseError);
@@ -189,7 +207,14 @@ void SerialParser::processJsonData(const QByteArray &jsonData) {
 
   qint64 timestamp = frame["timestamp"].toInteger();
   // Save snapshot for timeline replay
-  m_snapshots.append({timestamp, jsonData});
+  FrameSnapshot snapshot;
+  snapshot.timestamp = timestamp;
+  snapshot.sensors =
+      m_sensorModel ? m_sensorModel->getAllSensors() : QList<Sensor>();
+  snapshot.vectors =
+      m_vectorModel ? m_vectorModel->getAllVectors() : QList<Vector>();
+  m_snapshots.append(snapshot);
+  emit snapshotsChanged();
 
   if (frame.contains("sensors")) {
     updateSensorsFromJson(frame["sensors"].toArray());
@@ -199,8 +224,6 @@ void SerialParser::processJsonData(const QByteArray &jsonData) {
     updateVectorsFromJson(frame["vectors"].toArray());
   }
 }
-
-// --- Timeline/Replay API ---
 
 // Returns a list of all available timestamps
 QList<qint64> SerialParser::availableTimestamps() const {
@@ -219,7 +242,7 @@ bool SerialParser::restoreToIndex(int index) {
     m_sensorModel->clear();
   if (m_vectorModel)
     m_vectorModel->clear();
-  processJsonData(m_snapshots[index].jsonData);
+  setModels(m_snapshots[index].sensors, m_snapshots[index].vectors);
   return true;
 }
 

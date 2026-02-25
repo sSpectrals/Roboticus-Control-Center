@@ -2,6 +2,7 @@ import QtQuick
 import QtQuick.Controls 2.15
 import QtQuick.Controls.Material
 import QtQuick.Layouts
+import com.Roboticus.ControlCenter
 
 Rectangle {
     id: timeline
@@ -10,10 +11,25 @@ Rectangle {
     border.color: Qt.darker(color, 1.2)
     border.width: 1
 
+    required property var serialParser
+
     property int currentFrame: 0
-    property int maxFrames: 100
+    property int maxFrames: 0
     property real currentTime: 0.0
-    property real maxTime: 90.0 // total time in seconds
+    property real maxTime: 60.0
+
+    function updateTimelineProps() {
+        maxFrames = serialParser.snapshotCount() > 0 ? serialParser.snapshotCount() - 1 : 0;
+        currentTime = serialParser.snapshotCount() > 0 ? serialParser.timestampAt(currentFrame) / 1000.0 : 0.0;
+        maxTime = serialParser.snapshotCount() > 0 ? serialParser.timestampAt(serialParser.snapshotCount() - 1) / 1000.0 : 60.0;
+    }
+
+    Component.onCompleted: updateTimelineProps()
+    Connections {
+        target: serialParser
+        function onSnapshotsChanged() { updateTimelineProps(); }
+    }
+    onCurrentFrameChanged: updateTimelineProps()
 
     signal frameBack
     signal frameForward
@@ -79,8 +95,8 @@ Rectangle {
 
             onClicked: {
                 if (timeline.currentFrame > 0) {
-                    timeline.currentFrame--
-                    timeline.frameBack()
+                    timeline.currentFrame--;
+                    serialParser.restoreToIndex(currentFrame);
                 }
             }
 
@@ -143,8 +159,8 @@ Rectangle {
 
             onClicked: {
                 if (timeline.currentFrame < timeline.maxFrames) {
-                    timeline.currentFrame++
-                    timeline.frameForward()
+                    timeline.currentFrame++;
+                    serialParser.restoreToIndex(currentFrame);
                 }
             }
 
@@ -182,10 +198,7 @@ Rectangle {
                         bottom: parent.bottom
                         margins: 2
                     }
-                    width: timeline.maxFrames > 0 ? Math.max(
-                                                        0, (parent.width - 4)
-                                                        * (timeline.currentFrame
-                                                           / timeline.maxFrames)) : 0
+                    width: timeline.maxFrames > 0 ? Math.max(0, (parent.width - 4) * (timeline.currentFrame / timeline.maxFrames)) : 0
                     radius: height / 2
                     color: "#98FF98"
                     opacity: 0.7
@@ -281,18 +294,13 @@ Rectangle {
                 MouseArea {
                     anchors.fill: parent
                     onClicked: function (mouse) {
-                        var ratio = Math.max(0,
-                                             Math.min(1,
-                                                      mouse.x / parent.width))
-                        timeline.currentFrame = Math.round(
-                                    ratio * timeline.maxFrames)
+                        var ratio = Math.max(0, Math.min(1, mouse.x / parent.width));
+                        timeline.currentFrame = Math.round(ratio * timeline.maxFrames);
                     }
                     onPositionChanged: function (mouse) {
                         if (pressed) {
-                            var ratio = Math.max(0, Math.min(
-                                                     1, mouse.x / parent.width))
-                            timeline.currentFrame = Math.round(
-                                        ratio * timeline.maxFrames)
+                            var ratio = Math.max(0, Math.min(1, mouse.x / parent.width));
+                            timeline.currentFrame = Math.round(ratio * timeline.maxFrames);
                         }
                     }
                     cursorShape: Qt.PointingHandCursor
@@ -426,9 +434,8 @@ Rectangle {
     }
 
     function formatTime(seconds) {
-        var mins = Math.floor(seconds / 60)
-        var secs = (seconds % 60).toFixed(1)
-        return (mins > 0 ? mins + ":" : "") + (mins > 0
-                                               && secs < 10 ? "0" : "") + secs + "s"
+        var mins = Math.floor(seconds / 60);
+        var secs = (seconds % 60).toFixed(1);
+        return (mins > 0 ? mins + ":" : "") + (mins > 0 && secs < 10 ? "0" : "") + secs + "s";
     }
 }

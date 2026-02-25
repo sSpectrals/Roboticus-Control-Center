@@ -51,6 +51,7 @@ public:
   Q_INVOKABLE int getIndexFromId(const QUuid &id) const;
   Q_INVOKABLE Vector getVectorById(const QUuid &id) const;
   Q_INVOKABLE int getIndexByName(const QString &name) const;
+  QList<Vector> getAllVectors() const { return m_vectors; }
 
 signals:
   void vectorAdded(const QUuid &id, const QString &name, double rotation,

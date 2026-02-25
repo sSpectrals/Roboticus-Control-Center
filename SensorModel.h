@@ -51,6 +51,7 @@ public:
   Q_INVOKABLE int getIndexFromId(const QUuid &id) const;
   Q_INVOKABLE Sensor getSensorById(const QUuid &id) const;
   Q_INVOKABLE int getIndexByName(const QString &name) const;
+  QList<Sensor> getAllSensors() const { return m_sensors; }
 
 signals:
   void sensorAdded(const QUuid &id, const QString &name, double input,

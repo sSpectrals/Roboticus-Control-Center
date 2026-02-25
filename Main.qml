@@ -108,6 +108,8 @@ Window {
         }
         height: 80
         width: sensorPanel.width
+
+        serialParser: serialParser
     }
 
     // AddItem {
