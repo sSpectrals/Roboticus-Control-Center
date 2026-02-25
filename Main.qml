@@ -110,6 +110,18 @@ Window {
         width: sensorPanel.width
 
         serialParser: serialParser
+
+        onCurrentFrameChanged: {
+            sensorPanel.clearGraph()
+            timelineBar.updateTimelineProps()
+        }
+
+        Connections {
+            target: serialParser
+            function onSnapshotsChanged() {
+                timelineBar.updateTimelineProps()
+            }
+        }
     }
 
     // AddItem {

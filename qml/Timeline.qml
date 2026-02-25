@@ -25,13 +25,6 @@ Rectangle {
     }
 
     Component.onCompleted: updateTimelineProps()
-    Connections {
-        target: serialParser
-        function onSnapshotsChanged() {
-            updateTimelineProps();
-        }
-    }
-    onCurrentFrameChanged: updateTimelineProps()
 
     signal frameBack
     signal frameForward
@@ -304,6 +297,7 @@ Rectangle {
                         if (pressed) {
                             var ratio = Math.max(0, Math.min(1, mouse.x / parent.width));
                             timeline.currentFrame = Math.round(ratio * timeline.maxFrames);
+                            serialParser.restoreToIndex(currentFrame);
                         }
                     }
                     cursorShape: Qt.PointingHandCursor

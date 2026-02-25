@@ -144,4 +144,15 @@ Rectangle {
             series.arrowColor = arrowColor;
         }
     }
+
+    function clearGraph() {
+        for (var id in seriesMap) {
+            var series = seriesMap[id];
+            if (series) {
+                chart.removeSeries(series);
+                series.destroy(100);
+            }
+        }
+        seriesMap = {};
+    }
 }

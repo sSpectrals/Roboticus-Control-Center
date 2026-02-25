@@ -242,6 +242,7 @@ bool SerialParser::restoreToIndex(int index) {
     m_sensorModel->clear();
   if (m_vectorModel)
     m_vectorModel->clear();
+  disconnectPort();
   setModels(m_snapshots[index].sensors, m_snapshots[index].vectors);
   return true;
 }
