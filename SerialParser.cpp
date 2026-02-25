@@ -188,7 +188,8 @@ void SerialParser::processJsonData(const QByteArray &jsonData) {
   QJsonObject frame = doc.object();
 
   qint64 timestamp = frame["timestamp"].toInteger();
-  Q_UNUSED(timestamp) // Available for future replay functionality
+  // Save snapshot for timeline replay
+  m_snapshots.append({timestamp, jsonData});
 
   if (frame.contains("sensors")) {
     updateSensorsFromJson(frame["sensors"].toArray());
@@ -197,6 +198,29 @@ void SerialParser::processJsonData(const QByteArray &jsonData) {
   if (frame.contains("vectors")) {
     updateVectorsFromJson(frame["vectors"].toArray());
   }
+}
+
+// --- Timeline/Replay API ---
+
+// Returns a list of all available timestamps
+QList<qint64> SerialParser::availableTimestamps() const {
+  QList<qint64> result;
+  for (const auto &snap : m_snapshots) {
+    result.append(snap.timestamp);
+  }
+  return result;
+}
+
+// Restores the model state to the snapshot at the given index
+bool SerialParser::restoreToIndex(int index) {
+  if (index < 0 || index >= m_snapshots.size())
+    return false;
+  if (m_sensorModel)
+    m_sensorModel->clear();
+  if (m_vectorModel)
+    m_vectorModel->clear();
+  processJsonData(m_snapshots[index].jsonData);
+  return true;
 }
 
 void SerialParser::updateSensorsFromJson(const QJsonArray &sensors) {

@@ -93,6 +93,12 @@ bool SensorModel::setData(const QModelIndex &index, const QVariant &value,
   return changed;
 }
 
+void SensorModel::clear() {
+  beginResetModel();
+  m_sensors.clear();
+  endResetModel();
+}
+
 QHash<int, QByteArray> SensorModel::roleNames() const {
   static const QHash<int, QByteArray> mapping{{IdRole, "id"},
                                               {NameRole, "name"},

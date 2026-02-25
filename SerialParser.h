@@ -14,13 +14,22 @@
 #include "SensorModel.h"
 #include "VectorModel.h"
 
+#include <QPair>
+#include <QVector>
+
+struct FrameSnapshot {
+  qint64 timestamp;
+  QByteArray jsonData;
+};
+
 class SerialParser : public QObject {
   Q_OBJECT
   QML_ELEMENT
 
   Q_PROPERTY(bool isConnected READ isConnected NOTIFY connectionChanged)
   Q_PROPERTY(QString currentPort READ currentPort NOTIFY portChanged)
-  Q_PROPERTY(QStringList availablePortsList READ availablePortsList NOTIFY availablePortsChanged)
+  Q_PROPERTY(QStringList availablePortsList READ availablePortsList NOTIFY
+                 availablePortsChanged)
 
 public:
   explicit SerialParser(QObject *parent = nullptr);
@@ -31,12 +40,14 @@ public:
   Q_INVOKABLE bool setComPort(QString port);
   Q_INVOKABLE void disconnectPort();
 
-
   QStringList availablePortsList() const { return m_availablePorts; }
   Q_INVOKABLE void refreshPorts();
 
   bool isConnected() const { return m_serial.isOpen(); }
   QString currentPort() const { return m_serial.portName(); }
+
+  Q_INVOKABLE QList<qint64> availableTimestamps() const;
+  Q_INVOKABLE bool restoreToIndex(int index);
 
   Q_INVOKABLE void setModels(SensorModel *sensorModel,
                              VectorModel *vectorModel);
@@ -55,6 +66,8 @@ private:
   VectorModel *m_vectorModel = nullptr;
   QStringList m_availablePorts;
   QTimer m_portRefreshTimer;
+
+  QVector<FrameSnapshot> m_snapshots;
 
   void configureDefaultSettings();
   void processJsonData(const QByteArray &jsonData);

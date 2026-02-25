@@ -46,6 +46,7 @@ public:
                                bool isTriggered = false, double x = 0.0,
                                double y = 0.0);
   Q_INVOKABLE bool removeSensor(const QUuid &id);
+  Q_INVOKABLE void clear();
 
   Q_INVOKABLE int getIndexFromId(const QUuid &id) const;
   Q_INVOKABLE Sensor getSensorById(const QUuid &id) const;

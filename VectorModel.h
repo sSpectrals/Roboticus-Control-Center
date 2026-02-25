@@ -46,6 +46,7 @@ public:
                                double scale = 1.0, QColor color = "white",
                                double x = 0.0, double y = 0.0);
   Q_INVOKABLE bool removeVector(const QUuid &id);
+  Q_INVOKABLE void clear();
 
   Q_INVOKABLE int getIndexFromId(const QUuid &id) const;
   Q_INVOKABLE Vector getVectorById(const QUuid &id) const;

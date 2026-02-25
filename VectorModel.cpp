@@ -93,6 +93,12 @@ bool VectorModel::setData(const QModelIndex &index, const QVariant &value,
   return changed;
 }
 
+void VectorModel::clear() {
+  beginResetModel();
+  m_vectors.clear();
+  endResetModel();
+}
+
 QHash<int, QByteArray> VectorModel::roleNames() const {
   static const QHash<int, QByteArray> mapping{
       {IdRole, "id"},       {NameRole, "name"},   {RotationRole, "rotation"},
