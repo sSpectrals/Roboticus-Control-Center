@@ -11,6 +11,7 @@ struct Sensor {
   double inputValue = -1.0;
   double threshold = -1.0;
   bool isTriggered = false;
+  int layer = 1;
   double x = 0.0;
   double y = 0.0;
 
@@ -27,6 +28,7 @@ public:
     InputRole,
     ThresholdRole,
     TriggerRole,
+    LayerRole,
     XRole,
     YRole
   };
@@ -43,8 +45,9 @@ public:
 
   Q_INVOKABLE Sensor addSensor(QString name = QString(), double input = 0.0,
                                double threshold = 100.0,
-                               bool isTriggered = false, double x = 0.0,
-                               double y = 0.0);
+                               bool isTriggered = false, int layer = 1,
+                               double x = 0.0, double y = 0.0);
+
   Q_INVOKABLE bool removeSensor(const QUuid &id);
   Q_INVOKABLE void clear();
 
@@ -55,12 +58,12 @@ public:
 
 signals:
   void sensorAdded(const QUuid &id, const QString &name, double input,
-                   double threshold, const bool &isTriggered, double x,
-                   double y);
+                   double threshold, const bool &isTriggered, int layer,
+                   double x, double y);
   void sensorRemoved(const QUuid &id);
   void sensorUpdated(const QUuid &id, const QString &name, double input,
                      double threshold, const bool &isTriggered, double x,
-                     double y);
+                     int layer, double y);
 
 private:
   QList<Sensor> m_sensors;

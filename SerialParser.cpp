@@ -129,7 +129,7 @@ void SerialParser::refreshPorts() {
 void SerialParser::setModels(QList<Sensor> sensors, QList<Vector> vectors) {
   for (const Sensor &s : sensors) {
     m_sensorModel->addSensor(s.name, s.inputValue, s.threshold, s.isTriggered,
-                             s.x, s.y);
+                             s.layer, s.x, s.y);
   }
 
   for (const Vector &v : vectors) {
@@ -218,6 +218,7 @@ Q_INVOKABLE bool SerialParser::saveToFile(QUrl filePath) {
       sensorObj["input"] = sensor.inputValue;
       sensorObj["threshold"] = sensor.threshold;
       sensorObj["isTriggered"] = sensor.isTriggered;
+      sensorObj["layer"] = sensor.layer;
       QJsonObject locationObj;
       locationObj["x"] = sensor.x;
       locationObj["y"] = sensor.y;
@@ -225,6 +226,7 @@ Q_INVOKABLE bool SerialParser::saveToFile(QUrl filePath) {
       sensorsArray.append(sensorObj);
     }
     snapObj["sensors"] = sensorsArray;
+
     QJsonArray vectorsArray;
     for (const auto &vector : snap.vectors) {
       QJsonObject vectorObj;
@@ -244,6 +246,7 @@ Q_INVOKABLE bool SerialParser::saveToFile(QUrl filePath) {
   QJsonDocument doc(snapshotsArray);
   qint64 bytesWritten = file.write(doc.toJson(QJsonDocument::Compact));
   file.close();
+
   if (bytesWritten == -1) {
     qDebug() << "Failed to write to file:" << filePath;
     return false;
@@ -306,6 +309,7 @@ Q_INVOKABLE bool SerialParser::loadFromFile(QUrl filePath) {
       sensor.inputValue = sensorObj["input"].toDouble();
       sensor.threshold = sensorObj["threshold"].toDouble();
       sensor.isTriggered = sensorObj["isTriggered"].toBool();
+      sensor.layer = sensorObj["layer"].toInt();
 
       if (sensorObj.contains("location") && sensorObj["location"].isObject()) {
         QJsonObject locationObj = sensorObj["location"].toObject();
@@ -351,7 +355,6 @@ Q_INVOKABLE bool SerialParser::loadFromFile(QUrl filePath) {
     }
     m_snapshots.append(snapshot);
   }
-  restoreToIndex(1);
   qDebug() << "Successfully loaded" << m_snapshots.size() << "snapshots from"
            << filePath;
   return true;
@@ -428,6 +431,7 @@ void SerialParser::updateSensorsFromJson(const QJsonArray &sensors) {
                                      : inputVal.toDouble(-1);
 
     bool isTriggered = sensorObj["isTriggered"].toBool(false);
+    int layer = sensorObj["layer"].toInt(1);
 
     QJsonObject location = sensorObj["location"].toObject();
     double x = location["x"].toDouble(0.0);
@@ -443,10 +447,11 @@ void SerialParser::updateSensorsFromJson(const QJsonArray &sensors) {
       m_sensorModel->setData(modelIdx, isTriggered, SensorModel::TriggerRole);
       m_sensorModel->setData(modelIdx, x, SensorModel::XRole);
       m_sensorModel->setData(modelIdx, y, SensorModel::YRole);
+      m_sensorModel->setData(modelIdx, layer, SensorModel::LayerRole);
     } else {
       // Add new sensor
-      Sensor newSensor =
-          m_sensorModel->addSensor(name, input, threshold, isTriggered, x, y);
+      Sensor newSensor = m_sensorModel->addSensor(name, input, threshold,
+                                                  isTriggered, layer, x, y);
     }
   }
 }

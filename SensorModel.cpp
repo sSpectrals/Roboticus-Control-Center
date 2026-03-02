@@ -24,6 +24,8 @@ QVariant SensorModel::data(const QModelIndex &index, int role) const {
     return sensor.threshold;
   case TriggerRole:
     return sensor.isTriggered;
+  case LayerRole:
+    return sensor.layer;
   case XRole:
     return sensor.x;
   case YRole:
@@ -77,6 +79,12 @@ bool SensorModel::setData(const QModelIndex &index, const QVariant &value,
       changed = true;
     }
     break;
+  case LayerRole:
+    if (sensor.layer != value.toInt()) {
+      sensor.layer = value.toInt();
+      changed = true;
+    }
+    break;
   default:
     return false;
   }
@@ -84,8 +92,8 @@ bool SensorModel::setData(const QModelIndex &index, const QVariant &value,
   if (changed) {
     // for graph update
     emit sensorUpdated(sensor.id, sensor.name, sensor.inputValue,
-                       sensor.threshold, sensor.isTriggered, sensor.x,
-                       sensor.y);
+                       sensor.threshold, sensor.isTriggered, sensor.layer,
+                       sensor.x, sensor.y);
     // for listView/repeater, built in signal so not really defined in header
     emit dataChanged(index, index, {role});
   }
@@ -105,17 +113,19 @@ QHash<int, QByteArray> SensorModel::roleNames() const {
                                               {InputRole, "inputValue"},
                                               {ThresholdRole, "threshold"},
                                               {TriggerRole, "isTriggered"},
+                                              {LayerRole, "layer"},
                                               {XRole, "x"},
                                               {YRole, "y"}};
   return mapping;
 }
 
 Sensor SensorModel::addSensor(QString name, double input, double threshold,
-                              bool isTriggered, double x, double y) {
+                              bool isTriggered, int layer, double x, double y) {
 
   Sensor sensor;
   sensor.name =
       name.isEmpty() ? "Sensor " + QString::number(m_sensors.size() + 1) : name;
+  sensor.layer = layer;
   sensor.inputValue = input;
   sensor.threshold = threshold;
   sensor.isTriggered = isTriggered;
@@ -126,7 +136,7 @@ Sensor SensorModel::addSensor(QString name, double input, double threshold,
   m_sensors.append(sensor);
   endInsertRows();
   emit sensorAdded(sensor.id, sensor.name, sensor.inputValue, sensor.threshold,
-                   sensor.isTriggered, sensor.x, sensor.y);
+                   sensor.isTriggered, sensor.layer, sensor.x, sensor.y);
   return sensor;
 }
 

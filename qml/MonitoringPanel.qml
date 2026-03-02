@@ -63,6 +63,7 @@ Flickable {
 
                 Text {
                     text: "Sensors"
+                    id: sensorsText
                     font.pixelSize: 20
                     font.weight: Font.DemiBold
                     color: "white"
@@ -70,6 +71,85 @@ Flickable {
                         left: parent.left
                         verticalCenter: parent.verticalCenter
                         leftMargin: 10
+                    }
+                }
+
+                ComboBox {
+                    id: sensorLayerSelection
+                    model: ["Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"]
+                    currentIndex: 0
+
+                    anchors.verticalCenter: sensorsText.verticalCenter
+                    anchors.left: sensorsText.right
+                    anchors.leftMargin: 24
+
+                    width: 140
+                    height: 36
+
+                    Material.accent: "#98FF98"
+                    Material.foreground: "#98FF98"
+
+                    background: Rectangle {
+                        color: "#0f0f0f"
+                        border.color: sensorLayerSelection.hovered ? "#98FF98" : "#333333"
+                        border.width: 2
+                        radius: 6
+
+                        Behavior on border.color {
+                            ColorAnimation {
+                                duration: 150
+                            }
+                        }
+                    }
+
+                    popup: Popup {
+                        y: sensorLayerSelection.height
+                        width: sensorLayerSelection.width
+                        height: implicitHeight
+                        padding: 3
+                        contentItem: ListView {
+                            clip: true
+                            implicitHeight: contentHeight
+                            model: sensorLayerSelection.popup.visible ? sensorLayerSelection.delegateModel : null
+                            currentIndex: sensorLayerSelection.highlightedIndex
+
+                            ScrollIndicator.vertical: ScrollIndicator {}
+                        }
+
+                        background: Rectangle {
+                            color: "#1a1a1a"
+                            border.color: "#98FF98"
+                            border.width: 2
+                            radius: 6
+                        }
+                    }
+
+                    delegate: ItemDelegate {
+                        width: sensorLayerSelection.width
+                        hoverEnabled: true
+
+                        contentItem: Text {
+                            text: modelData
+                            font.pixelSize: 16
+                            color: parent.highlighted || parent.hovered ? "#98FF98" : "#888888"
+                        }
+
+                        highlighted: sensorLayerSelection.highlightedIndex === index
+
+                        background: Rectangle {
+                            color: parent.highlighted || parent.hovered ? "#0f0f0f" : "transparent"
+
+                            Behavior on color {
+                                ColorAnimation {
+                                    duration: 100
+                                }
+                            }
+                        }
+                    }
+
+                    onActivated: function (index) {
+                        // SerialParser.setLayer
+                        focus = false
                     }
                 }
             }

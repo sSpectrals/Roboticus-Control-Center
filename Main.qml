@@ -18,7 +18,7 @@ Window {
     SensorController {
         id: sensorController
 
-        onSensorAdded: function (id, name, input, threshold, isTriggered, x, y) {
+        onSensorAdded: function (id, name, input, threshold, isTriggered, layer, x, y) {
             sensorPanel.addPointToGraph(id, x, y, isTriggered)
         }
 
@@ -26,7 +26,7 @@ Window {
             sensorPanel.removePointFromGraph(id)
         }
 
-        onSensorUpdated: function (id, name, input, threshold, isTriggered, x, y) {
+        onSensorUpdated: function (id, name, input, threshold, isTriggered, layer, x, y) {
             sensorPanel.updatePointOnGraph(id, x, y, isTriggered)
         }
     }
@@ -136,7 +136,7 @@ Window {
     //     width: (parent.width) / 2
 
     //     onAddSensorRequested: {
-    //         sensorController.addSensor("Sensor name", 0, 100, false, 0.0, 0.0)
+    //         sensorController.addSensor("Sensor name", 0, 100, false, 1, 0.0, 0.0)
     //     }
     //     onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1,
     //                                                      "white", 0.0, 0.0)
