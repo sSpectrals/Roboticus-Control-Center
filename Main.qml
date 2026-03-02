@@ -34,7 +34,7 @@ Window {
     VectorController {
         id: vectorController
 
-        onVectorAdded: function (id, name, rotation, scale, color, x, y) {
+        onVectorAdded: function (id, name, rotation, scale, color, layer, x, y) {
             sensorPanel.addArrowToGraph(id, rotation, scale, color, x, y)
         }
 
@@ -42,7 +42,7 @@ Window {
             sensorPanel.removeArrowFromGraph(id)
         }
 
-        onVectorUpdated: function (id, name, rotation, scale, color, x, y) {
+        onVectorUpdated: function (id, name, rotation, scale, color, layer, x, y) {
             sensorPanel.updateArrowOnGraph(id, rotation, scale, color, x, y)
         }
     }
@@ -139,6 +139,6 @@ Window {
     //         sensorController.addSensor("Sensor name", 0, 100, false, 1, 0.0, 0.0)
     //     }
     //     onAddVectorRequested: vectorController.addVector("Vector name", 0.0, 1,
-    //                                                      "white", 0.0, 0.0)
+    //                                                      "white", 1, 0.0, 0.0)
     // }
 }

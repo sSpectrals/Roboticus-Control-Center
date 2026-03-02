@@ -62,8 +62,8 @@ signals:
                    double x, double y);
   void sensorRemoved(const QUuid &id);
   void sensorUpdated(const QUuid &id, const QString &name, double input,
-                     double threshold, const bool &isTriggered, double x,
-                     int layer, double y);
+                     double threshold, const bool &isTriggered, int layer,
+                     double x, double y);
 
 private:
   QList<Sensor> m_sensors;

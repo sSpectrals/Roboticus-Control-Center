@@ -125,10 +125,10 @@ Sensor SensorModel::addSensor(QString name, double input, double threshold,
   Sensor sensor;
   sensor.name =
       name.isEmpty() ? "Sensor " + QString::number(m_sensors.size() + 1) : name;
-  sensor.layer = layer;
   sensor.inputValue = input;
   sensor.threshold = threshold;
   sensor.isTriggered = isTriggered;
+  sensor.layer = layer;
   sensor.x = x;
   sensor.y = y;
 

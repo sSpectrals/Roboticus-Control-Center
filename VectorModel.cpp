@@ -24,6 +24,8 @@ QVariant VectorModel::data(const QModelIndex &index, int role) const {
     return vector.scale;
   case ColorRole:
     return vector.color;
+  case LayerRole:
+    return vector.layer;
   case XRole:
     return vector.x;
   case YRole:
@@ -65,6 +67,12 @@ bool VectorModel::setData(const QModelIndex &index, const QVariant &value,
       changed = true;
     }
     break;
+  case LayerRole:
+    if (vector.layer != value.toInt()) {
+      vector.layer = value.toInt();
+      changed = true;
+    }
+    break;
   case XRole:
     if (vector.x != value.toDouble()) {
       vector.x = value.toDouble();
@@ -87,7 +95,7 @@ bool VectorModel::setData(const QModelIndex &index, const QVariant &value,
 
     // signal to update graph
     emit vectorUpdated(vector.id, vector.name, vector.rotation, vector.scale,
-                       vector.color, vector.x, vector.y);
+                       vector.color, vector.layer, vector.x, vector.y);
   }
 
   return changed;
@@ -102,18 +110,19 @@ void VectorModel::clear() {
 QHash<int, QByteArray> VectorModel::roleNames() const {
   static const QHash<int, QByteArray> mapping{
       {IdRole, "id"},       {NameRole, "name"},   {RotationRole, "rotation"},
-      {ScaleRole, "scale"}, {ColorRole, "color"}, {XRole, "x"},
-      {YRole, "y"}};
+      {ScaleRole, "scale"}, {ColorRole, "color"}, {LayerRole, "layer"},
+      {XRole, "x"},         {YRole, "y"}};
   return mapping;
 }
 
 Vector VectorModel::addVector(QString name, double rotation, double scale,
-                              QColor color, double x, double y) {
+                              QColor color, int layer, double x, double y) {
   Vector vector;
   vector.name = name;
   vector.rotation = rotation;
   vector.scale = scale;
   vector.color = color;
+  vector.layer = layer;
   vector.x = x;
   vector.y = y;
 
@@ -122,7 +131,7 @@ Vector VectorModel::addVector(QString name, double rotation, double scale,
   endInsertRows();
 
   emit vectorAdded(vector.id, vector.name, vector.rotation, vector.scale,
-                   vector.color, vector.x, vector.y);
+                   vector.color, vector.layer, vector.x, vector.y);
   return vector;
 }
 

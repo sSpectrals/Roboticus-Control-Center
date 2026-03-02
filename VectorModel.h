@@ -12,6 +12,7 @@ struct Vector {
   double rotation = 0.0;
   double scale = 1.0;
   QColor color = "white";
+  int layer = 1;
   double x = 0.0;
   double y = 0.0;
 
@@ -28,6 +29,7 @@ public:
     RotationRole,
     ScaleRole,
     ColorRole,
+    LayerRole,
     XRole,
     YRole
   };
@@ -44,7 +46,7 @@ public:
 
   Q_INVOKABLE Vector addVector(QString name = QString(), double rotation = 0.0,
                                double scale = 1.0, QColor color = "white",
-                               double x = 0.0, double y = 0.0);
+                               int layer = 1, double x = 0.0, double y = 0.0);
   Q_INVOKABLE bool removeVector(const QUuid &id);
   Q_INVOKABLE void clear();
 
@@ -55,10 +57,12 @@ public:
 
 signals:
   void vectorAdded(const QUuid &id, const QString &name, double rotation,
-                   double scale, const QColor &color, double x, double y);
+                   double scale, const QColor &color, int layer, double x,
+                   double y);
   void vectorRemoved(const QUuid &id);
   void vectorUpdated(const QUuid &id, const QString &name, double rotation,
-                     double scale, const QColor &color, double x, double y);
+                     double scale, const QColor &color, int layer, double x,
+                     double y);
 
 private:
   QList<Vector> m_vectors;

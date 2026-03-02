@@ -13,13 +13,14 @@ VectorController::VectorController(QObject *parent)
 
 Q_INVOKABLE Vector VectorController::addVector(const QString &name,
                                                double rotation, double scale,
-                                               QColor color, double x,
-                                               double y) {
+                                               QColor color, int layer,
+                                               double x, double y) {
 
   if (!m_model)
     return Vector();
 
-  Vector newVector = m_model->addVector(name, rotation, scale, color, x, y);
+  Vector newVector =
+      m_model->addVector(name, rotation, scale, color, layer, x, y);
 
   return newVector;
 }
