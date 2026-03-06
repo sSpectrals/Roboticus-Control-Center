@@ -152,3 +152,18 @@ Q_INVOKABLE bool VectorController::setVectorPositionY(const QUuid &id,
 
   return m_model->setData(m_model->index(index), y, VectorModel::YRole);
 }
+
+Q_INVOKABLE void VectorController::setActiveLayer(const QString &layerName) {
+  if (!m_model)
+    return;
+
+  emit clearChartSeries();
+
+  const auto &vectors = m_model->getAllVectors();
+  for (const auto &vector : vectors) {
+    if (vector.layer == layerName) {
+      emit vectorAdded(vector.id, vector.name, vector.rotation, vector.scale,
+                       vector.color, vector.layer, vector.x, vector.y);
+    }
+  }
+}

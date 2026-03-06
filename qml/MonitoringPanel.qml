@@ -49,6 +49,17 @@ Flickable {
         ]
     }
 
+    SortFilterProxyModel {
+        id: filteredVectorModel
+        model: vectorController.model
+        filters: [
+            ValueFilter {
+                roleName: "layer"
+                value: flickable.selectedVectorLayer
+            }
+        ]
+    }
+
     Column {
         id: column
         width: parent.width
@@ -67,7 +78,7 @@ Flickable {
 
             onCountChanged: {
                 if (count > 0) {
-                    positionViewAtEnd();
+                    positionViewAtEnd()
                 }
             }
 
@@ -148,13 +159,15 @@ Flickable {
                             contentItem: Text {
                                 text: modelData
                                 font.pixelSize: 16
-                                color: parent.highlighted || parent.hovered ? "#98FF98" : "#888888"
+                                color: parent.highlighted
+                                       || parent.hovered ? "#98FF98" : "#888888"
                             }
 
                             highlighted: sensorLayerSelection.highlightedIndex === index
 
                             background: Rectangle {
-                                color: parent.highlighted || parent.hovered ? "#0f0f0f" : "transparent"
+                                color: parent.highlighted
+                                       || parent.hovered ? "#0f0f0f" : "transparent"
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -165,9 +178,10 @@ Flickable {
                         }
 
                         onActivated: function (index) {
-                            flickable.selectedSensorLayer = sensorLayerSelection.currentText;
-                            sensorController.setActiveLayer(sensorLayerSelection.currentText);
-                            focus = false;
+                            flickable.selectedSensorLayer = sensorLayerSelection.currentText
+                            sensorController.setActiveLayer(
+                                        sensorLayerSelection.currentText)
+                            focus = false
                         }
                     }
                 }
@@ -199,12 +213,12 @@ Flickable {
                 selected: column.selection === sensorDelegate
 
                 onClicked: {
-                    column.selection = column.selection === sensorDelegate ? null : sensorDelegate;
+                    column.selection = column.selection === sensorDelegate ? null : sensorDelegate
                 }
 
                 onDeleteSensor: {
-                    column.selection = null;
-                    sensorController.removeSensor(model.id);
+                    column.selection = null
+                    sensorController.removeSensor(model.id)
                 }
             }
         }
@@ -214,13 +228,13 @@ Flickable {
             width: parent.width
             height: contentHeight
             interactive: false
-            model: vectorController.model
+            model: filteredVectorModel
             spacing: 0
             clip: true
 
             onCountChanged: {
                 if (count > 0) {
-                    positionViewAtEnd();
+                    positionViewAtEnd()
                 }
             }
 
@@ -301,13 +315,15 @@ Flickable {
                             contentItem: Text {
                                 text: modelData
                                 font.pixelSize: 16
-                                color: parent.highlighted || parent.hovered ? "#98FF98" : "#888888"
+                                color: parent.highlighted
+                                       || parent.hovered ? "#98FF98" : "#888888"
                             }
 
                             highlighted: vectorLayerSelection.highlightedIndex === index
 
                             background: Rectangle {
-                                color: parent.highlighted || parent.hovered ? "#0f0f0f" : "transparent"
+                                color: parent.highlighted
+                                       || parent.hovered ? "#0f0f0f" : "transparent"
 
                                 Behavior on color {
                                     ColorAnimation {
@@ -318,8 +334,10 @@ Flickable {
                         }
 
                         onActivated: function (index) {
-                            // SerialParser.setLayer
-                            focus = false;
+                            flickable.selectedVectorLayer = vectorLayerSelection.currentText
+                            vectorController.setActiveLayer(
+                                        vectorLayerSelection.currentText)
+                            focus = false
                         }
                     }
                 }
@@ -350,12 +368,12 @@ Flickable {
                 selected: column.selection === vectorDelegate
 
                 onClicked: {
-                    column.selection = column.selection === vectorDelegate ? null : vectorDelegate;
+                    column.selection = column.selection === vectorDelegate ? null : vectorDelegate
                 }
 
                 onDeleteVector: {
-                    column.selection = null;
-                    vectorController.removeVector(model.id);
+                    column.selection = null
+                    vectorController.removeVector(model.id)
                 }
             }
         }

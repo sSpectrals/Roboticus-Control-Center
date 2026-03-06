@@ -31,6 +31,8 @@ public:
   Q_INVOKABLE bool setVectorPositionX(const QUuid &id, double x);
   Q_INVOKABLE bool setVectorPositionY(const QUuid &id, double y);
 
+  Q_INVOKABLE void setActiveLayer(const QString &layerName);
+
 signals:
   void vectorAdded(const QUuid &id, const QString &name, double rotation,
                    double scale, const QColor &color, const QString &layer,
@@ -39,6 +41,7 @@ signals:
   void vectorUpdated(const QUuid &id, const QString &name, double rotation,
                      double scale, const QColor &color, const QString &layer,
                      double x, double y);
+  void clearChartSeries();
 
 private:
   VectorModel *m_model;

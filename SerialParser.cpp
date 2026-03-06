@@ -345,6 +345,7 @@ Q_INVOKABLE bool SerialParser::loadFromFile(QUrl filePath) {
       vector.scale = vectorObj["scale"].toDouble();
       vector.color = QColor(vectorObj["color"].toString());
       vector.layer = vectorObj["layer"].toString();
+
       if (vectorObj.contains("location") && vectorObj["location"].isObject()) {
         QJsonObject locationObj = vectorObj["location"].toObject();
         vector.x = locationObj["x"].toDouble();
