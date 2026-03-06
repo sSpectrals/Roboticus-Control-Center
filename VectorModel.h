@@ -22,6 +22,8 @@ struct Vector {
 class VectorModel : public QAbstractListModel {
   Q_OBJECT
   QML_ELEMENT
+
+  Q_PROPERTY(QList<QString> layers READ layers NOTIFY layersChanged)
 public:
   enum Roles {
     IdRole = Qt::UserRole + 1,
@@ -36,6 +38,8 @@ public:
   Q_ENUM(Roles)
 
   explicit VectorModel(QObject *parent = nullptr);
+
+  QList<QString> layers() const { return m_layers; }
 
   virtual int
   rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -64,9 +68,11 @@ signals:
   void vectorUpdated(const QUuid &id, const QString &name, double rotation,
                      double scale, const QColor &color, const QString &layer,
                      double x, double y);
+  void layersChanged();
 
 private:
   QList<Vector> m_vectors;
+  QList<QString> m_layers;
 };
 
 #endif // VECTORMODEL_H

@@ -19,19 +19,23 @@ Window {
         id: sensorController
 
         onSensorAdded: function (id, name, input, threshold, isTriggered, layer, x, y) {
-            sensorPanel.addPointToGraph(id, x, y, isTriggered)
+            if (layer.toLowerCase() === monitor.selectedSensorLayer.toLowerCase()) {
+                sensorPanel.addPointToGraph(id, x, y, isTriggered);
+            }
         }
 
         onSensorRemoved: function (id) {
-            sensorPanel.removePointFromGraph(id)
+            sensorPanel.removePointFromGraph(id);
         }
 
         onSensorUpdated: function (id, name, input, threshold, isTriggered, layer, x, y) {
-            sensorPanel.updatePointOnGraph(id, x, y, isTriggered)
+            if (layer.toLowerCase() === monitor.selectedSensorLayer.toLowerCase()) {
+                sensorPanel.updatePointOnGraph(id, x, y, isTriggered);
+            }
         }
 
         onClearChartSeries: function () {
-            sensorPanel.clearGraph()
+            sensorPanel.clearGraph();
         }
     }
 
@@ -39,26 +43,29 @@ Window {
         id: vectorController
 
         onVectorAdded: function (id, name, rotation, scale, color, layer, x, y) {
-            sensorPanel.addArrowToGraph(id, rotation, scale, color, x, y)
+            if (layer.toLowerCase() === monitor.selectedVectorLayer.toLowerCase()) {
+                sensorPanel.addArrowToGraph(id, rotation, scale, color, x, y);
+            }
         }
 
         onVectorRemoved: function (id) {
-            sensorPanel.removeArrowFromGraph(id)
+            sensorPanel.removeArrowFromGraph(id);
         }
 
         onVectorUpdated: function (id, name, rotation, scale, color, layer, x, y) {
-            sensorPanel.updateArrowOnGraph(id, rotation, scale, color, x, y)
+            if (layer.toLowerCase() === monitor.selectedVectorLayer.toLowerCase()) {
+                sensorPanel.updateArrowOnGraph(id, rotation, scale, color, x, y);
+            }
         }
 
         onClearChartSeries: function () {
-            sensorPanel.clearGraph()
+            sensorPanel.clearGraph();
         }
     }
 
     SerialParser {
         id: serialParser
-        Component.onCompleted: setModels(sensorController.model,
-                                         vectorController.model)
+        Component.onCompleted: setModels(sensorController.model, vectorController.model)
     }
 
     Rectangle {
@@ -120,14 +127,14 @@ Window {
         serialParser: serialParser
 
         onCurrentFrameChanged: {
-            sensorPanel.clearGraph()
-            timelineBar.updateTimelineProps()
+            sensorPanel.clearGraph();
+            timelineBar.updateTimelineProps();
         }
 
         Connections {
             target: serialParser
             function onSnapshotsChanged() {
-                timelineBar.updateTimelineProps()
+                timelineBar.updateTimelineProps();
             }
         }
     }

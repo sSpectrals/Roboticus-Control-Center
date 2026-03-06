@@ -10,10 +10,12 @@ class SensorController : public QObject {
   QML_ELEMENT
 
   Q_PROPERTY(SensorModel *model READ model CONSTANT)
+  Q_PROPERTY(QList<QString> layers READ layers NOTIFY layersChanged)
 public:
   explicit SensorController(QObject *parent = nullptr);
 
   SensorModel *model() const { return m_model; }
+  QList<QString> layers() const { return m_model ? m_model->layers() : QList<QString>(); }
 
   Q_INVOKABLE Sensor addSensor(const QString &name = QString(),
                                double input = 0.0, double threshold = 100.0,
@@ -42,6 +44,7 @@ signals:
                      double threshold, const bool &isTriggered,
                      const QString &layer, double x, double y);
   void clearChartSeries();
+  void layersChanged();
 
 private:
   SensorModel *m_model;

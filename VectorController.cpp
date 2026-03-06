@@ -9,6 +9,8 @@ VectorController::VectorController(QObject *parent)
           &VectorController::vectorRemoved);
   connect(m_model, &VectorModel::vectorUpdated, this,
           &VectorController::vectorUpdated);
+  connect(m_model, &VectorModel::layersChanged, this,
+          &VectorController::layersChanged);
 }
 
 Q_INVOKABLE Vector VectorController::addVector(const QString &name,

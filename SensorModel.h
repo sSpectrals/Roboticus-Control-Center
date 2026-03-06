@@ -21,6 +21,8 @@ struct Sensor {
 class SensorModel : public QAbstractListModel {
   Q_OBJECT
   QML_ELEMENT
+
+  Q_PROPERTY(QList<QString> layers READ layers NOTIFY layersChanged)
 public:
   enum Roles {
     IdRole = Qt::UserRole + 1,
@@ -35,6 +37,8 @@ public:
   Q_ENUM(Roles)
 
   explicit SensorModel(QObject *parent = nullptr);
+
+  QList<QString> layers() const { return m_layers; }
 
   virtual int
   rowCount(const QModelIndex &parent = QModelIndex()) const override;
@@ -65,9 +69,11 @@ signals:
   void sensorUpdated(const QUuid &id, const QString &name, double input,
                      double threshold, const bool &isTriggered,
                      const QString &layer, double x, double y);
+  void layersChanged();
 
 private:
   QList<Sensor> m_sensors;
+  QList<QString> m_layers;
 };
 
 #endif // SENSORMODEL_H

@@ -136,6 +136,12 @@ Sensor SensorModel::addSensor(QString name, double input, double threshold,
   beginInsertRows(QModelIndex(), m_sensors.size(), m_sensors.size());
   m_sensors.append(sensor);
   endInsertRows();
+
+  if (!m_layers.contains(layer)) {
+    m_layers.append(layer);
+    emit layersChanged();
+  }
+
   emit sensorAdded(sensor.id, sensor.name, sensor.inputValue, sensor.threshold,
                    sensor.isTriggered, sensor.layer, sensor.x, sensor.y);
   return sensor;

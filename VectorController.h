@@ -11,10 +11,12 @@ class VectorController : public QObject {
   QML_ELEMENT
 
   Q_PROPERTY(VectorModel *model READ model CONSTANT)
+  Q_PROPERTY(QList<QString> layers READ layers NOTIFY layersChanged)
 public:
   explicit VectorController(QObject *parent = nullptr);
 
   VectorModel *model() const { return m_model; }
+  QList<QString> layers() const { return m_model ? m_model->layers() : QList<QString>(); }
 
   Q_INVOKABLE Vector addVector(const QString &name = QString(),
                                double rotation = 0, double scale = 1,
@@ -42,6 +44,7 @@ signals:
                      double scale, const QColor &color, const QString &layer,
                      double x, double y);
   void clearChartSeries();
+  void layersChanged();
 
 private:
   VectorModel *m_model;

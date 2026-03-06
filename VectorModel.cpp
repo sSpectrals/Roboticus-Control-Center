@@ -130,6 +130,11 @@ Vector VectorModel::addVector(QString name, double rotation, double scale,
   m_vectors.append(vector);
   endInsertRows();
 
+  if (!m_layers.contains(layer)) {
+    m_layers.append(layer);
+    emit layersChanged();
+  }
+
   emit vectorAdded(vector.id, vector.name, vector.rotation, vector.scale,
                    vector.color, vector.layer, vector.x, vector.y);
   return vector;

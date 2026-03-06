@@ -16,8 +16,10 @@ Flickable {
     required property var sensorController
     required property var vectorController
 
-    property string selectedSensorLayer: "Layer 1"
-    property string selectedVectorLayer: "Layer 1"
+    property string selectedSensorLayer: sensorController.layers.length
+                                         > 0 ? sensorController.layers[0] : "Layer 1"
+    property string selectedVectorLayer: vectorController.layers.length
+                                         > 0 ? vectorController.layers[0] : "Layer 1"
 
     ScrollBar.vertical: ScrollBar {
         id: verticalScrollBar
@@ -105,8 +107,8 @@ Flickable {
 
                     ComboBox {
                         id: sensorLayerSelection
-                        model: ["Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"]
-                        // visible: serialParser.availableSensorLayers.length > 1
+                        model: sensorController.layers
+                        visible: sensorController.layers.length > 1
                         currentIndex: 0
 
                         anchors.verticalCenter: parent.verticalCenter
@@ -187,14 +189,6 @@ Flickable {
                 }
             }
 
-            add: Transition {
-                NumberAnimation {
-                    properties: "x"
-                    from: 300
-                    duration: 300
-                }
-            }
-
             delegate: SensorInfo {
                 id: sensorDelegate
                 width: ListView.view.width
@@ -261,8 +255,8 @@ Flickable {
 
                     ComboBox {
                         id: vectorLayerSelection
-                        model: ["Layer 1", "Layer 2", "Layer 3", "Layer 4", "Layer 5"]
-                        // visible: serialParser.availableVectorLayers.length > 1
+                        model: vectorController.layers
+                        visible: vectorController.layers.length > 1
                         currentIndex: 0
 
                         anchors.verticalCenter: parent.verticalCenter
@@ -340,14 +334,6 @@ Flickable {
                             focus = false
                         }
                     }
-                }
-            }
-
-            add: Transition {
-                NumberAnimation {
-                    properties: "x"
-                    from: 300
-                    duration: 200
                 }
             }
 
