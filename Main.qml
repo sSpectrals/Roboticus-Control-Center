@@ -35,7 +35,7 @@ Window {
         }
 
         onClearChartSeries: function () {
-            sensorPanel.clearGraph();
+            sensorPanel.clearPoints();
         }
     }
 
@@ -59,7 +59,7 @@ Window {
         }
 
         onClearChartSeries: function () {
-            sensorPanel.clearGraph();
+            sensorPanel.clearArrows();
         }
     }
 

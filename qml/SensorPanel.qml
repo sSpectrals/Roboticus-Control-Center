@@ -69,7 +69,8 @@ Rectangle {
         // }
     }
 
-    property var seriesMap: ({})
+    property var pointSeriesMap: ({})
+    property var arrowSeriesMap: ({})
 
     function addPointToGraph(id, x, y, trig) {
         var component = Qt.createComponent("SinglePointSeries.qml");
@@ -82,23 +83,23 @@ Rectangle {
             });
 
             chart.addSeries(series);
-            seriesMap[id] = series;
+            pointSeriesMap[id] = series;
         }
     }
 
     function removePointFromGraph(id) {
-        var series = seriesMap[id];
+        var series = pointSeriesMap[id];
         if (series) {
             chart.removeSeries(series);
 
-            delete seriesMap[id];
+            delete pointSeriesMap[id];
 
             series.destroy(100);
         }
     }
 
     function updatePointOnGraph(id, x, y, trig) {
-        var series = seriesMap[id];
+        var series = pointSeriesMap[id];
         if (series) {
             series.pointX = x;
             series.pointY = y;
@@ -119,23 +120,23 @@ Rectangle {
             });
 
             chart.addSeries(series);
-            seriesMap[id] = series;
+            arrowSeriesMap[id] = series;
         }
     }
 
     function removeArrowFromGraph(id) {
-        var series = seriesMap[id];
+        var series = arrowSeriesMap[id];
         if (series) {
             chart.removeSeries(series);
 
-            delete seriesMap[id];
+            delete arrowSeriesMap[id];
 
             series.destroy(100);
         }
     }
 
     function updateArrowOnGraph(id, rotation, scale, arrowColor, x, y) {
-        var series = seriesMap[id];
+        var series = arrowSeriesMap[id];
         if (series) {
             series.vecX = x;
             series.vecY = y;
@@ -145,14 +146,30 @@ Rectangle {
         }
     }
 
-    function clearGraph() {
-        for (var id in seriesMap) {
-            var series = seriesMap[id];
+    function clearPoints() {
+        for (var id in pointSeriesMap) {
+            var series = pointSeriesMap[id];
             if (series) {
                 chart.removeSeries(series);
                 series.destroy(100);
             }
         }
-        seriesMap = {};
+        pointSeriesMap = {};
+    }
+
+    function clearArrows() {
+        for (var id in arrowSeriesMap) {
+            var series = arrowSeriesMap[id];
+            if (series) {
+                chart.removeSeries(series);
+                series.destroy(100);
+            }
+        }
+        arrowSeriesMap = {};
+    }
+
+    function clearGraph() {
+        clearPoints();
+        clearArrows();
     }
 }
