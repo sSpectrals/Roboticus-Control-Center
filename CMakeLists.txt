@@ -34,6 +34,8 @@ qt_add_qml_module(appRoboticus_control_center
         qml/assets/SVG/remove.svg
         qml/assets/SVG/arrow.svg
         qml/assets/SVG/trash.svg
+        qml/assets/icons/Roboticus_icon.png
+        qml/assets/icons/Roboticus_icon.ico
 
     SOURCES
         SensorController.h SensorController.cpp
