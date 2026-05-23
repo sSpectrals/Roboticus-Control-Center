@@ -1,6 +1,7 @@
 #pragma once
 
 #include <QObject>
+#include <QMetaObject>
 #include <QQmlEngine>
 #include <QString>
 #include <QUrl>
@@ -15,7 +16,7 @@
 #include "include/parser/SnapshotStore.h"
 
 /**
- * @brief Central controller that wires together the serial port, parser,
+ * @brief Central controller that wires together serial/UDP input, parser,
  *        data models, snapshot store, and file I/O.
  *
  *        Owns the SerialPortManager and SerialParser. Holds weak (non-owning)
@@ -94,7 +95,7 @@ public:
     /** @brief Switches to wireless input mode and closes any open serial port. */
     Q_INVOKABLE void switchToWirelessMode();
 
-    /** @brief Starts UDP listening in wireless mode without parsing datagrams. */
+    /** @brief Starts UDP listening in wireless mode and feeds datagrams to the existing parser. */
     Q_INVOKABLE bool startWirelessMonitor(int port);
 
     /** @brief Stops UDP listening if active. */
@@ -127,6 +128,8 @@ private:
     SerialPortManager *m_portManager = nullptr;
     SerialParser *m_parser = nullptr;
     UDPConnection *m_udpConnection = nullptr;
+    QMetaObject::Connection m_udpParserConnection;
+    QMetaObject::Connection m_udpParserDebugConnection;
     QString m_connectionMode = QStringLiteral("wired");
     SnapshotStore m_snapshotStore;
     SnapshotLoader m_snapshotLoader;
@@ -137,6 +140,18 @@ private:
 
     /** @brief Dispatches frame data to the sensor and vector model updaters. */
     void updateModelsFromFrame(const DecodedFrame &frame);
+
+    /** @brief Connects serial bytes to the parser if not already connected. */
+    void connectSerialInputToParser();
+
+    /** @brief Disconnects serial bytes from the parser. */
+    void disconnectSerialInputFromParser();
+
+    /** @brief Connects UDP datagrams to the parser and a wireless debug log. */
+    void connectUdpInputToParser();
+
+    /** @brief Disconnects UDP datagrams from the parser. */
+    void disconnectUdpInputFromParser();
 
     /**
      * @brief Parses the raw sensor list from a frame and updates or inserts

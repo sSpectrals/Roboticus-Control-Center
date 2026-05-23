@@ -1,5 +1,57 @@
 # Implementation Log
 
+## 2026-05-23 12:28:10 +02:00
+
+Goal of this step: Implement app-side wireless telemetry by feeding UDP datagrams into the existing binary frame parser.
+
+Files inspected:
+
+- `docs/PROJECT_CONTEXT.md`
+- `docs/IMPLEMENTATION_LOG.md`
+- `include/controllers/AppController.h`
+- `src/controllers/AppController.cpp`
+- `include/io/SerialParser.h`
+- `src/io/SerialParser.cpp`
+- `include/io/UDPConnection.h`
+- `src/io/UDPConnection.cpp`
+
+Files changed:
+
+- `include/controllers/AppController.h`
+- `src/controllers/AppController.cpp`
+- `src/io/UDPConnection.cpp`
+- `src/io/SerialParser.cpp`
+- `docs/PROJECT_CONTEXT.md`
+- `docs/IMPLEMENTATION_LOG.md`
+
+Summary of changes:
+
+- Added explicit parser input routing in `AppController`.
+- Wired mode connects `SerialPortManager::rawDataReceived` to `SerialParser::onRawDataReady` and disconnects/stops UDP parser input.
+- Wireless monitor start disconnects serial parser input, resets `SerialParser`, starts UDP listening, then connects `UDPConnection::rawDataReceived` to the parser after the listener starts successfully.
+- Wireless monitor stop disconnects UDP parser input, stops UDP listening, and resets `SerialParser`.
+- Preserved the existing frame protocol: UDP datagrams are expected to contain `0xFD + uint16 little-endian payload length + MsgPack payload`.
+- Did not parse MsgPack in `UDPConnection` and did not add JSON telemetry.
+- Added minimal debug logs for UDP datagram size, first byte, wireless bytes reaching `SerialParser`, and successful `frameDecoded` emission.
+- Did not change graph, model, monitor, timeline, or snapshot behavior.
+
+Errors encountered:
+
+- No build errors were encountered.
+
+Tests performed:
+
+- Build command:
+
+```powershell
+$env:Path = "C:\Qt\Tools\mingw1310_64\bin;$env:Path"; & C:/Qt/Tools/CMake_64/bin/cmake.exe --build build/Desktop_Qt_6_11_1_MinGW_64_bit-Debug
+```
+
+Result:
+
+- Build completed successfully: `[100%] Built target appRoboticus_Data_Visualiser`.
+- Runtime UDP telemetry with an ESP32 fake generator was not manually tested during this step.
+
 ## 2026-05-23 12:19:34 +02:00
 
 Goal of this step: Add user-facing UDP connection errors matching the existing serial error flow.

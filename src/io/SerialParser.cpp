@@ -1,5 +1,6 @@
 #include "SerialParser.h"
 
+#include <QDebug>
 #include <QVariant>
 #include <msgpack.h>
 
@@ -23,6 +24,7 @@ void SerialParser::processMsgPackData(const QByteArray &data) {
   if (!frame.isValid) {
     return;
   }
+  qDebug() << "SerialParser frameDecoded emitted";
   emit frameDecoded(frame);
 }
 

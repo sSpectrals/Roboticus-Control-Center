@@ -1,13 +1,13 @@
 #include "controllers/AppController.h"
 
+#include <QDebug>
+
 AppController::AppController(QObject *parent) : QObject(parent) {
   m_portManager = new SerialPortManager(this);
   m_parser = new SerialParser(this);
   m_udpConnection = new UDPConnection(this);
 
-  // Route raw data from Serial Port -> Parser
-  connect(m_portManager, &SerialPortManager::rawDataReceived, m_parser,
-          &SerialParser::onRawDataReady);
+  connectSerialInputToParser();
 
   // Route decoded frames from Parser -> Controller
   connect(m_parser, &SerialParser::frameDecoded, this,
@@ -32,6 +32,8 @@ void AppController::setModels(SensorModel *sensorModel,
 }
 
 void AppController::switchToWiredMode() {
+  disconnectUdpInputFromParser();
+
   if (m_udpConnection) {
     m_udpConnection->stopListening();
   }
@@ -39,6 +41,8 @@ void AppController::switchToWiredMode() {
   if (m_parser) {
     m_parser->reset();
   }
+
+  connectSerialInputToParser();
 
   if (m_connectionMode == QStringLiteral("wired")) {
     return;
@@ -51,6 +55,12 @@ void AppController::switchToWiredMode() {
 void AppController::switchToWirelessMode() {
   if (m_portManager && m_portManager->isConnected()) {
     m_portManager->disconnectPort();
+  }
+
+  disconnectSerialInputFromParser();
+
+  if (!m_udpConnection || !m_udpConnection->isListening()) {
+    disconnectUdpInputFromParser();
   }
 
   if (m_parser) {
@@ -79,6 +89,9 @@ bool AppController::startWirelessMonitor(int port) {
     m_portManager->disconnectPort();
   }
 
+  disconnectSerialInputFromParser();
+  disconnectUdpInputFromParser();
+
   if (m_parser) {
     m_parser->reset();
   }
@@ -88,10 +101,16 @@ bool AppController::startWirelessMonitor(int port) {
   }
 
   m_udpConnection->clearStatistics();
-  return m_udpConnection->startListening(static_cast<quint16>(port));
+  const bool started = m_udpConnection->startListening(static_cast<quint16>(port));
+  if (started) {
+    connectUdpInputToParser();
+  }
+  return started;
 }
 
 void AppController::stopWirelessMonitor() {
+  disconnectUdpInputFromParser();
+
   if (m_udpConnection) {
     m_udpConnection->stopListening();
   }
@@ -104,6 +123,56 @@ void AppController::stopWirelessMonitor() {
 void AppController::reportConnectionError(const QString &message) {
   if (!message.isEmpty()) {
     emit errorOccurred(message);
+  }
+}
+
+void AppController::connectSerialInputToParser() {
+  if (!m_portManager || !m_parser) {
+    return;
+  }
+
+  connect(m_portManager, &SerialPortManager::rawDataReceived, m_parser,
+          &SerialParser::onRawDataReady, Qt::UniqueConnection);
+}
+
+void AppController::disconnectSerialInputFromParser() {
+  if (!m_portManager || !m_parser) {
+    return;
+  }
+
+  disconnect(m_portManager, &SerialPortManager::rawDataReceived, m_parser,
+             &SerialParser::onRawDataReady);
+}
+
+void AppController::connectUdpInputToParser() {
+  if (!m_udpConnection || !m_parser || m_udpParserConnection) {
+    return;
+  }
+
+  m_udpParserConnection =
+      connect(m_udpConnection, &UDPConnection::rawDataReceived, m_parser,
+              &SerialParser::onRawDataReady, Qt::UniqueConnection);
+  if (!m_udpParserConnection) {
+    return;
+  }
+
+  m_udpParserDebugConnection =
+      connect(m_udpConnection, &UDPConnection::rawDataReceived, this,
+              [](const QByteArray &data) {
+                qDebug() << "Wireless UDP data received by SerialParser, bytes:"
+                         << data.size();
+              });
+}
+
+void AppController::disconnectUdpInputFromParser() {
+  if (m_udpParserConnection) {
+    disconnect(m_udpParserConnection);
+    m_udpParserConnection = QMetaObject::Connection();
+  }
+
+  if (m_udpParserDebugConnection) {
+    disconnect(m_udpParserDebugConnection);
+    m_udpParserDebugConnection = QMetaObject::Connection();
   }
 }
 

@@ -1,6 +1,6 @@
 # Project Context
 
-Last updated: 2026-05-23 12:19:34 +02:00
+Last updated: 2026-05-23 12:28:10 +02:00
 
 ## Current project structure relevant to this task
 
@@ -13,22 +13,30 @@ Last updated: 2026-05-23 12:19:34 +02:00
 - `libs/qmsgpack/` is the bundled MsgPack dependency used by `SerialParser`.
 - `build/Desktop_Qt_6_11_1_MinGW_64_bit-Debug/` is the current Qt Creator generated build directory.
 
-## Existing serial data flow
+## Existing input data flow
 
 Verified from `AppController`, `SerialParser`, `SerialFrameExtractor`, `SerialPortManager`, and QML files:
 
-`SerialPortManager -> SerialParser -> SerialFrameExtractor -> AppController -> models -> QML UI`
+- Wired monitor active:
+  `SerialPortManager -> SerialParser -> SerialFrameExtractor -> AppController -> models -> QML UI`
+- Wireless monitor active:
+  `UDPConnection -> SerialParser -> SerialFrameExtractor -> AppController -> models -> QML UI`
 
 - `SerialPortManager` emits `rawDataReceived(QByteArray)` when serial bytes arrive.
-- `AppController` owns `SerialPortManager` and `SerialParser`.
-- `AppController` connects `SerialPortManager::rawDataReceived` to `SerialParser::onRawDataReady`.
+- `UDPConnection` emits `rawDataReceived(QByteArray)` when UDP datagrams arrive.
+- `AppController` owns `SerialPortManager`, `UDPConnection`, and `SerialParser`.
+- `AppController` connects only the active input source to `SerialParser::onRawDataReady`.
+- Wired mode keeps serial connected to the parser and stops/disconnects UDP parser input.
+- Wireless monitor start disconnects serial parser input, starts UDP listening, and connects UDP datagrams to the parser only after the listener starts successfully.
+- Wireless monitor stop disconnects UDP parser input and resets the parser.
 - `SerialParser` appends raw bytes to `SerialFrameExtractor`, takes complete frames, emits raw MsgPack payloads through `dataReceived`, decodes MsgPack payloads, and emits `frameDecoded`.
 - `AppController` connects `SerialParser::frameDecoded` to `AppController::onFrameParsed`.
 - `AppController::onFrameParsed` updates the sensor and vector models and appends a snapshot.
 - `ui/Main.qml` creates `SensorController`, `VectorController`, `AppController`, `ConnectionBar`, `Monitor`, `Timeline`, and `Graph`.
 - `ui/Main.qml` passes `sensorController.model` and `vectorController.model` into `AppController::setModels`.
 - QML graph updates are connected through `SensorController` and `VectorController` signals in `ui/Main.qml`.
-- UDP datagrams are not connected to `SerialParser` yet. The UDP layer is currently for wireless connection testing and status only.
+- UDP datagrams must already contain the existing binary frame format: `0xFD + uint16 little-endian payload length + MsgPack payload`.
+- UDP does not parse MsgPack inside `UDPConnection` and no JSON telemetry format has been added.
 
 ## Important files inspected
 
@@ -45,6 +53,7 @@ Verified from `AppController`, `SerialParser`, `SerialFrameExtractor`, `SerialPo
 - `CMakeLists.txt`: lists the Qt target, QML files, C++ sources, includes, and linked libraries.
 - `include/io/UDPConnection.h`: declares the UDP transport/status QObject exposed through `AppController`.
 - `src/io/UDPConnection.cpp`: binds a `QUdpSocket`, receives datagrams, and updates packet statistics.
+- `src/controllers/AppController.cpp`: owns the mutually exclusive parser input routing for wired serial and wireless UDP.
 - `README.md`: documents the high-level app purpose, serial frame protocol, and snapshot format.
 
 ## Existing framed data/parser architecture
@@ -83,16 +92,21 @@ Verified details only:
 - `ConnectionBar.qml` shows UDP controls in wireless mode with default port `45454`, start/stop button, listening/stopped status, and validation errors.
 - Wireless UI cleanup on 2026-05-23: visible debug fields for packets, bytes, and last sender were removed from the main connection bar.
 - UDP packet, byte, and last-sender statistics remain tracked internally in `UDPConnection`.
-- UDP emits `rawDataReceived(QByteArray)`, but it is not connected to `SerialParser`.
+- Wireless telemetry update on 2026-05-23: `AppController::startWirelessMonitor()` now connects `UDPConnection::rawDataReceived(QByteArray)` to `SerialParser::onRawDataReady(QByteArray)` after UDP listening starts successfully.
+- `AppController` disconnects the inactive parser input source during wired/wireless transitions so serial and UDP do not feed `SerialParser` at the same time.
+- UDP datagrams are treated as existing framed binary data. `UDPConnection` still does not parse MsgPack or create a separate telemetry format.
 - No UDP transport logic, parser logic, MsgPack-over-UDP, RoboticusDebugger telemetry-over-UDP, graph, monitor, model, or timeline behavior was changed in the wireless UI cleanup.
 - UDP connection error update on 2026-05-23: invalid UDP port input now emits user-facing errors through `AppController`.
 - `UDPConnection` now emits an error if no UDP packets are received within 10 seconds after listening starts or after the previous packet.
 - UDP bind and socket errors are still exposed through `UDPConnection::errorString` and `errorOccurred`.
-- UDP packet, byte, and last-sender statistics remain internal and UDP datagrams are still not connected to `SerialParser`.
+- UDP packet, byte, and last-sender statistics remain internal.
+- Added minimal debug logs for UDP datagram size, UDP datagram first byte, wireless bytes reaching `SerialParser`, and successful `SerialParser::frameDecoded` emission.
 
 ## Why the change was made
 
 The change prepares the UI for a future wireless input path while preserving the existing wired serial mode. Resetting the parser buffer during mode switches prevents incomplete bytes from one input mode from being reused after a mode change.
+
+The latest wireless telemetry change allows an ESP32 fake telemetry generator to send valid existing binary frames over UDP before real robot firmware is ready. It intentionally reuses the existing parser/model/UI path instead of adding new parsing in `UDPConnection`.
 
 ## Files modified
 
@@ -104,6 +118,7 @@ The change prepares the UI for a future wireless input path while preserving the
 - `src/controllers/AppController.cpp`
 - `include/io/UDPConnection.h`
 - `src/io/UDPConnection.cpp`
+- `src/io/SerialParser.cpp`
 - `CMakeLists.txt`
 - `ui/Main.qml`
 - `ui/components/ConnectionBar.qml`
@@ -114,7 +129,7 @@ The change prepares the UI for a future wireless input path while preserving the
 
 - `include/io/SerialPortManager.h`
 - `src/io/SerialPortManager.cpp`
-- MsgPack parsing behavior in `src/io/SerialParser.cpp`, except for adding `reset()`.
+- MsgPack parsing behavior in `src/io/SerialParser.cpp`, except for adding `reset()` and a debug log before `frameDecoded`.
 - Model files under `include/models/` and `src/models/`.
 - Graph QML files under `ui/components/Graph/`.
 - Monitor QML files under `ui/components/Monitor/`.
@@ -142,13 +157,15 @@ The app was launched briefly after the wireless UI cleanup and was still running
 
 - The requested wired/wireless UI mode switch exists.
 - Wireless mode disconnects serial input and shows UDP listener controls.
-- UDP listening is connection-test only and is not connected to telemetry parsing yet.
+- UDP listening now feeds existing binary frames into telemetry parsing only while the wireless monitor is active.
 - Wireless mode no longer shows packets, bytes, or last sender in the main connection bar.
 - Wireless UDP validation errors are shown for empty ports, letters/symbols, and ports outside `1..65535`.
 - Wireless UDP listening reports a timeout error if no packets arrive within 10 seconds.
+- Wireless UDP datagrams now feed the existing parser only while the wireless monitor is active.
+- Wired mode keeps serial behavior intact and disconnects/stops UDP parser input.
 - Wired serial behavior is preserved and wired mode stops UDP listening if active.
 - The project builds successfully with the 2026-05-23 command listed in `docs/IMPLEMENTATION_LOG.md`.
 
 ## Next planned step
 
-Add real RoboticusDebugger telemetry-over-UDP later, then decide when and how UDP datagrams should enter the existing parser/data pipeline.
+Test with an ESP32 fake telemetry generator that sends valid existing binary frames over UDP. Add real robot UART bridge firmware later.

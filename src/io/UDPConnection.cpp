@@ -1,5 +1,6 @@
 #include "UDPConnection.h"
 
+#include <QDebug>
 #include <QHostAddress>
 #include <QNetworkDatagram>
 #include <QUdpSocket>
@@ -107,6 +108,15 @@ void UDPConnection::readPendingDatagrams() {
     }
 
     const QByteArray data = datagram.data();
+    const QString firstByte =
+        data.isEmpty()
+            ? QStringLiteral("<empty>")
+            : QStringLiteral("0x%1")
+                  .arg(static_cast<quint8>(data.at(0)), 2, 16,
+                       QLatin1Char('0'))
+                  .toUpper();
+    qDebug() << "UDP datagram received size" << data.size() << "first byte"
+             << firstByte;
 
     ++m_packetsReceived;
     m_bytesReceived += static_cast<quint64>(data.size());
