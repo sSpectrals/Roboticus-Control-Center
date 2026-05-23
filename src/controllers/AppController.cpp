@@ -27,6 +27,36 @@ void AppController::setModels(SensorModel *sensorModel,
   m_vectorModel = vectorModel;
 }
 
+void AppController::switchToWiredMode() {
+  if (m_parser) {
+    m_parser->reset();
+  }
+
+  if (m_connectionMode == QStringLiteral("wired")) {
+    return;
+  }
+
+  m_connectionMode = QStringLiteral("wired");
+  emit connectionModeChanged();
+}
+
+void AppController::switchToWirelessMode() {
+  if (m_portManager && m_portManager->isConnected()) {
+    m_portManager->disconnectPort();
+  }
+
+  if (m_parser) {
+    m_parser->reset();
+  }
+
+  if (m_connectionMode == QStringLiteral("wireless")) {
+    return;
+  }
+
+  m_connectionMode = QStringLiteral("wireless");
+  emit connectionModeChanged();
+}
+
 void AppController::onFrameParsed(const DecodedFrame &frame) {
   // 1. update UI models
   updateModelsFromFrame(frame);

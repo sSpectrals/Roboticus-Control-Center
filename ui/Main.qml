@@ -118,6 +118,7 @@ Window {
     ConnectionBar {
         id: title
 
+        appController: appController
         portManager: appController.portManager
     }
 

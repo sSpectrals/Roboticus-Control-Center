@@ -11,7 +11,9 @@ Rectangle {
     height: 50
     color: "transparent"
 
+    required property var appController
     required property var portManager
+    readonly property bool wiredMode: appController.connectionMode === "wired"
 
     anchors {
         left: parent.left
@@ -38,8 +40,26 @@ Rectangle {
         height: parent.height
         spacing: 20
 
+        Button {
+            text: "Wired"
+            highlighted: connectionBar.wiredMode
+            Layout.preferredWidth: 100
+            Layout.preferredHeight: connectionBar.height * 0.6
+            onClicked: appController.switchToWiredMode()
+        }
+
+        Button {
+            text: "Wireless"
+            highlighted: !connectionBar.wiredMode
+            Layout.preferredWidth: 110
+            Layout.preferredHeight: connectionBar.height * 0.6
+            onClicked: appController.switchToWirelessMode()
+        }
+
         StyledComboBox {
             id: comSelection
+            visible: connectionBar.wiredMode
+            enabled: connectionBar.wiredMode
             Layout.preferredWidth: 150
             Layout.preferredHeight: connectionBar.height * 0.6
             Layout.fillWidth: true
@@ -64,6 +84,8 @@ Rectangle {
 
         StyledComboBox {
             id: baudSelection
+            visible: connectionBar.wiredMode
+            enabled: connectionBar.wiredMode
             Layout.preferredWidth: 110
             Layout.preferredHeight: connectionBar.height * 0.6
             Layout.fillWidth: true
@@ -78,6 +100,8 @@ Rectangle {
 
         Button {
             id: startMonitor
+            visible: connectionBar.wiredMode
+            enabled: connectionBar.wiredMode
             Layout.preferredWidth: 150
             Layout.fillWidth: true
             Layout.preferredHeight: connectionBar.height * 0.6

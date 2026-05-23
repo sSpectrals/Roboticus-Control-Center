@@ -2,6 +2,7 @@
 
 #include <QObject>
 #include <QQmlEngine>
+#include <QString>
 #include <QUrl>
 
 #include "include/io/SerialParser.h"
@@ -33,12 +34,16 @@ class AppController : public QObject {
     /** @brief Total number of stored snapshots; updates whenever a frame arrives or a file is loaded. */
     Q_PROPERTY(int snapshotCount READ snapshotCount NOTIFY snapshotsChanged)
 
+    /** @brief Active input mode. Supported values are "wired" and "wireless". */
+    Q_PROPERTY(QString connectionMode READ connectionMode NOTIFY connectionModeChanged)
+
 public:
     explicit AppController(QObject *parent = nullptr);
 
     SerialPortManager *portManager() const { return m_portManager; }
     SerialParser *parser() const { return m_parser; }
     int snapshotCount() const { return m_snapshotStore.count(); }
+    QString connectionMode() const { return m_connectionMode; }
 
     /**
      * @brief Registers the active sensor and vector models with the controller.
@@ -78,9 +83,18 @@ public:
     /** @brief Returns all stored timestamps in order of arrival. */
     Q_INVOKABLE QList<qint64> availableTimestamps() const;
 
+    /** @brief Switches to serial COM-port input mode. */
+    Q_INVOKABLE void switchToWiredMode();
+
+    /** @brief Switches to wireless input mode and closes any open serial port. */
+    Q_INVOKABLE void switchToWirelessMode();
+
 signals:
     /** @brief Emitted whenever the snapshot store changes (frame received or file loaded). */
     void snapshotsChanged();
+
+    /** @brief Emitted when connectionMode changes. */
+    void connectionModeChanged();
 
     /** @brief Emitted with a human-readable message when any operation fails. */
     void errorOccurred(const QString &message);
@@ -98,6 +112,7 @@ private slots:
 private:
     SerialPortManager *m_portManager = nullptr;
     SerialParser *m_parser = nullptr;
+    QString m_connectionMode = QStringLiteral("wired");
     SnapshotStore m_snapshotStore;
     SnapshotLoader m_snapshotLoader;
 
