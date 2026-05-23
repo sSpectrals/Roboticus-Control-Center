@@ -1,14 +1,15 @@
 # Project Context
 
-Last updated: 2026-05-23 11:11:34 +02:00
+Last updated: 2026-05-23 11:36:15 +02:00
 
 ## Current project structure relevant to this task
 
-- `CMakeLists.txt` defines one Qt 6 QML application target named `appRoboticus_Data_Visualiser`.
+- `CMakeLists.txt` defines one Qt 6 QML application target named `appRoboticus_Data_Visualiser` and links Qt Network for UDP support.
 - `include/` contains C++ headers for controllers, models, IO, and parser logic.
 - `src/` contains the matching C++ implementations.
 - `ui/` contains QML UI files.
 - `ui/components/ConnectionBar.qml` is the top connection control bar.
+- `include/io/UDPConnection.h` and `src/io/UDPConnection.cpp` contain the UDP listening/status transport layer.
 - `libs/qmsgpack/` is the bundled MsgPack dependency used by `SerialParser`.
 - `build/Desktop_Qt_6_11_1_MinGW_64_bit-Debug/` is the current Qt Creator generated build directory.
 
@@ -27,6 +28,7 @@ Verified from `AppController`, `SerialParser`, `SerialFrameExtractor`, `SerialPo
 - `ui/Main.qml` creates `SensorController`, `VectorController`, `AppController`, `ConnectionBar`, `Monitor`, `Timeline`, and `Graph`.
 - `ui/Main.qml` passes `sensorController.model` and `vectorController.model` into `AppController::setModels`.
 - QML graph updates are connected through `SensorController` and `VectorController` signals in `ui/Main.qml`.
+- UDP datagrams are not connected to `SerialParser` yet. The UDP layer is currently for wireless connection testing and status only.
 
 ## Important files inspected
 
@@ -41,6 +43,8 @@ Verified from `AppController`, `SerialParser`, `SerialFrameExtractor`, `SerialPo
 - `ui/Main.qml`: creates the main QML object graph and passes dependencies between UI components.
 - `ui/components/ConnectionBar.qml`: contains the COM port, baud rate, and Start Monitor serial controls.
 - `CMakeLists.txt`: lists the Qt target, QML files, C++ sources, includes, and linked libraries.
+- `include/io/UDPConnection.h`: declares the UDP transport/status QObject exposed through `AppController`.
+- `src/io/UDPConnection.cpp`: binds a `QUdpSocket`, receives datagrams, and updates packet statistics.
 - `README.md`: documents the high-level app purpose, serial frame protocol, and snapshot format.
 
 ## Existing framed data/parser architecture
@@ -73,6 +77,12 @@ Verified details only:
 - Layout-only update on 2026-05-23: `ConnectionBar.qml` now places Wired/Wireless mode buttons in a separate top row.
 - The serial controls remain in a separate lower row and are still only visible/enabled in wired mode.
 - No C++ logic, parser logic, serial logic, graph, monitor, timeline, or UDP code was changed in the layout-only update.
+- UDP update on 2026-05-23: added `UDPConnection` as a Qt Network/`QUdpSocket` listener with QML-visible listening state, port, packet count, byte count, last sender, and error string.
+- Added `AppController::udpConnection`, `startWirelessMonitor(quint16)`, and `stopWirelessMonitor()`.
+- Wireless mode stops serial and does not auto-start UDP. Wired mode stops UDP.
+- `ConnectionBar.qml` shows UDP controls in wireless mode with default port `45454`, start/stop buttons, status, statistics, last sender, and validation errors.
+- UDP emits `rawDataReceived(QByteArray)`, but it is not connected to `SerialParser`.
+- No MsgPack-over-UDP, RoboticusDebugger telemetry-over-UDP, parser, graph, monitor, model, or timeline behavior was implemented in the UDP update.
 
 ## Why the change was made
 
@@ -86,6 +96,9 @@ The change prepares the UI for a future wireless input path while preserving the
 - `src/io/SerialParser.cpp`
 - `include/controllers/AppController.h`
 - `src/controllers/AppController.cpp`
+- `include/io/UDPConnection.h`
+- `src/io/UDPConnection.cpp`
+- `CMakeLists.txt`
 - `ui/Main.qml`
 - `ui/components/ConnectionBar.qml`
 - `docs/PROJECT_CONTEXT.md`
@@ -100,13 +113,13 @@ The change prepares the UI for a future wireless input path while preserving the
 - Graph QML files under `ui/components/Graph/`.
 - Monitor QML files under `ui/components/Monitor/`.
 - Timeline QML files under `ui/components/Timeline/`.
-- `CMakeLists.txt`
 
 ## Build errors encountered and how they were fixed
 
 - The earlier documented `E:/QT/Tools/CMake_64/bin/cmake.exe` path was not available in the 2026-05-23 shell.
 - The earlier documented `build/Desktop_Qt_6_11_1_MinGW_64_bit_Debug` build directory was not present.
 - The current build cache is under `build/Desktop_Qt_6_11_1_MinGW_64_bit-Debug` and points to Qt tools under `C:/Qt`.
+- During the UDP update, an initial build stopped at automatic QML type registration without a useful diagnostic. A verbose rerun passed that step but hit the 120 second command timeout while compiling. A final build with a longer timeout completed successfully.
 - The successful build command was:
 
 ```powershell
@@ -120,10 +133,11 @@ Not confirmed yet. The desktop app was not launched during this step. QML compil
 ## Current status after the change
 
 - The requested wired/wireless UI mode switch exists.
-- Wireless mode currently only disconnects serial input and hides/disables serial controls.
-- No UDP or wireless input implementation has been added.
+- Wireless mode disconnects serial input and shows UDP listener controls.
+- UDP listening is connection-test only and is not connected to telemetry parsing yet.
+- Wired serial behavior is preserved and wired mode stops UDP listening if active.
 - The project builds successfully with the 2026-05-23 command listed in `docs/IMPLEMENTATION_LOG.md`.
 
 ## Next planned step
 
-Add `UDPConnection` later as a second raw byte input source that emits `rawDataReceived(QByteArray)` into the existing parser.
+Add real RoboticusDebugger telemetry-over-UDP later, then decide when and how UDP datagrams should enter the existing parser/data pipeline.

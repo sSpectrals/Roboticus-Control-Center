@@ -7,6 +7,7 @@
 
 #include "include/io/SerialParser.h"
 #include "include/io/SerialPortManager.h"
+#include "include/io/UDPConnection.h"
 #include "include/models/SensorModel.h"
 #include "include/models/VectorModel.h"
 #include "include/parser/FrameTypes.h"
@@ -31,6 +32,9 @@ class AppController : public QObject {
     /** @brief Exposes the parser to QML. */
     Q_PROPERTY(SerialParser *parser READ parser CONSTANT)
 
+    /** @brief Exposes the UDP transport status/control object to QML. */
+    Q_PROPERTY(UDPConnection *udpConnection READ udpConnection CONSTANT)
+
     /** @brief Total number of stored snapshots; updates whenever a frame arrives or a file is loaded. */
     Q_PROPERTY(int snapshotCount READ snapshotCount NOTIFY snapshotsChanged)
 
@@ -42,6 +46,7 @@ public:
 
     SerialPortManager *portManager() const { return m_portManager; }
     SerialParser *parser() const { return m_parser; }
+    UDPConnection *udpConnection() const { return m_udpConnection; }
     int snapshotCount() const { return m_snapshotStore.count(); }
     QString connectionMode() const { return m_connectionMode; }
 
@@ -89,6 +94,12 @@ public:
     /** @brief Switches to wireless input mode and closes any open serial port. */
     Q_INVOKABLE void switchToWirelessMode();
 
+    /** @brief Starts UDP listening in wireless mode without parsing datagrams. */
+    Q_INVOKABLE bool startWirelessMonitor(quint16 port);
+
+    /** @brief Stops UDP listening if active. */
+    Q_INVOKABLE void stopWirelessMonitor();
+
 signals:
     /** @brief Emitted whenever the snapshot store changes (frame received or file loaded). */
     void snapshotsChanged();
@@ -112,6 +123,7 @@ private slots:
 private:
     SerialPortManager *m_portManager = nullptr;
     SerialParser *m_parser = nullptr;
+    UDPConnection *m_udpConnection = nullptr;
     QString m_connectionMode = QStringLiteral("wired");
     SnapshotStore m_snapshotStore;
     SnapshotLoader m_snapshotLoader;

@@ -7,12 +7,14 @@ import QtQuick.Controls.Material
 Rectangle {
     id: connectionBar
 
-    height: 92
+    height: connectionBar.wiredMode ? 92 : 128
     color: "transparent"
 
     required property var appController
     required property var portManager
+    readonly property var udpConnection: appController.udpConnection
     readonly property bool wiredMode: appController.connectionMode === "wired"
+    property string udpPortError: ""
 
     anchors {
         left: monitor.left
@@ -29,6 +31,31 @@ Rectangle {
         if (portManager.availablePortsList.length > 0)
             portManager.setComPort(portManager.availablePortsList[0])
     }
+
+    function startWirelessMonitor() {
+        const portText = udpPortField.text.trim()
+
+        if (portText.length === 0) {
+            udpPortError = "UDP port is required"
+            return
+        }
+
+        if (!/^[0-9]+$/.test(portText)) {
+            udpPortError = "UDP port must be a number"
+            return
+        }
+
+        const port = Number(portText)
+        if (port <= 0 || port > 65535) {
+            udpPortError = "UDP port must be between 1 and 65535"
+            return
+        }
+
+        udpPortError = ""
+        if (!appController.startWirelessMonitor(port) && udpConnection.errorString.length > 0)
+            udpPortError = udpConnection.errorString
+    }
+
     // Mode selection
     RowLayout {
         id: modeRow
@@ -61,6 +88,121 @@ Rectangle {
 
         Item {
             Layout.fillWidth: true
+        }
+    }
+
+    // Wireless controls
+    ColumnLayout {
+        id: wirelessControlsColumn
+        visible: !connectionBar.wiredMode
+        enabled: !connectionBar.wiredMode
+        anchors {
+            left: parent.left
+            right: parent.right
+            top: modeRow.bottom
+            topMargin: 8
+            leftMargin: 10
+            rightMargin: 10
+        }
+        spacing: 6
+
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 34
+            spacing: 12
+
+            TextField {
+                id: udpPortField
+                text: "45454"
+                placeholderText: "UDP port"
+                enabled: !udpConnection.listening
+                selectByMouse: true
+                inputMethodHints: Qt.ImhDigitsOnly
+                Layout.preferredWidth: 90
+                Layout.minimumWidth: 80
+                Layout.preferredHeight: 34
+                onTextChanged: udpPortError = ""
+                onAccepted: {
+                    if (!udpConnection.listening)
+                        connectionBar.startWirelessMonitor()
+                }
+            }
+
+            Button {
+                text: "Start Wireless Monitor"
+                visible: !udpConnection.listening
+                enabled: !udpConnection.listening
+                Layout.preferredWidth: 190
+                Layout.preferredHeight: 34
+                onClicked: connectionBar.startWirelessMonitor()
+            }
+
+            Button {
+                text: "Stop Wireless Monitor"
+                visible: udpConnection.listening
+                enabled: udpConnection.listening
+                Layout.preferredWidth: 190
+                Layout.preferredHeight: 34
+                onClicked: {
+                    appController.stopWirelessMonitor()
+                    udpPortError = ""
+                }
+            }
+
+            Text {
+                text: udpConnection.listening ? "Listening" : "Stopped"
+                color: udpConnection.listening ? "#98FF98" : "#aaaaaa"
+                font.bold: true
+                font.pixelSize: 13
+                Layout.preferredWidth: 72
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            Item {
+                Layout.fillWidth: true
+            }
+        }
+
+        RowLayout {
+            Layout.fillWidth: true
+            Layout.preferredHeight: 18
+            spacing: 14
+
+            Text {
+                text: "Packets: " + udpConnection.packetsReceived
+                color: "#dddddd"
+                font.pixelSize: 12
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            Text {
+                text: "Bytes: " + udpConnection.bytesReceived
+                color: "#dddddd"
+                font.pixelSize: 12
+                Layout.alignment: Qt.AlignVCenter
+            }
+
+            Text {
+                text: udpConnection.lastSenderAddress.length > 0
+                      ? "Last sender: " + udpConnection.lastSenderAddress + ":" + udpConnection.lastSenderPort
+                      : "Last sender: -"
+                color: "#dddddd"
+                font.pixelSize: 12
+                elide: Text.ElideRight
+                Layout.fillWidth: true
+                Layout.alignment: Qt.AlignVCenter
+            }
+        }
+
+        Text {
+            readonly property string message: udpPortError.length > 0 ? udpPortError : udpConnection.errorString
+            visible: message.length > 0
+            text: message
+            color: "#ff8a8a"
+            font.pixelSize: 12
+            elide: Text.ElideRight
+            Layout.fillWidth: true
+            Layout.preferredHeight: visible ? 16 : 0
         }
     }
 

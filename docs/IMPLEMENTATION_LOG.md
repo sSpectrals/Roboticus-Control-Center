@@ -1,5 +1,65 @@
 # Implementation Log
 
+## 2026-05-23 11:36:15 +02:00
+
+Goal of this step: Add a UDP wireless listener/status layer without feeding UDP datagrams into telemetry parsing yet.
+
+Files inspected:
+
+- `CMakeLists.txt`
+- `include/controllers/AppController.h`
+- `src/controllers/AppController.cpp`
+- `ui/Main.qml`
+- `ui/components/ConnectionBar.qml`
+- `include/io/SerialPortManager.h`
+- `src/io/SerialPortManager.cpp`
+- `include/io/SerialParser.h`
+- `src/io/SerialParser.cpp`
+- `include/parser/SerialFrameExtractor.h`
+- `src/parser/SerialFrameExtractor.cpp`
+- `docs/PROJECT_CONTEXT.md`
+- `docs/IMPLEMENTATION_LOG.md`
+
+Files changed:
+
+- `CMakeLists.txt`
+- `include/controllers/AppController.h`
+- `src/controllers/AppController.cpp`
+- `include/io/UDPConnection.h`
+- `src/io/UDPConnection.cpp`
+- `ui/components/ConnectionBar.qml`
+- `docs/PROJECT_CONTEXT.md`
+- `docs/IMPLEMENTATION_LOG.md`
+
+Summary of changes:
+
+- Added `UDPConnection`, a QObject/`QUdpSocket` transport layer that can bind to an IPv4 UDP port, receive datagrams, track packet/byte counts, track the last sender, expose errors, and emit `rawDataReceived(QByteArray)`.
+- Added Qt Network to CMake package requirements and linked `Qt6::Network`.
+- Exposed `udpConnection` through `AppController`.
+- Added `AppController::startWirelessMonitor(quint16)` and `AppController::stopWirelessMonitor()`.
+- Wireless start switches to wireless mode if needed, disconnects serial if active, resets the parser buffer, clears UDP statistics, and starts UDP listening.
+- Wired mode stops UDP listening. Wireless mode still stops serial and does not auto-start UDP.
+- Added wireless-mode controls in `ConnectionBar.qml`: UDP port field defaulting to `45454`, Start/Stop Wireless Monitor buttons, listening status, packet count, byte count, last sender, and validation/error text.
+- UDP datagrams are not connected to `SerialParser`; no MsgPack-over-UDP or RoboticusDebugger-over-UDP telemetry parsing was added.
+- Graph, monitor, timeline, model, serial parser, and serial port manager logic were not changed.
+
+Errors encountered:
+
+- Initial build exited during automatic QML type registration. The visible output only showed the target failure, with no specific qmltyperegistrar diagnostic.
+- A verbose rebuild got past QML type registration but hit the 120 second command timeout while compiling QML cache/object files.
+- Re-running the same build with a 300 second timeout completed successfully.
+
+Tests performed:
+
+```powershell
+$env:Path = "C:\Qt\Tools\mingw1310_64\bin;$env:Path"; & C:/Qt/Tools/CMake_64/bin/cmake.exe --build build/Desktop_Qt_6_11_1_MinGW_64_bit-Debug
+```
+
+Result:
+
+- Build completed successfully: `[100%] Built target appRoboticus_Data_Visualiser`.
+- Runtime UI behavior: Not tested. The app was built but not launched.
+
 ## 2026-05-23 11:11:34 +02:00
 
 Goal of this step: Fix the `ConnectionBar` QML layout so mode selection and serial controls are separated into two rows.

@@ -3,6 +3,7 @@
 AppController::AppController(QObject *parent) : QObject(parent) {
   m_portManager = new SerialPortManager(this);
   m_parser = new SerialParser(this);
+  m_udpConnection = new UDPConnection(this);
 
   // Route raw data from Serial Port -> Parser
   connect(m_portManager, &SerialPortManager::rawDataReceived, m_parser,
@@ -19,6 +20,9 @@ AppController::AppController(QObject *parent) : QObject(parent) {
   // Forward errors to UI
   connect(m_portManager, &SerialPortManager::errorOccurred, this,
           &AppController::errorOccurred);
+
+  connect(m_udpConnection, &UDPConnection::errorOccurred, this,
+          &AppController::errorOccurred);
 }
 
 void AppController::setModels(SensorModel *sensorModel,
@@ -28,6 +32,10 @@ void AppController::setModels(SensorModel *sensorModel,
 }
 
 void AppController::switchToWiredMode() {
+  if (m_udpConnection) {
+    m_udpConnection->stopListening();
+  }
+
   if (m_parser) {
     m_parser->reset();
   }
@@ -55,6 +63,37 @@ void AppController::switchToWirelessMode() {
 
   m_connectionMode = QStringLiteral("wireless");
   emit connectionModeChanged();
+}
+
+bool AppController::startWirelessMonitor(quint16 port) {
+  if (m_connectionMode != QStringLiteral("wireless")) {
+    switchToWirelessMode();
+  }
+
+  if (m_portManager && m_portManager->isConnected()) {
+    m_portManager->disconnectPort();
+  }
+
+  if (m_parser) {
+    m_parser->reset();
+  }
+
+  if (!m_udpConnection) {
+    return false;
+  }
+
+  m_udpConnection->clearStatistics();
+  return m_udpConnection->startListening(port);
+}
+
+void AppController::stopWirelessMonitor() {
+  if (m_udpConnection) {
+    m_udpConnection->stopListening();
+  }
+
+  if (m_parser) {
+    m_parser->reset();
+  }
 }
 
 void AppController::onFrameParsed(const DecodedFrame &frame) {
