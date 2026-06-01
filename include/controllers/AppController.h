@@ -2,10 +2,12 @@
 
 #include <QObject>
 #include <QQmlEngine>
+#include <QString>
 #include <QUrl>
 
 #include "include/io/SerialParser.h"
 #include "include/io/SerialPortManager.h"
+#include "include/io/UDPConnection.h"
 #include "include/models/SensorModel.h"
 #include "include/models/VectorModel.h"
 #include "include/parser/FrameTypes.h"
@@ -13,7 +15,7 @@
 #include "include/parser/SnapshotStore.h"
 
 /**
- * @brief Central controller that wires together the serial port, parser,
+ * @brief Central controller that wires together serial/UDP input, parser,
  *        data models, snapshot store, and file I/O.
  *
  *        Owns the SerialPortManager and SerialParser. Holds weak (non-owning)
@@ -30,15 +32,23 @@ class AppController : public QObject {
     /** @brief Exposes the parser to QML. */
     Q_PROPERTY(SerialParser *parser READ parser CONSTANT)
 
+    /** @brief Exposes the UDP transport status/control object to QML. */
+    Q_PROPERTY(UDPConnection *udpConnection READ udpConnection CONSTANT)
+
     /** @brief Total number of stored snapshots; updates whenever a frame arrives or a file is loaded. */
     Q_PROPERTY(int snapshotCount READ snapshotCount NOTIFY snapshotsChanged)
+
+    /** @brief Active input mode. Supported values are "wired" and "wireless". */
+    Q_PROPERTY(QString connectionMode READ connectionMode NOTIFY connectionModeChanged)
 
 public:
     explicit AppController(QObject *parent = nullptr);
 
     SerialPortManager *portManager() const { return m_portManager; }
     SerialParser *parser() const { return m_parser; }
+    UDPConnection *udpConnection() const { return m_udpConnection; }
     int snapshotCount() const { return m_snapshotStore.count(); }
+    QString connectionMode() const { return m_connectionMode; }
 
     /**
      * @brief Registers the active sensor and vector models with the controller.
@@ -78,9 +88,27 @@ public:
     /** @brief Returns all stored timestamps in order of arrival. */
     Q_INVOKABLE QList<qint64> availableTimestamps() const;
 
+    /** @brief Switches to serial COM-port input mode. */
+    Q_INVOKABLE void switchToWiredMode();
+
+    /** @brief Switches to wireless input mode and closes any open serial port. */
+    Q_INVOKABLE void switchToWirelessMode();
+
+    /** @brief Starts UDP listening in wireless mode and feeds datagrams to the existing parser. */
+    Q_INVOKABLE bool startWirelessMonitor(int port);
+
+    /** @brief Stops UDP listening if active. */
+    Q_INVOKABLE void stopWirelessMonitor();
+
+    /** @brief Emits a user-facing connection error from QML validation. */
+    Q_INVOKABLE void reportConnectionError(const QString &message);
+
 signals:
     /** @brief Emitted whenever the snapshot store changes (frame received or file loaded). */
     void snapshotsChanged();
+
+    /** @brief Emitted when connectionMode changes. */
+    void connectionModeChanged();
 
     /** @brief Emitted with a human-readable message when any operation fails. */
     void errorOccurred(const QString &message);
@@ -98,6 +126,9 @@ private slots:
 private:
     SerialPortManager *m_portManager = nullptr;
     SerialParser *m_parser = nullptr;
+    UDPConnection *m_udpConnection = nullptr;
+    QMetaObject::Connection m_udpParserConnection;
+    QString m_connectionMode = QStringLiteral("wired");
     SnapshotStore m_snapshotStore;
     SnapshotLoader m_snapshotLoader;
 
@@ -107,6 +138,18 @@ private:
 
     /** @brief Dispatches frame data to the sensor and vector model updaters. */
     void updateModelsFromFrame(const DecodedFrame &frame);
+
+    /** @brief Connects serial bytes to the parser if not already connected. */
+    void connectSerialInputToParser();
+
+    /** @brief Disconnects serial bytes from the parser. */
+    void disconnectSerialInputFromParser();
+
+    /** @brief Connects UDP datagrams to the parser and a wireless debug log. */
+    void connectUdpInputToParser();
+
+    /** @brief Disconnects UDP datagrams from the parser. */
+    void disconnectUdpInputFromParser();
 
     /**
      * @brief Parses the raw sensor list from a frame and updates or inserts
