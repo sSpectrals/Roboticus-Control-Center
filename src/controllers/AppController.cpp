@@ -155,24 +155,12 @@ void AppController::connectUdpInputToParser() {
   if (!m_udpParserConnection) {
     return;
   }
-
-  m_udpParserDebugConnection =
-      connect(m_udpConnection, &UDPConnection::rawDataReceived, this,
-              [](const QByteArray &data) {
-                qDebug() << "Wireless UDP data received by SerialParser, bytes:"
-                         << data.size();
-              });
 }
 
 void AppController::disconnectUdpInputFromParser() {
   if (m_udpParserConnection) {
     disconnect(m_udpParserConnection);
     m_udpParserConnection = QMetaObject::Connection();
-  }
-
-  if (m_udpParserDebugConnection) {
-    disconnect(m_udpParserDebugConnection);
-    m_udpParserDebugConnection = QMetaObject::Connection();
   }
 }
 

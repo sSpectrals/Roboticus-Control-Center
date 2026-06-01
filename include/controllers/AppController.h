@@ -129,7 +129,6 @@ private:
     SerialParser *m_parser = nullptr;
     UDPConnection *m_udpConnection = nullptr;
     QMetaObject::Connection m_udpParserConnection;
-    QMetaObject::Connection m_udpParserDebugConnection;
     QString m_connectionMode = QStringLiteral("wired");
     SnapshotStore m_snapshotStore;
     SnapshotLoader m_snapshotLoader;
