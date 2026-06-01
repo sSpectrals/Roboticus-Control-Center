@@ -19,6 +19,8 @@ Rectangle {
     readonly property int controlRowHeight: 34
     readonly property int controlSpacing: 12
     readonly property int primaryControlWidth: 180
+    readonly property int secondaryControlWidth: 120
+    readonly property int monitorControlWidth: 220
     readonly property color accentColor: "#98FF98"
     readonly property color darkTextColor: "#0f0f0f"
     readonly property color controlBackgroundColor: "#0f0f0f"
@@ -48,6 +50,8 @@ Rectangle {
             color: modeButton.selected ? connectionBar.darkTextColor : "#ffffff"
             font.bold: true
             font.pixelSize: 13
+            minimumPixelSize: 8
+            fontSizeMode: Text.Fit
             horizontalAlignment: Text.AlignHCenter
             verticalAlignment: Text.AlignVCenter
             elide: Text.ElideRight
@@ -137,19 +141,19 @@ Rectangle {
         ModeButton {
             text: "Wired"
             selected: connectionBar.wiredMode
-            Layout.preferredWidth: 100
+            Layout.fillWidth: true
+            Layout.preferredWidth: 1
+            Layout.minimumWidth: 72
             onClicked: appController.switchToWiredMode()
         }
 
         ModeButton {
             text: "Wireless"
             selected: !connectionBar.wiredMode
-            Layout.preferredWidth: 110
-            onClicked: appController.switchToWirelessMode()
-        }
-
-        Item {
             Layout.fillWidth: true
+            Layout.preferredWidth: 1
+            Layout.minimumWidth: 84
+            onClicked: appController.switchToWirelessMode()
         }
     }
 
@@ -183,8 +187,9 @@ Rectangle {
             rightPadding: 12
             topPadding: 0
             bottomPadding: 0
+            Layout.fillWidth: true
             Layout.preferredWidth: connectionBar.primaryControlWidth
-            Layout.minimumWidth: 120
+            Layout.minimumWidth: 80
             Layout.preferredHeight: wirelessControlsRow.height
             onTextChanged: udpPortError = ""
             onAccepted: {
@@ -224,9 +229,9 @@ Rectangle {
 
         Button {
             id: wirelessMonitorButton
-            Layout.preferredWidth: 230
-            Layout.minimumWidth: 190
-            Layout.maximumWidth: 260
+            Layout.fillWidth: true
+            Layout.preferredWidth: connectionBar.monitorControlWidth
+            Layout.minimumWidth: 120
             Layout.preferredHeight: wirelessControlsRow.height
             Layout.alignment: Qt.AlignVCenter
 
@@ -236,12 +241,22 @@ Rectangle {
             Material.elevation: wirelessMonitorButton.hovered ? 3 : 1
 
             Text {
-                anchors.centerIn: parent
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                    leftMargin: 10
+                    rightMargin: 10
+                }
                 color: connectionBar.accentColor
                 text: udpConnection.listening ? "Stop Wireless Monitor" : "Start Wireless Monitor"
                 font.bold: true
                 font.pixelSize: 13
                 minimumPixelSize: 8
+                fontSizeMode: Text.Fit
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
 
             background: Rectangle {
@@ -285,8 +300,8 @@ Rectangle {
             horizontalAlignment: Text.AlignLeft
             verticalAlignment: Text.AlignVCenter
             Layout.fillWidth: true
-            Layout.minimumWidth: 100
-            Layout.preferredWidth: 120
+            Layout.minimumWidth: 58
+            Layout.preferredWidth: 90
             Layout.alignment: Qt.AlignVCenter
         }
     }
@@ -326,10 +341,10 @@ Rectangle {
 
         StyledComboBox {
             id: comSelection
+            Layout.fillWidth: true
             Layout.preferredWidth: connectionBar.primaryControlWidth
-            Layout.minimumWidth: 120
+            Layout.minimumWidth: 88
             Layout.preferredHeight: serialControlsRow.height
-            // Layout.fillWidth: true
             model: portManager.availablePortsList.length > 0 ? portManager.availablePortsList : ["No COM Port found"]
             currentIndex: 0
 
@@ -351,10 +366,10 @@ Rectangle {
 
         StyledComboBox {
             id: baudSelection
-            Layout.preferredWidth: 120
-            Layout.minimumWidth: 90
+            Layout.fillWidth: true
+            Layout.preferredWidth: connectionBar.secondaryControlWidth
+            Layout.minimumWidth: 68
             Layout.preferredHeight: serialControlsRow.height
-            // Layout.fillWidth: true
             model: [9600, 19200, 38400, 57600, 115200, 230400, 460800, 921600]
             currentIndex: 4
 
@@ -366,9 +381,9 @@ Rectangle {
 
         Button {
             id: startMonitor
-            Layout.preferredWidth: 170
-            Layout.minimumWidth: 130
-            // Layout.fillWidth: true
+            Layout.fillWidth: true
+            Layout.preferredWidth: connectionBar.monitorControlWidth
+            Layout.minimumWidth: 96
             Layout.preferredHeight: serialControlsRow.height
             Layout.alignment: Qt.AlignVCenter
 
@@ -378,12 +393,22 @@ Rectangle {
             Material.elevation: startMonitor.hovered ? 3 : 1
 
             Text {
-                anchors.centerIn: parent
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                    leftMargin: 10
+                    rightMargin: 10
+                }
                 color: "#98FF98"
                 text: portManager.isConnected ? "Stop Monitor" : "Start Monitor"
                 font.bold: true
                 font.pixelSize: 14
                 minimumPixelSize: 8
+                fontSizeMode: Text.Fit
+                elide: Text.ElideRight
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
             }
 
             background: Rectangle {
@@ -415,10 +440,6 @@ Rectangle {
             HoverHandler {
                 cursorShape: Qt.PointingHandCursor
             }
-        }
-
-        Item {
-            Layout.fillWidth: true
         }
     }
 
