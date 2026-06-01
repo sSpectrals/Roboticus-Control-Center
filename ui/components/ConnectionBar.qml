@@ -7,14 +7,13 @@ import QtQuick.Controls.Material
 Rectangle {
     id: connectionBar
 
-    height: connectionBar.wiredMode || connectionBar.wirelessErrorMessage.length === 0 ? 92 : 116
+    height: 92
     color: "transparent"
 
     required property var appController
     required property var portManager
     readonly property var udpConnection: appController.udpConnection
     readonly property bool wiredMode: appController.connectionMode === "wired"
-    readonly property string wirelessErrorMessage: udpPortError
     readonly property int rowMargin: 10
     readonly property int controlRowHeight: 34
     readonly property int controlSpacing: 12
@@ -25,7 +24,6 @@ Rectangle {
     readonly property color darkTextColor: "#0f0f0f"
     readonly property color controlBackgroundColor: "#0f0f0f"
     readonly property color controlBorderColor: "#333333"
-    property string udpPortError: ""
 
     anchors {
         left: monitor.left
@@ -92,38 +90,6 @@ Rectangle {
             portManager.setComPort(portManager.availablePortsList[0])
     }
 
-    function showUdpError(message) {
-        udpPortError = message
-        appController.reportConnectionError(message)
-    }
-
-    function startWirelessMonitor() {
-        const portText = udpPortField.text.trim()
-
-        if (portText.length === 0) {
-            showUdpError("No UDP port entered. Please enter a UDP port to listen on.")
-            return
-        }
-
-        if (!/^[0-9]+$/.test(portText)) {
-            showUdpError("UDP port must contain only numbers. Remove letters or symbols.")
-            return
-        }
-
-        const port = Number(portText)
-        if (port <= 0 || port > 65535) {
-            showUdpError("UDP port must be between 1 and 65535.")
-            return
-        }
-
-        udpPortError = ""
-        if (!appController.startWirelessMonitor(port)) {
-            udpPortError = udpConnection.errorString.length > 0
-                         ? udpConnection.errorString
-                         : "Failed to start UDP listener."
-        }
-    }
-
     // Mode selection
     RowLayout {
         id: modeRow
@@ -173,42 +139,25 @@ Rectangle {
         height: connectionBar.controlRowHeight
         spacing: connectionBar.controlSpacing
 
-        TextField {
-            id: udpPortField
-            text: "45454"
-            enabled: !udpConnection.listening
-            selectByMouse: true
-            inputMethodHints: Qt.ImhDigitsOnly
-            verticalAlignment: TextInput.AlignVCenter
-            color: connectionBar.accentColor
-            selectionColor: connectionBar.accentColor
-            selectedTextColor: connectionBar.darkTextColor
-            leftPadding: 20
-            rightPadding: 12
-            topPadding: 0
-            bottomPadding: 0
+        Rectangle {
+            id: udpPortFieldContainer
             Layout.fillWidth: true
             Layout.preferredWidth: connectionBar.primaryControlWidth
             Layout.minimumWidth: 80
             Layout.preferredHeight: wirelessControlsRow.height
-            onTextChanged: udpPortError = ""
-            onAccepted: {
-                if (!udpConnection.listening)
-                    connectionBar.startWirelessMonitor()
+            color: connectionBar.controlBackgroundColor
+            border.width: 2
+            border.color: udpPortField.activeFocus || containerHover.hovered
+                          ? connectionBar.accentColor
+                          : connectionBar.controlBorderColor
+            radius: 4
+
+            Behavior on border.color {
+                ColorAnimation { duration: 150 }
             }
 
-            Material.accent: connectionBar.accentColor
-            Material.foreground: connectionBar.accentColor
-
-            background: Rectangle {
-                color: connectionBar.controlBackgroundColor
-                border.width: 2
-                border.color: udpPortField.hovered || udpPortField.activeFocus ? connectionBar.accentColor : connectionBar.controlBorderColor
-                radius: 4
-
-                Behavior on border.color {
-                    ColorAnimation { duration: 150 }
-                }
+            HoverHandler {
+                id: containerHover
             }
 
             Text {
@@ -221,8 +170,32 @@ Rectangle {
                     left: parent.left
                     right: parent.right
                     verticalCenter: parent.verticalCenter
-                    leftMargin: udpPortField.leftPadding
-                    rightMargin: udpPortField.rightPadding
+                    leftMargin: 20
+                    rightMargin: 12
+                }
+            }
+
+            TextInput {
+                id: udpPortField
+                text: "8080"
+                enabled: !udpConnection.listening
+                activeFocusOnPress: true
+                selectByMouse: true
+                validator: RegularExpressionValidator { regularExpression: /^[0-9]{1,5}$/ } // only allow integers
+                color: connectionBar.accentColor
+                selectionColor: connectionBar.accentColor
+                selectedTextColor: connectionBar.darkTextColor
+                font.pixelSize: 13
+                anchors {
+                    left: parent.left
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                    leftMargin: 20
+                    rightMargin: 12
+                }
+                onAccepted: {
+                    if (!udpConnection.listening)
+                        appController.startWirelessMonitor(udpPortField.text)
                 }
             }
         }
@@ -280,9 +253,8 @@ Rectangle {
             onClicked: {
                 if (udpConnection.listening) {
                     appController.stopWirelessMonitor()
-                    udpPortError = ""
                 } else {
-                    connectionBar.startWirelessMonitor()
+                    appController.startWirelessMonitor(udpPortField.text)
                 }
             }
 
@@ -306,22 +278,6 @@ Rectangle {
         }
     }
 
-    Text {
-        visible: !connectionBar.wiredMode && connectionBar.wirelessErrorMessage.length > 0
-        text: connectionBar.wirelessErrorMessage
-        color: "#ff8a8a"
-        font.pixelSize: 12
-        elide: Text.ElideRight
-        anchors {
-            left: parent.left
-            right: parent.right
-            top: wirelessControlsRow.bottom
-            topMargin: 4
-            leftMargin: connectionBar.rowMargin
-            rightMargin: connectionBar.rowMargin
-        }
-        height: visible ? 16 : 0
-    }
 
     // Serial controls
     RowLayout {

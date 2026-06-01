@@ -14,8 +14,8 @@ UDPConnection::UDPConnection(QObject *parent) : QObject(parent) {
 }
 
 bool UDPConnection::startListening(quint16 port) {
-  if (port == 0) {
-    setError("UDP port must be between 1 and 65535.");
+  if (port < 1 || port > 65535 ) {
+    emit errorOccurred("UDP port must be between 1 and 65535.");
     return false;
   }
 
@@ -36,9 +36,9 @@ bool UDPConnection::startListening(quint16 port) {
                      QUdpSocket::ShareAddress | QUdpSocket::ReuseAddressHint);
 
   if (!bound) {
-    setError(QString("Failed to listen on UDP port %1: %2")
-                 .arg(port)
-                 .arg(m_socket->errorString()));
+      emit errorOccurred(QString("Failed to listen on UDP port %1: %2")
+                             .arg(port)
+                             .arg(m_socket->errorString()));
     return false;
   }
 
@@ -52,7 +52,6 @@ bool UDPConnection::startListening(quint16 port) {
 
   m_port = port;
   m_listening = true;
-  clearError();
   m_noDatagramsTimer.start();
 
   if (portChangedNeeded) {
@@ -76,7 +75,6 @@ void UDPConnection::stopListening() {
   }
 
   m_listening = false;
-  clearError();
 
   if (wasListening) {
     emit listeningChanged();
@@ -103,7 +101,7 @@ void UDPConnection::readPendingDatagrams() {
   while (m_socket->hasPendingDatagrams()) {
     const QNetworkDatagram datagram = m_socket->receiveDatagram();
     if (!datagram.isValid()) {
-      setError("Received an invalid UDP datagram.");
+      emit errorOccurred("Received an invalid UDP datagram.");
       continue;
     }
 
@@ -128,7 +126,6 @@ void UDPConnection::readPendingDatagrams() {
   }
 
   if (receivedAnyDatagram) {
-    clearError();
     m_noDatagramsTimer.start();
     emit statisticsChanged();
     emit lastSenderChanged();
@@ -140,8 +137,9 @@ void UDPConnection::handleNoDatagramsTimeout() {
     return;
   }
 
-  setError(QString("No UDP packets were received on port %1 within 10 seconds.")
-               .arg(m_port));
+  emit errorOccurred(
+      QString("No UDP packets were received on port %1 within 10 seconds.")
+          .arg(m_port));
 }
 
 void UDPConnection::handleSocketError(QAbstractSocket::SocketError error) {
@@ -149,27 +147,6 @@ void UDPConnection::handleSocketError(QAbstractSocket::SocketError error) {
     return;
   }
 
-  setError(QString("UDP socket error: %1").arg(m_socket->errorString()));
-}
-
-void UDPConnection::setError(const QString &message) {
-  if (message.isEmpty()) {
-    return;
-  }
-
-  if (m_errorString != message) {
-    m_errorString = message;
-    emit errorChanged();
-  }
-
-  emit errorOccurred(message);
-}
-
-void UDPConnection::clearError() {
-  if (m_errorString.isEmpty()) {
-    return;
-  }
-
-  m_errorString.clear();
-  emit errorChanged();
+  emit errorOccurred(
+      QString("UDP socket error: %1").arg(m_socket->errorString()));
 }

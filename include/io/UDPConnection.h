@@ -17,7 +17,6 @@ class UDPConnection : public QObject {
     Q_PROPERTY(quint64 bytesReceived READ bytesReceived NOTIFY statisticsChanged)
     Q_PROPERTY(QString lastSenderAddress READ lastSenderAddress NOTIFY lastSenderChanged)
     Q_PROPERTY(quint16 lastSenderPort READ lastSenderPort NOTIFY lastSenderChanged)
-    Q_PROPERTY(QString errorString READ errorString NOTIFY errorChanged)
 
 public:
     explicit UDPConnection(QObject *parent = nullptr);
@@ -28,7 +27,6 @@ public:
     quint64 bytesReceived() const { return m_bytesReceived; }
     QString lastSenderAddress() const { return m_lastSenderAddress; }
     quint16 lastSenderPort() const { return m_lastSenderPort; }
-    QString errorString() const { return m_errorString; }
 
     Q_INVOKABLE bool startListening(quint16 port);
     Q_INVOKABLE void stopListening();
@@ -40,7 +38,6 @@ signals:
     void portChanged();
     void statisticsChanged();
     void lastSenderChanged();
-    void errorChanged();
     void errorOccurred(const QString &message);
 
 private slots:
@@ -49,9 +46,6 @@ private slots:
     void handleSocketError(QAbstractSocket::SocketError error);
 
 private:
-    void setError(const QString &message);
-    void clearError();
-
     static constexpr int NoDatagramsTimeoutMs = 10000;
 
     QUdpSocket *m_socket = nullptr;

@@ -1,7 +1,6 @@
 #pragma once
 
 #include <QObject>
-#include <QMetaObject>
 #include <QQmlEngine>
 #include <QString>
 #include <QUrl>
